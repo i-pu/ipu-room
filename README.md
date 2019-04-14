@@ -27,3 +27,13 @@ yarn run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+## Docker setup
+### Run server
+```
+cd server && docker-compose up --build
+```
+### Delete server
+```
+docker-compose down
+```

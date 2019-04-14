@@ -61,9 +61,6 @@ func main() {
 	go ws.Server.Serve()
 	defer ws.Server.Close()
 
-	fs := http.FileServer(http.Dir("static"))
-	http.Handle("/", fs)
-
 	http.Handle("/socket.io/", ws)
 	log.Println("Serving at localhost:8000...")
 	log.Fatal(http.ListenAndServe(":8000", nil))
