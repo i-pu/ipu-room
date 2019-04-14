@@ -3,7 +3,7 @@ import BootstrapVue from 'bootstrap-vue'
 import VueSocketIO from 'vue-socket.io'
 Vue.use(BootstrapVue)
 Vue.use(new VueSocketIO({
-  connection: 'http://172.20.10.10:8000',
+  connection: 'http://localhost:8000',
   options: { path: '/socket.io/' }
 }))
 
