@@ -1,7 +1,13 @@
 import Vue from 'vue'
-import App from './App.vue'
+import BootstrapVue from 'bootstrap-vue'
+import VueSocketIO from 'vue-socket.io'
+Vue.use(BootstrapVue)
+Vue.use(new VueSocketIO({
+  connection: 'http://172.20.10.10:8000',
+  options: { path: '/socket.io/' }
+}))
 
-Vue.config.productionTip = false
+import App from './App'
 
 new Vue({
   render: h => h(App),
