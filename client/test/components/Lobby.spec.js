@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import Lobby from './Lobby'
+import Lobby from './../../src/components/Lobby'
 
 describe('Component', () => {
   test('is a Vue instance', () => {
