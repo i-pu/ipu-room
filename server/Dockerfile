@@ -1,32 +1,9 @@
-FROM alpine:3.9 as builder
+FROM python:3.7.3-alpine3.9
+WORKDIR /project
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
-RUN apk add --no-cache go \
-        git \
-        binutils-gold \
-        curl \
-        g++ \
-        gcc \
-        gnupg \
-        libgcc \
-        linux-headers \
-        make \
-        python
-
-RUN go get -u github.com/googollee/go-socket.io
-
-WORKDIR /root/go/src/github.com/googollee/go-engine.io/transport/websocket/
-RUN mv transport.go transport.go.old
-COPY ./transport.go.new ./transport.go
-
-# GOPATH=/root/go
-WORKDIR /root/go/src/server
-COPY . .    
+COPY . .
 RUN ls -l -a
-RUN go build main.go
 
-
-FROM alpine:latest as runner
-RUN apk add --no-cache libc6-compat
-
-WORKDIR /app
-COPY --from=builder /root/go/src/server/main .
+CMD ["python" , "-u" , "server.py"]

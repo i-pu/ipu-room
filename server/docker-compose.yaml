@@ -5,6 +5,10 @@ services:
     container_name: server
     ports: 
       - "8000:8000"
-    # env_file: ".env"
-    entrypoint: 
-      - './main'
+    env_file: .env
+
+  db:
+    container_name: db
+    image: postgres:11.2
+    env_file:
+      - .env
