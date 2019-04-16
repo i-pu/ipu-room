@@ -16,8 +16,6 @@
 </template>
 
 <script>
-import uuidv4 from 'uuid/v4'
-
 import Register from './Register'
 
 export default {

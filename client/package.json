@@ -1,44 +1,30 @@
 {
-  "name": "ipu",
+  "name": "client",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "test": "NODE_ENV=test jest"
+    "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "babel": "^6.23.0",
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "^2.0.0-rc.18",
     "core-js": "^2.6.5",
-    "uuid": "^3.3.2",
     "vue": "^2.6.10",
-    "vue-router": "^3.0.3",
+    "vue-router": "^3.0.5",
     "vue-socket.io": "^3.0.7"
   },
   "devDependencies": {
-    "@babel/core": "^7.4.3",
-    "@vue/cli-plugin-babel": "^3.5.0",
-    "@vue/cli-plugin-eslint": "^3.5.0",
-    "@vue/cli-service": "^3.5.0",
-    "@vue/test-utils": "^1.0.0-beta.29",
-    "babel-core": "^7.0.0-bridge.0",
+    "@vue/cli-plugin-babel": "^3.6.0",
+    "@vue/cli-plugin-eslint": "^3.6.0",
+    "@vue/cli-service": "^3.6.0",
     "babel-eslint": "^10.0.1",
-    "babel-jest": "^24.7.1",
-    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
-    "babel-preset-env": "^1.7.0",
-    "eslint": "^5.8.0",
+    "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
-    "jest": "^24.7.1",
     "pug": "^2.0.3",
     "pug-loader": "^2.4.0",
     "pug-plain-loader": "^1.0.0",
-    "regenerator-runtime": "^0.13.2",
-    "vue-class-component": "^7.0.2",
-    "vue-jest": "^3.0.4",
-    "vue-property-decorator": "^8.1.0",
     "vue-template-compiler": "^2.5.21"
   },
   "eslintConfig": {
@@ -64,22 +50,5 @@
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
-  ],
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "vue"
-    ],
-    "transformIgnorePatterns": [
-      "node_modules/(?!vue-awesome|vuex-i18n)"
-    ],
-    "transform": {
-      ".*\\.(vue)$": "vue-jest",
-      "^.+\\.jsx?$": "babel-jest"
-    },
-    "moduleNameMapper": {
-      "^@/(.*)$": "<rootDir>/src/$1"
-    }
-  }
+  ]
 }
