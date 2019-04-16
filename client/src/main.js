@@ -9,6 +9,11 @@ Vue.use(new VueSocketIO({
 
 import App from './App'
 
+import router from './router'
+
+router.push('/room')
+
 new Vue({
+  router,
   render: h => h(App),
 }).$mount('#app')

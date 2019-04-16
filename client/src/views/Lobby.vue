@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import Register from './Register'
+import Register from './../components/Register'
 
 export default {
   name: 'Lobby',
