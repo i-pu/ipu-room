@@ -1,19 +1,27 @@
 <template lang='pug'>
   div
-    b-container
-      b-row
-        b-col#header
-      b-row
-        b-col#desk(cols="9")
-          canvas(width="640" height="360")
-        b-col#chat(cols="3")
-      b-row
-        b-col#status(cols="12")
+    v-container(fluid grid-list-md text-xs-center)
+      v-layout(row wrap)
+        v-flex(d-flex xs12 sm12 md9)
+          v-responsive(:aspect-ratio="16/9")
+            v-card(white)
+              desk#desk
+        v-flex(d-flex xs12 sm12 md3)
+          v-card(white)
+            chat#chat
+        v-flex(d-flex xs12 sm12 md12)
+          v-card(white)
+            status#status
 </template>
 
 <script>
+import Desk from '@/components/Desk'
+import Chat from '@/components/Chat'
+import Status from '@/components/Status'
+
 export default {
   name: 'Room',
+  components: { Desk, Chat, Status },
   data () {
     return {
 
@@ -24,33 +32,7 @@ export default {
 </script>
 
 <style scoped>
-#header {
-  width: 100%;
-  height: 5vh;
-  background-color: cyan;
-}
-
-#desk {
-  width: 100%;
-  height: 100%;
-  padding: 0;
-  background-color: aliceblue;
-}
-
-#desk canvas {
-  width: 100%;
-  height: 100%;
-}
-
-#chat {
-  width: 100%;
-  height: auto;
-  background-color: turquoise;
-}
-
 #status {
-  width: 100%;
-  height: 30vh;
-  background-color: blanchedalmond;
+  height: 300px;
 }
 </style>

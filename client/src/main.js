@@ -1,7 +1,7 @@
 import Vue from 'vue'
-import BootstrapVue from 'bootstrap-vue'
+import './plugins/vuetify'
 import VueSocketIO from 'vue-socket.io'
-Vue.use(BootstrapVue)
+
 Vue.use(new VueSocketIO({
   connection: 'http://localhost:8000',
   options: { path: '/socket.io/' }

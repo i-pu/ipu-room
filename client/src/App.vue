@@ -1,13 +1,26 @@
 <template lang="pug">
-  #app
-    router-view
+  v-app
+    v-toolbar(app)
+      v-toolbar-title.headline.text-uppercase
+        span へやつくるやつ
+      v-spacer
+      v-btn(
+        color="error"
+        href="#"
+        target="_blank"
+      ) 退出
+
+    v-content
+      router-view
 </template>
 
 <script>
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
-
 export default {
   name: 'App',
+  data () {
+    return {
+      //
+    }
+  }
 }
 </script>
