@@ -15,9 +15,9 @@
 </template>
 
 <script>
-import Desk from '@/components/Desk'
-import Chat from '@/components/Chat'
-import Status from '@/components/Status'
+import Desk from '@/components/room/Desk'
+import Chat from '@/components/room/Chat'
+import Status from '@/components/room/Status'
 
 export default {
   name: 'Room',

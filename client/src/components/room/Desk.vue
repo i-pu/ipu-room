@@ -5,12 +5,7 @@
 
 <script>
 export default {
-  name: '',
-  data () {
-    return { }
-  },
-  created () {},
-  methods: { }
+  name: 'Desk',
 }
 </script>
 
