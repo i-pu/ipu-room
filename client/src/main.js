@@ -3,15 +3,17 @@ import './plugins/vuetify'
 import VueSocketIO from 'vue-socket.io'
 
 Vue.use(new VueSocketIO({
-  connection: 'http://localhost:8000',
-  options: { path: '/socket.io/' }
+  connection: 'http://10.160.163.229:8000',
+  // options: { path: '/socket.io/' }
 }))
+
+Vue.productionTip = false
 
 import App from './App'
 
 import router from './router'
 
-router.push('/room')
+// router.push('/room')
 
 new Vue({
   router,

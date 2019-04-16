@@ -1,18 +1,30 @@
 <template lang="pug">
   div
-    register(@register="register" @makeroom="makeRoom")
+    // register(@register="register" @makeroom="makeRoom")
 
-    b-container
-      b-row
-        b-col(v-for="room in rooms" :key="room.roomId" class="col-4 mb-4")
-          b-card(:title="room.hostUserId.toString()")
-            h4(slot="header") {{ room.roomId }}
-            p {{ room.members }}
-            b-button(@click="joinRoom(user.userId, room.roomId)" variant="primary") 入室
+    v-container(fluid grid-list-md)
+      v-layout(row wrap)
+        v-flex(
+          v-for="room in rooms"
+          :key="room.roomId"
+          d-flex
+          xs12 sm6 md3
+        )
+          v-card
+            v-img(:src="room.thumbnailUrl" height="200px")
+            v-card-title(primary-title) {{ room.title }}
+            v-card-actions
+              v-btn(color="info") 入室
 
-    b-button(@click="send") 送信
+        // 新規作成
+        v-flex(d-flex xs12 sm6 md3)
+          v-card(color="green")
+            v-card-title(primary-title) 新規作成
+            v-card-actions
+              v-btn(color="info") 作成
 
-    b-button(@click="$socket.emit('bye')") Bye
+    v-btn(@click="$socket.emit('notice', 'a')") notice
+    v-btn(@click="$socket.emit('bye', {})") bye
 </template>
 
 <script>
@@ -31,7 +43,13 @@ export default {
   },
   data () {
     return {
-      rooms: [],
+      rooms: [{
+        title: '雑談部屋',
+        hostUserId: 'aaa',
+        members: ['a', 'b', 'c'],
+        roomId: 'room1',
+        thumbnailUrl: 'https://cdn.vuetifyjs.com/images/cards/house.jpg'
+      }],
       user: {}
     }
   },
