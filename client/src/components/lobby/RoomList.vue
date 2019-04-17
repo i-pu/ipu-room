@@ -3,25 +3,22 @@
     v-container(fluid grid-list-md)
       v-layout(row wrap)
         v-flex(
-          v-for="room in rooms" :key="room.roomId"
+          v-for="room in rooms" :key="room.room_id"
           d-flex xs12 sm6 md3
         )
           v-card
-            v-img(:src="room.thumbnailUrl" height="200px")
-            v-card-title(primary-title) {{ room.title }}
+            v-img(:src="room.thumbnail_url" height="200px")
+            v-card-title
+              h3.headline {{ room.room_name }}
+            v-card-text
+              template(v-for="member, i in room.members")
+                v-tooltip.mr-2(top :key="i")
+                  template(v-slot:activator="{ on }")
+                    v-avatar(v-on="on")
+                      img(:src="member.avatar_url")
+                  span {{ member.name }}
             v-card-actions
               v-btn(color="info" @click="onClickJoin") 入室
-
-        // 新規作成
-        v-flex(d-flex xs12 sm6 md3)
-          v-card(color="light-green lighten-4")
-            v-card-title(primary-title) 新規作成
-            v-card-actions
-              v-text-field(
-                v-model="roomNameInput"
-                label="部屋名"
-              )
-              v-btn(color="info" @click="onClickCreate") 作成
 </template>
 
 <script>
@@ -38,12 +35,7 @@ export default {
   methods: {
     onClickJoin () {
       // this.$socket.emit('enter_room', { room_name: this.roomNameInput })
-
       this.$router.push('/room')
-    },
-    onClickCreate () {
-      this.$emit('create', { roomName: this.roomNameInput })
-      this.roomNameInput = ''
     }
   }
 }

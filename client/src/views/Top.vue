@@ -11,7 +11,7 @@
           v-card(white)
             v-card-text
               v-layout(align-center)
-                v-text-field(placeholder="Your name")
+                v-text-field(placeholder="Your name" v-model="userName")
                 v-btn(color="blue-grey" class="white--text" @click="toLobby") Lobby
                   v-icon(right dark) arrow_right_alt
 </template>
@@ -20,12 +20,25 @@
 export default {
   name: '',
   data () {
-    return { }
+    return {
+      userName: ''
+    }
   },
-  created () {},
+  sockets: {
+    visit (data) {
+      console.log(data)
+      // TODO Vuex
+      this.$router.push({
+        path: `/lobby/${data.user_id}`,
+        params: {
+          userId: data.user_id
+        }
+      })
+    }
+  },
   methods: {
     toLobby () {
-      this.$router.push('/lobby')
+      this.$socket.emit('visit', { user_name: this.userName })
     }
   }
 }
