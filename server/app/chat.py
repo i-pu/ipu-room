@@ -21,7 +21,7 @@ def chat(data):
     print('chat event')
     print('data:', data)
     print('rooms:', rooms())
-    data['comment_id'] = '2075'
+    data['comment_id'] = '10000000'
     socketio.emit('chat', data=data, room='chat_room')
 
 
