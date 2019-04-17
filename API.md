@@ -1,8 +1,25 @@
+## path
+#### /room
+- methods
+  - GET
+- returns
+  - rooms:[room]
+
 ## event
-#### enter_room
+#### visit
 - args
   - user_name
-  - room_name
+  
+#### lobby
+- args
+  - user_id
+- returns
+  - rooms: [room]
+  
+#### enter_room
+- args
+  - user_id
+  - room_id
 - returns
   - users:[user]
   - comments:[comment]
@@ -30,6 +47,9 @@
   - unimplemented
   
 ## type
+#### room
+- room_id
+- room_name
 #### user 
 - user_id
 - room_id 
