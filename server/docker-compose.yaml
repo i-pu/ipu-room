@@ -6,6 +6,8 @@ services:
     ports: 
       - "8000:8000"
     env_file: .env
+    entrypoint:
+      - ./entry.sh
 
   db:
     container_name: db
