@@ -1,7 +1,8 @@
 
 <template lang="pug">
-  div
+  #desk
     vue-p5(
+      ref="p5canvas"
       @setup="setup" 
       @draw="draw"
       @keypressed="keyPressed"
@@ -21,12 +22,17 @@ export default {
       lines: []
     }
   },
+  mounted() {
+    const { clientWidth, clientHeight } = this.$refs.p5canvas.$el
+    console.log(`${clientWidth} x ${clientHeight}`)
+  },
   methods: {
     mouseDragged ({ mouseX, mouseY, pmouseX, pmouseY }) {
       this.lines.push({ mouseX, mouseY, pmouseX, pmouseY })
     },
     setup (sketch) {
-      sketch.createCanvas(400, 400)
+      const { clientWidth, clientHeight } = this.$refs.p5canvas.$el
+      sketch.createCanvas(clientWidth, clientHeight)
       sketch.background(255)
     },
     draw (sketch) {
@@ -39,8 +45,11 @@ export default {
 </script>
 
 <style scoped>
-desk-canvas {
-  width: 100%;
+#desk {
+  height: 100%;
+}
+
+#desk div {
   height: 100%;
 }
 </style>

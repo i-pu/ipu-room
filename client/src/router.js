@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+
+import Top from '@/views/Top'
 import Lobby from '@/views/Lobby'
 import Room from '@/views/Room'
 
@@ -12,6 +14,11 @@ export default new Router({
   routes: [
     {
       path: '/',
+      name: 'Top',
+      component: Top
+    },
+    {
+      path: '/lobby',
       name: 'Lobby',
       component: Lobby
     },

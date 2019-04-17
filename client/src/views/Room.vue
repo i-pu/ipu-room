@@ -2,9 +2,14 @@
   div
     v-container(fluid grid-list-md text-xs-center)
       v-layout(row wrap)
+        v-flex(xs12 sm12 md12)
+          v-toolbar(dense floating)
+            v-toolbar-title {{ room.name }}
+            v-spacer
+            v-toolbar-title お絵かき
         v-flex(d-flex xs12 sm12 md9)
           v-responsive(:aspect-ratio="16/9")
-            v-card(white)
+            v-card(height="100%" white)
               desk#desk
         v-flex(d-flex xs12 sm12 md3)
           v-card(white)
@@ -24,7 +29,9 @@ export default {
   components: { Desk, Chat, Status },
   data () {
     return {
-
+      room: {
+        name: 'テスト部屋'
+      }
     }
   },
   methods: { }
@@ -32,7 +39,15 @@ export default {
 </script>
 
 <style scoped>
+#desk {
+  height: 100%;
+}
+
 #status {
   height: 300px;
+}
+
+v-card {
+  height: 100%;
 }
 </style>
