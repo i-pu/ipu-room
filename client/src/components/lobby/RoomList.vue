@@ -37,8 +37,9 @@ export default {
   },
   methods: {
     onClickJoin () {
-      this.$socket.emit('enter_room', { room_name: this.roomNameInput })
-      this.roomNameInput = ''
+      // this.$socket.emit('enter_room', { room_name: this.roomNameInput })
+
+      this.$router.push('/room')
     },
     onClickCreate () {
       this.$emit('create', { roomName: this.roomNameInput })
