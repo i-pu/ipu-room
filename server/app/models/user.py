@@ -11,3 +11,6 @@ class User(db.Model):
     def __init__(self, name, room_id=None):
         self.name = name
         self.room_id = room_id
+
+    def __repr__(self):
+        return 'id: {}, name: {}, room_id: {}'.format(self.id, self.name, self.room_id)

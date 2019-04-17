@@ -6,14 +6,26 @@ from .config import socketio
 from .models import db, User, Room, Comment
 
 
+def rich_room(room):
+    members = User.query.filter_by(room_id=room.id).all()
+    room.members = members
+
+    return room
+
+
+# todo: 1 vs many に変えたい
+
 def check_user(handler):
     @wraps(handler)
     def already_registered(*args, **kwargs):
+        print('check_user')
         data = args[0]
         user_id = data['user_id']
-        user = User.query.filter('id={}'.format(user_id)).one()
+        user = User.query.filter_by(id=user_id).one()
         if user is None:
-            raise RuntimeError()
+            raise RuntimeError
+        else:
+            print('user:', user)
         return handler(*args, **kwargs)
 
     return already_registered
@@ -22,12 +34,20 @@ def check_user(handler):
 @socketio.on('visit')
 def visit(data):
     print('visit')
-    user = User(data['username'])
+    print('data:', data)
+    user = User(data['user_name'])
     db.session.add(user)
     db.session.commit()
 
+    print('user:', user)
+    socketio.emit('visit', data={
+        'user_id': user.id,
+        'user_name': user.name,
+    })
+
 
 @socketio.on('create_room')
+@check_user
 def create_room(data):
     print(create_room)
     print(data)
@@ -38,10 +58,7 @@ def create_room(data):
     db.session.add(room)
     db.session.commit()
 
-    socketio.emit('create_room', data={
-        'room_name': room.name,
-        'room_id': room.id,
-    })
+    socketio.emit('create_room', data=rich_room(room).__dict__())
 
 
 @socketio.on('lobby')
@@ -49,9 +66,10 @@ def create_room(data):
 def lobby(data):
     print('lobby')
     print('user_id', data['user_id'])
-    all_room = Room.query().all()
+    all_room = Room.query.all()
+
     socketio.emit('lobby', data={
-        'rooms': all_room,
+        'rooms': list(map(rich_room, all_room)),
     })
 
 
@@ -60,21 +78,21 @@ def lobby(data):
 def begin_chat(data):
     print('enter_room')
     print('data:', data)
-    user = User.query().filter('id={}'.format(data['user_id'])).one()
+    user = User.query.filter_by(id=data['user_id']).one()
     print('user_id', user.id)
 
     room_id = data['room_id']
-    room = Room.query().filter('id={}'.format(room_id)).one()
+    room = Room.query.filter_by(id=room_id).one()
     print('room:', room)
 
-    comments = Comment.query().filter('room_id={}'.format(room_id)).all()
+    comments = Comment.query.filter_by(room_id=room_id).all()
 
     join_room(room_id)
     user.room_id = room_id
     db.session.add(user)
     db.session.commit()
 
-    users = User.query().filter('room_id={}', format(room_id)).all()
+    users = User.query.filter_by(room_id=room_id).all()
 
     socketio.emit('enter_room',
                   data={
@@ -112,7 +130,7 @@ def exit_chat(data):
     room_id = data['room_id']
     user_id = data['user_id']
 
-    user = User.query().filter('id={}'.format(user_id)).one()
+    user = User.query.filter_by(id=user_id).one()
     user.query.update({'room_id': None})
     db.session.commit()
 

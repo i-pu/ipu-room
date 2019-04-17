@@ -7,6 +7,9 @@ class Room(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime)
+    thumbnail_url = db.Column(db.String(255), nullable=True)
+
+    members = []
 
     def __init__(self, room_name):
         self.name = room_name
