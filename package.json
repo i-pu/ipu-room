@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "vue-p5": "0.7.x"
+  }
+}

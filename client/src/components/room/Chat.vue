@@ -51,8 +51,24 @@ export default {
         text: this.chatInput,
         commented_at: new Date()
       }
-      this.$socket.emit('chat', comment)
+
+      // fook
+      const cancelled = !this.beforeComment(comment)
+
       this.chatInput = ''
+
+      if (cancelled) {
+        return
+      }
+
+      // Local
+      this.comments.push(comment)
+      // this.$socket.emit('chat', comment)
+    },
+
+    beforeComment (comment) {
+      console.log(comment)
+      return true
     }
   }
 }
