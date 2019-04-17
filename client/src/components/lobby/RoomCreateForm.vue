@@ -20,6 +20,9 @@
 <script>
 export default {
   name: '',
+  props: {
+    userId: Number
+  },
   data () {
     return {
       dialog: false,
@@ -28,8 +31,9 @@ export default {
   },
   methods: {
     onClickCreate () {
+      console.log(this.userId)
       console.log(this.roomNameInput)
-      // this.$emit('create', { roomName: this.roomNameInput })
+      this.$socket.emit('create_room', { room_name: this.roomNameInput, user_id: this.userId })
       this.dialog = false
       this.roomNameInput = ''
     }

@@ -9,7 +9,7 @@
 
       room-create-form
 
-    room-list(:rooms="rooms")
+    room-list(:rooms="rooms" :userId="userId")
 </template>
 
 <script>
@@ -23,19 +23,30 @@ export default {
   components: { RoomList, RoomCreateForm },
   data () {
     return {
-      rooms: ROOMS_MOCK,
+      rooms: [],
+      userId: -1,
       name: 'ななし'
     }
   },
   sockets: {
-    room (rooms) {
-      this.rooms = rooms
+    room (data) {
+      console.log(data)
+      this.rooms.push(data.room)
+    },
+    lobby (data) {
+      console.log(data.rooms)
+      this.rooms = data.rooms
+    },
+    visit (data) {
+      console.log(data)
+      this.userId = data.user_id
+      this.$socket.emit('lobby', { user_id: data.user_id })
     }
   },
   mounted() {
     console.log(this.$route.params.userId)
 
-    this.$emit('room')
+    this.$socket.emit('visit', { user_name: 'AAA' })
   }
 }
 </script>
