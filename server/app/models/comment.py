@@ -15,3 +15,14 @@ class Comment(db.Model):
         self.room_id = room_id
         self.content = content
         self.created_at = created_at
+
+    def __to_dict__(self):
+        return {
+            'comment': {
+                'id': self.id,
+                'user_id': self.user_id,
+                'room_id': self.room_id,
+                'content': self.content,
+                'created_at': self.created_at,
+            }
+        }

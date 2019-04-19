@@ -7,57 +7,106 @@
 
 ## event
 #### visit
-- args
-  - user_name
+##### arg
+```json
+{
+  "user_name": string
+}
+```
+##### return
+```json
+user
+```
   
 #### lobby
-- args
-  - user_id
-- returns
-  - rooms: [room]
+##### arg
+```json
+{
+  "user_id": int
+}
+```
+##### return
+```json
+{
+  "rooms": [room]
+}
+```
   
 #### enter_room
-- args
-  - user_id
-  - room_id
-- returns
-  - users:[user]
-  - comments:[comment]
-  - room_name
-  - room_id
-- errors
-  - unimplemented
+##### arg
+```json
+{
+  "user_id": int,
+  "room_id": int
+}
+```
+##### return
+```json
+room
+```
+##### errors
+unimplemented
   
 #### chat 
-- args
-  - user_id
-  - room_id
-  - content
-  - created_at
-- returns
-  - comment
-- errors
-  - unimplemented
+##### arg
+```json
+{
+  "user_id": int,
+  "room_id": int,
+  "content": string,
+  "created_at": time, // unimplemented
+}
+```
+##### return
+```json
+comment
+```
+
+##### error
+unimplemented
 
 #### exit_room
-- args
-  - user_id
-  - room_id
-- errors
-  - unimplemented
+##### arg
+```json
+{
+  "user_id": int,
+  "room_id": int
+}
+```
+##### error
+unimplemented
   
 ## type
 #### room
-- room_id
-- room_name
+```json
+{
+  "room": {
+    "room_id": int,
+    "room_name": string,
+    "users": [user],
+    "comments": [comment]
+  }
+}
+```
 #### user 
-- user_id
-- room_id 
-- user_name
-
+```json
+{
+  "user": {
+    "id": int,
+    "name": string,
+    "room_id": Option<int>
+  }
+}
+```
 #### comment
-- comment_id
-- comment_user_id
-- comment_room_id
-- content
-- created_at
+```json
+{
+  "comment": {
+    "id": int, 
+    "user_id": int,
+    "room_id": int,
+    "content": string,
+    "created_at": time // unimplemented
+  }
+}
+```

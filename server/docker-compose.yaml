@@ -8,8 +8,9 @@ services:
     env_file: .env
     environment:
       - PYTHONUNBUFFERED=1
-    entrypoint:
-      - ./entry.sh
+    restart: on-failure
+#     entrypoint:
+#       - ./entry.sh
 
   db:
     container_name: db

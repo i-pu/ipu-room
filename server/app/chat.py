@@ -1,4 +1,5 @@
 from functools import wraps
+import ast
 
 from flask_socketio import join_room, leave_room, rooms
 
@@ -31,49 +32,64 @@ def check_user(handler):
     return already_registered
 
 
+def byte_data_to_dict(handler):
+    @wraps(handler)
+    def data_is_dict(*args, **kwargs):
+        print('byte data to dict')
+        data = args[0]
+        data = ast.literal_eval(data)
+        return handler(data, *args[1:], **kwargs)
+
+    return data_is_dict
+
+
 @socketio.on('visit')
+@byte_data_to_dict
 def visit(data):
     print('visit')
     print('data:', data)
-    user = User(data['user_name'])
+
+    user = User(name=data['user_name'])
     db.session.add(user)
     db.session.commit()
 
     print('user:', user)
-    socketio.emit('visit', data={
-        'user_id': user.id,
-        'user_name': user.name,
-    })
+    socketio.emit('visit', data=user.__to_dict__())
 
 
 @socketio.on('create_room')
+@byte_data_to_dict
 @check_user
 def create_room(data):
-    print(create_room)
+    print('create_room')
     print(data)
 
     room_name = data['room_name']
-    room = Room(room_name)
+    room = Room()
+    room.name = room_name
 
     db.session.add(room)
     db.session.commit()
 
-    socketio.emit('create_room', data=rich_room(room).__dict__())
+    socketio.emit('create_room', data=room.__to_dict__())
 
 
 @socketio.on('lobby')
+@byte_data_to_dict
 @check_user
 def lobby(data):
     print('lobby')
     print('user_id', data['user_id'])
     all_room = Room.query.all()
 
-    socketio.emit('lobby', data={
-        'rooms': list(map(rich_room, all_room)),
-    })
+    socketio.emit('lobby',
+                  data={
+                      'rooms': list(map(__dict__, all_room)),
+                  })
 
 
 @socketio.on('enter_room')
+@byte_data_to_dict
 @check_user
 def begin_chat(data):
     print('enter_room')
@@ -104,6 +120,7 @@ def begin_chat(data):
 
 
 @socketio.on('chat')
+@byte_data_to_dict
 @check_user
 def chat(data):
     print('chat event')
@@ -118,10 +135,11 @@ def chat(data):
     db.session.add(comment)
     db.session.commit()
 
-    socketio.emit('chat', data=comment.__dict__(), room=room_id)
+    socketio.emit('chat', data=comment.__to_dict(), room=room_id)
 
 
 @socketio.on('exit_room')
+@byte_data_to_dict
 @check_user
 def exit_chat(data):
     print('exit room')
