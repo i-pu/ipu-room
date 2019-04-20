@@ -19,14 +19,14 @@ def rich_room(room):
 def check_user(handler):
     @wraps(handler)
     def already_registered(*args, **kwargs):
-        print('check_user')
+        print('check_user', flush=True)
         data = args[0]
         user_id = data['user_id']
         user = User.query.filter_by(id=user_id).one()
         if user is None:
             raise RuntimeError
         else:
-            print('user:', user)
+            print('user:', user, flush=True)
         return handler(*args, **kwargs)
 
     return already_registered
@@ -35,7 +35,7 @@ def check_user(handler):
 def byte_data_to_dict(handler):
     @wraps(handler)
     def data_is_dict(*args, **kwargs):
-        print('byte data to dict')
+        print('byte data to dict', flush=True)
         data = args[0]
         data = ast.literal_eval(data)
         return handler(data, *args[1:], **kwargs)
@@ -46,14 +46,14 @@ def byte_data_to_dict(handler):
 @socketio.on('visit')
 @byte_data_to_dict
 def visit(data):
-    print('visit')
-    print('data:', data)
+    print('visit', flush=True)
+    print('data:', data, flush=True)
 
     user = User(name=data['user_name'])
     db.session.add(user)
     db.session.commit()
 
-    print('user:', user)
+    print('user:', user, flush=True)
     socketio.emit('visit', data=user.__to_dict__())
 
 
@@ -61,8 +61,8 @@ def visit(data):
 @byte_data_to_dict
 @check_user
 def create_room(data):
-    print('create_room')
-    print(data)
+    print('create_room', flush=True)
+    print(data, flush=True)
 
     room_name = data['room_name']
     room = Room()
@@ -78,8 +78,8 @@ def create_room(data):
 @byte_data_to_dict
 @check_user
 def lobby(data):
-    print('lobby')
-    print('user_id', data['user_id'])
+    print('lobby', flush=True)
+    print('user_id', data['user_id'], flush=True)
     all_room = Room.query.all()
 
     socketio.emit('lobby',
@@ -92,14 +92,14 @@ def lobby(data):
 @byte_data_to_dict
 @check_user
 def begin_chat(data):
-    print('enter_room')
-    print('data:', data)
+    print('enter_room', flush=True)
+    print('data:', data, flush=True)
     user = User.query.filter_by(id=data['user_id']).one()
-    print('user_id', user.id)
+    print('user_id', user.id, flush=True)
 
     room_id = data['room_id']
     room = Room.query.filter_by(id=room_id).one()
-    print('room:', room)
+    print('room:', room, flush=True)
 
     comments = Comment.query.filter_by(room_id=room_id).all()
 
@@ -123,8 +123,8 @@ def begin_chat(data):
 @byte_data_to_dict
 @check_user
 def chat(data):
-    print('chat event')
-    print('data:', data)
+    print('chat event', flush=True)
+    print('data:', data, flush=True)
 
     room_id = data['room_id']
     user_id = data['user_id']
@@ -142,8 +142,8 @@ def chat(data):
 @byte_data_to_dict
 @check_user
 def exit_chat(data):
-    print('exit room')
-    print(data)
+    print('exit room', flush=True)
+    print(data, flush=True)
 
     room_id = data['room_id']
     user_id = data['user_id']
@@ -157,5 +157,5 @@ def exit_chat(data):
 
 @socketio.on_error()
 def on_error(e):
-    print('---------- error happen!!! --------- ')
-    print(e)
+    print('---------- error happen!!! --------- ', flush=True)
+    print(e, flush=True)

@@ -9,8 +9,11 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
     restart: on-failure
-#     entrypoint:
-#       - ./entry.sh
+    entrypoint:
+      - ./entry.sh
+      - python
+      - -u
+      - server.py
 
   db:
     container_name: db
