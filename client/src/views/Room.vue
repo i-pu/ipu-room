@@ -2,7 +2,7 @@
   div
     v-container(fluid grid-list-md text-xs-center)
       v-layout(row wrap)
-        v-flex(xs12 sm12 md12)
+        v-flex(d-flex xs12 sm12 md12)
           v-toolbar(dense floating)
             v-toolbar-title {{ room.name }}
             v-spacer
