@@ -9,6 +9,8 @@
 
       v-btn(@click="plugintest") プラグイン
 
+      plugin-create-form
+
       room-create-form
 
     room-list(:rooms="rooms" :userId="userId")
@@ -17,12 +19,13 @@
 <script>
 import RoomList from '@/components/lobby/RoomList'
 import RoomCreateForm from '@/components/lobby/RoomCreateForm'
+import PluginCreateForm from '@/components/PluginCreateForm'
 
 import { ROOMS_MOCK } from '@/api/mock'
 
 export default {
   name: 'Lobby',
-  components: { RoomList, RoomCreateForm },
+  components: { RoomList, RoomCreateForm, PluginCreateForm },
   data () {
     return {
       rooms: [],

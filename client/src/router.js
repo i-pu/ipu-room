@@ -5,6 +5,8 @@ import Top from '@/views/Top'
 import Lobby from '@/views/Lobby'
 import Room from '@/views/Room'
 
+import PluginCreateForm from '@/components/PluginCreateForm'
+
 import 'vuetify/dist/vuetify.min'
 
 Vue.use(Router)
@@ -26,6 +28,11 @@ export default new Router({
       path: '/room',
       name: 'Room',
       component: Room
+    },
+    {
+      path: '/test',
+      name: 'PluginCreateForm',
+      component: PluginCreateForm
     }
   ]
 })
