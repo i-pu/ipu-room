@@ -7,6 +7,8 @@
         
       v-spacer
 
+      v-btn(@click="plugintest") プラグイン
+
       room-create-form
 
     room-list(:rooms="rooms" :userId="userId")
@@ -47,6 +49,17 @@ export default {
     console.log(this.$route.params.userId)
 
     this.$socket.emit('visit', { user_name: 'AAA' })
-  }
+  },
+  methods: {
+    plugintest () {
+      fetch('http://10.160.163.229:8000', {
+        method: 'POST',
+        headers: {
+          // 'Content-type': 'application/json'
+        },
+        body: 'while True: 1'
+      })
+    }
+  },
 }
 </script>
