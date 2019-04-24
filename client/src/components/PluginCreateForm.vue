@@ -105,6 +105,11 @@ export default {
         description: this.description,
         fileContent: this.fileContent
       })
+
+      this.$socket.emit('register_plugin', {
+        plugin_name: this.name,
+        python_file: this.fileContent
+      })
     }
   }
 }

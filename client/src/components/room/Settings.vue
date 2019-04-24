@@ -8,9 +8,7 @@
           v-card-title
             span.headline 設定
           v-card-text
-            v-form(
-              v-model="valid"
-            )
+            v-form
               v-container(grid-list-md)
                 v-layout(wrap)
                   v-flex(xs12)
@@ -34,6 +32,7 @@ export default {
   name: '',
   data () {
     return {
+      dialog: false,
       roomName: 'ほげ',
       setting1: false
     }

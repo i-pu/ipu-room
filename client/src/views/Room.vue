@@ -6,12 +6,13 @@
           v-toolbar(dense)
             v-toolbar-title {{ room.room_name }} {{ room.plugins.join(',') }}
             v-spacer
+            v-btn(color="primary" @click="activate") プラグインを有効にする
             settings
             v-btn(color="error" @click="exitRoom") 退出
         v-flex(d-flex xs12 sm12 md9)
           // v-responsive(:aspect-ratio="16/9")
           v-card(white)
-            desk#desk
+            desk#desk(:room="room")
         v-flex(d-flex xs12 sm12 md3)
           v-card(white)
             chat#chat
@@ -39,7 +40,14 @@ export default {
   methods: {
     exitRoom () {
       this.$router.push('/lobby/1234')
-    }
+    },
+
+    activate () {
+      this.$socket.emit('activate_plugin', {
+        plugin_name: this.room.plugins[0],
+        room_id: 'xxxx-yyyy-zzzz'
+      })
+    },
   }
 }
 </script>
