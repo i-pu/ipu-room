@@ -1,18 +1,49 @@
 ## path
-#### /room
-- methods
-  - GET
-- returns
-  - rooms:[room]
+#### /room [GET]
+##### return 
+```json
+{
+  "rooms": [room]
+}
+```
 
+#### /plugin [GET]
+##### return
+```json
+{
+  "plugins": [plugin]
+}
+```
+
+# Socket.IO
 ## event
+
+#### plugin/register
+##### arg
+```json
+{
+  "plugin_name": str,
+  "python_file": str
+}
+```
+
+#### plugin/activate
+##### arg
+```json
+{
+  "plugin_name": str,
+  "room_id": str
+}
+```
+
 #### visit
 ##### arg
 ```json
 {
-  "user_name": string
+  "user_name": str
 }
 ```
+
 ##### return
 ```json
 user
@@ -22,22 +53,22 @@ user
 ##### arg
 ```json
 {
-  "user_id": int
+  "user_id": str 
 }
 ```
 ##### return
 ```json
 {
-  "rooms": [room]
+  "rooms": [room],
 }
 ```
   
-#### enter_room
+#### room/enter
 ##### arg
 ```json
 {
-  "user_id": int,
-  "room_id": int
+  "user_id": str,
+  "room_id": str 
 }
 ```
 ##### return
@@ -51,8 +82,8 @@ unimplemented
 ##### arg
 ```json
 {
-  "user_id": int,
-  "room_id": int,
+  "user_id": str,
+  "room_id": str,
   "content": string,
   "created_at": time, // unimplemented
 }
@@ -65,12 +96,12 @@ comment
 ##### error
 unimplemented
 
-#### exit_room
+#### room/enter
 ##### arg
 ```json
 {
-  "user_id": int,
-  "room_id": int
+  "user_id": str,
+  "room_id": str 
 }
 ```
 ##### error
@@ -81,7 +112,7 @@ unimplemented
 ```json
 {
   "room": {
-    "room_id": int,
+    "room_id": str,
     "room_name": string,
     "users": [user],
     "comments": [comment]
@@ -92,9 +123,9 @@ unimplemented
 ```json
 {
   "user": {
-    "id": int,
+    "id": str,
     "name": string,
-    "room_id": Option<int>
+    "room_id": Option<str>
   }
 }
 ```
@@ -102,11 +133,20 @@ unimplemented
 ```json
 {
   "comment": {
-    "id": int, 
-    "user_id": int,
-    "room_id": int,
+    "id": str, 
+    "user_id": str,
+    "room_id": str,
     "content": string,
     "created_at": time // unimplemented
+  }
+}
+```
+
+```json
+{
+  "plugin": {
+    "id": str,
+    "name": str,
   }
 }
 ```
