@@ -3,7 +3,7 @@ from flask_socketio import join_room, leave_room, rooms
 from .config import socketio
 from .models import db, Room, Comment
 from .utils import *
-
+from .io import WriteFile
 
 @socketio.on('register_plugin')
 @byte_data_to_dict
@@ -13,8 +13,7 @@ def register_plugin_handler(data):
     plugin_name = data['plugin_name']
     plugin_python_file = data['python_file']
 
-    with open(plugin_name + '.py', mode='w') as f:
-        f.write(plugin_python_file)
+    read.Write(plugin_name + '.py', plugin_python_file)
 
 
 @socketio.on('activate_plugin')
