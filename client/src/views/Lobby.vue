@@ -2,8 +2,8 @@
   div
     v-toolbar(app)
       v-toolbar-title.headline.text-uppercase
-        span.pr-3 へやつくるやつ
-        span.pr-3 {{ name }} さん
+        span.pr-3 ipu
+        // span.pr-3 {{ name }} さん
         
       v-spacer
 

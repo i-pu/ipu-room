@@ -14,7 +14,7 @@
               template(v-for="member, i in room.members")
                 v-tooltip.mr-2(top :key="i")
                   template(v-slot:activator="{ on }")
-                    v-avatar(v-on="on")
+                    v-avatar(v-on="on" size="60")
                       img(:src="member.avatar_url")
                   span {{ member.name }}
             v-card-actions

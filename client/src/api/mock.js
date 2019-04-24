@@ -3,7 +3,7 @@ export const ROOMS_MOCK = [
   {
     room_name: '雑談部屋1',
     room_id: 'room1',
-    thumbnail_url: 'https://cdn.vuetifyjs.com/images/cards/house.jpg',
+    thumbnail_url: 'https://public.potaufeu.asahi.com/686b-p/picture/12463073/5c4a362cea9cb2f5d90b60e2f2a6c85f.jpg',
     members: [
       {
         name: 'Tom',

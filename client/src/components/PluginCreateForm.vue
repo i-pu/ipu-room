@@ -90,6 +90,10 @@ export default {
         this.loading = false
         this.fileUploaded = true
         this.fileName = files[0].name
+
+        if (this.name === '') {
+          this.name = this.fileName.match(/(.*)(?:\.([^.]+$))/)[1]
+        }
       }
       reader.readAsText(files[0])
     },

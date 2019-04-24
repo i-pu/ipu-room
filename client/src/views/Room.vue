@@ -6,8 +6,8 @@
           v-toolbar(dense)
             v-toolbar-title {{ room.room_name }} {{ room.plugins.join(',') }}
             v-spacer
-            v-btn(color="success") 設定
-            v-btn(color="error") 退出
+            settings
+            v-btn(color="error" @click="exitRoom") 退出
         v-flex(d-flex xs12 sm12 md9)
           // v-responsive(:aspect-ratio="16/9")
           v-card(white)
@@ -24,18 +24,23 @@
 import Desk from '@/components/room/Desk'
 import Chat from '@/components/room/Chat'
 import Status from '@/components/room/Status'
+import Settings from '@/components/room/Settings'
 
 import { ROOMS_MOCK } from '@/api/mock'
 
 export default {
   name: 'Room',
-  components: { Desk, Chat, Status },
+  components: { Desk, Chat, Status, Settings },
   data () {
     return {
       room: ROOMS_MOCK[0]
     }
   },
-  methods: { }
+  methods: {
+    exitRoom () {
+      this.$router.push('/lobby/1234')
+    }
+  }
 }
 </script>
 
