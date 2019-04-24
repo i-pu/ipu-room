@@ -9,7 +9,8 @@ class User(db.Model):
     room_id = db.Column(db.Integer, db.ForeignKey('rooms.id'), nullable=True)
 
     def __repr__(self):
-        return 'id: {}, name: {}, room_id: {}'.format(self.id, self.name, self.room_id)
+        return 'id: {}, name: {}, room_id: {}'\
+            .format(self.id, self.name, self.room_id)
 
     def __to_dict__(self):
         return {

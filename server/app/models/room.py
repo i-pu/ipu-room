@@ -11,10 +11,6 @@ class Room(db.Model):
     users = db.relationship("User", backref="rooms")
     comments = db.relationship("Comment", backref="rooms")
 
-    def __rich_dict__(self):
-        # todo: get members
-        pass
-
     def __repr__(self):
         return 'id: {}, name: {}, created_at: {}, thumbnail_url: {}, users: {}'. \
             format(self.id, self.name, self.created_at, self.thumbnail_url, self.users)
