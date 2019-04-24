@@ -1,14 +1,22 @@
 
 <template lang="pug">
   #desk
-    v-btn(@click="fire") 発動
+    v-btn(@click="emitTest") 発動
     div(v-html="customHTML")
 </template>
 
 <script>
+const pluginHander = {
+  methods: {
+    fire () {
+      console.log('out')
+    }
+  }
+}
 
 export default {
   name: 'Desk',
+  mixins: [ pluginHander ],
   props: {
     room: Object
   },
@@ -21,23 +29,22 @@ export default {
   mounted() {
     console.log(this.socketPrefix)
 
-    this.sockets.subscribe(this.socketPrefix + 'my_event', (data) => {
-      console.log(data)
-    })
+    const handlers = [
+      { event: 'connect', script: ['console.log(this)'] },
+      { event: 'my_event', script: ['data', 'console.log(data)'] },
+      { event: 'f', script: ['data', 'console.log(data)'] }
+    ]
 
-    this.sockets.subscribe(this.socketPrefix + 'f', (data) => {
-      console.log(data)
-    })
+    for (const hander of handlers) {
+      this.$socket.on(this.socketPrefix + hander.event, Function(hander.script).bind(this))
+    }
   },
   methods: {
-    fire () {
-      // this.$socket.emit(this.socketPrefix + 'my_event', {
-      //   hoge: 1
-      // })
-
-      this.$socket.emit(this.socketPrefix + 'f', {
-        aaa: 'hoge'
-      })
+    emitTest () {
+      this.pluginActionHander('my_event', { hoge: 1 })
+    },
+    pluginActionHander (event, ...args) {
+      this.$socket.emit(this.socketPrefix + event, args)
     }
   },
 }
