@@ -4,9 +4,9 @@ from .config import db
 class User(db.Model):
     __tablename__ = 'users'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(255), primary_key=True)
     name = db.Column(db.String(255), nullable=False)
-    room_id = db.Column(db.Integer, db.ForeignKey('rooms.id'), nullable=True)
+    room_id = db.Column(db.String(255), db.ForeignKey('rooms.id'), nullable=True)
 
     def __repr__(self):
         return 'id: {}, name: {}, room_id: {}'\

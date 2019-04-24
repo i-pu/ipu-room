@@ -4,7 +4,7 @@ from .config import db
 class Plugin(db.Model):
     __tablename__ = 'plugins'
 
-    id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.String(255), primary_key=True)
     name = db.Column(db.String(255), unique=True)
 
     def __repr__(self):
