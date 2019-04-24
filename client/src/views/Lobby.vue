@@ -28,7 +28,7 @@ export default {
   components: { RoomList, RoomCreateForm, PluginCreateForm },
   data () {
     return {
-      rooms: [],
+      rooms: ROOMS_MOCK,
       userId: -1,
       name: 'ななし'
     }

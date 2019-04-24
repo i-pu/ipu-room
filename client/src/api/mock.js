@@ -17,7 +17,8 @@ export const ROOMS_MOCK = [
         name: 'Alice',
         avatar_url: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460'
       }
-    ]
+    ],
+    plugins: ['カウンター']
   }
 ]
 
