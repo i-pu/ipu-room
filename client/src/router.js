@@ -18,7 +18,7 @@ export default new Router({
       component: Top
     },
     {
-      path: '/lobby',
+      path: '/lobby/:userId',
       name: 'Lobby',
       component: Lobby
     },

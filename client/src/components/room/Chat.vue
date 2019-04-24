@@ -10,16 +10,17 @@
             v-list-tile-title {{ comment.text }}
             v-list-tile-sub-title {{ comment.user_name }}
 
-    v-form
-      v-container
-        v-layout
-          v-flex(xs8 md8)
-            v-text-field(
-              v-model="chatInput"
-              label="コメント"
-            )
-          v-flex(xs4 md4)
-            v-btn(color="info" @click="comment") 送信
+    v-text-field(
+      v-model="chatInput"
+      label="コメント"
+    )
+    v-btn(color="info" @click="comment") 送信
+            // v-flex(xs2 md2)
+            //   v-btn(fab dark small color="pink")
+            //     v-icon(dark) favorite
+            // v-flex(xs2 md2)
+            //   v-btn(fab dark small color="pink")
+            //     v-icon(dark) favorite 
 </template>
 
 <script>

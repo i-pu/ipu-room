@@ -1,46 +1,31 @@
-from functools import wraps
-import ast
-
 from flask_socketio import join_room, leave_room, rooms
 
 from .config import socketio
-from .models import db, User, Room, Comment
+from .models import db, Room, Comment
+from .utils import *
 
 
-def rich_room(room):
-    members = User.query.filter_by(room_id=room.id).all()
-    room.members = members
+@socketio.on('register_plugin')
+@byte_data_to_dict
+def register_plugin_handler(data):
+    print('register_plugin_handler', flush=True)
+    print('data:', data, flush=True)
+    plugin_name = data['plugin_name']
+    plugin_python_file = data['python_file']
 
-    return room
-
-
-# todo: 1 vs many に変えたい
-
-def check_user(handler):
-    @wraps(handler)
-    def already_registered(*args, **kwargs):
-        print('check_user', flush=True)
-        data = args[0]
-        user_id = data['user_id']
-        user = User.query.filter_by(id=user_id).one()
-        if user is None:
-            raise RuntimeError
-        else:
-            print('user:', user, flush=True)
-        return handler(*args, **kwargs)
-
-    return already_registered
+    with open(plugin_name + '.py', mode='w') as f:
+        f.write(plugin_python_file)
 
 
-def byte_data_to_dict(handler):
-    @wraps(handler)
-    def data_is_dict(*args, **kwargs):
-        print('byte data to dict', flush=True)
-        data = args[0]
-        data = ast.literal_eval(data)
-        return handler(data, *args[1:], **kwargs)
+@socketio.on('activate_plugin')
+@byte_data_to_dict
+def activate_plugin_handler(data):
+    print('activate_plugin_handler', flush=True)
+    print(data)
+    room_id = str(data['room_id'])
+    plugin_name = data['plugin_name']
 
-    return data_is_dict
+    activate_plugin(plugin_name, socketio, room_id)
 
 
 @socketio.on('visit')
