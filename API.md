@@ -63,12 +63,12 @@ user
 }
 ```
   
-#### room/enter
+#### room/create
 ##### arg
 ```json
 {
-  "user_id": str,
-  "room_id": str 
+  "room_name": str,
+  "plugins": [plugin_id] 
 }
 ```
 ##### return

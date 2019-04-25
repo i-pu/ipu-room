@@ -1,10 +1,16 @@
+from uuid import uuid4
+
 from .config import db
+
+
+def uuid4_for_str():
+    return str(uuid4())
 
 
 class Room(db.Model):
     __tablename__ = 'rooms'
 
-    id = db.Column(db.String(255), primary_key=True)
+    id = db.Column(db.String(255), primary_key=True, default=uuid4_for_str)
     name = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime)
     thumbnail_url = db.Column(db.String(255), nullable=True)
