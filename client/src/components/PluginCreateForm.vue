@@ -99,12 +99,8 @@ export default {
     },
     submit () {
       this.dialog = false
-      console.log('submitted')
-      console.log({
-        name: this.name,
-        description: this.description,
-        fileContent: this.fileContent
-      })
+
+      
 
       this.$socket.emit('register_plugin', {
         plugin_name: this.name,

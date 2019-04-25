@@ -2,48 +2,55 @@
 <template lang="pug">
   #desk
     v-btn(@click="emitTest") 発動
-    div(v-html="customHTML")
+    div(v-html="pluginHtml" ref="plugin")
 </template>
 
 <script>
-const pluginHander = {
-  methods: {
-    fire () {
-      console.log('out')
-    }
-  }
-}
-
 export default {
   name: 'Desk',
-  mixins: [ pluginHander ],
   props: {
     room: Object
   },
   data () {
     return {
-      customHTML: '<p>Hello, Plugin</p>',
+      pluginHtml: '',
       socketPrefix: this.room.room_id + this.room.plugins[0]
     }
   },
   mounted() {
     console.log(this.socketPrefix)
 
-    const handlers = [
-      { event: 'connect', script: ['console.log(this)'] },
-      { event: 'my_event', script: ['data', 'console.log(data)'] },
-      { event: 'f', script: ['data', 'console.log(data)'] }
+    // test
+    const pluginHtml = `<button event="plus('hoge')">1</button>`
+    const compiledHtml = `<button id="_plugin_btn_1_">1</button>`
+    this.pluginHtml = compiledHtml
+    // emit events from client
+    const emitEvents = [ 
+      { id: '_plugin_btn_1_', name: 'plus', args: ['hoge'] }
+    ]
+    // on events from server
+    const onEvents = [
+      { name: 'f', action: ['data', 'console.log(data.aaa)'] }
     ]
 
-    for (const hander of handlers) {
-      this.$socket.on(this.socketPrefix + hander.event, Function(hander.script).bind(this))
-    }
+    this.$nextTick(() => {
+      for (let emitEvent of emitEvents) {
+        document.getElementById(emitEvent.id).addEventListener('click', () => {
+          // this.pluginActionHander(emitEvent.name, emitEvent.args)
+          console.log(`event: ${emitEvent.name} args: ${emitEvent.args}`)
+        })
+      }
+
+      for (let onEvent of onEvents) {
+        this.$socket.on(this.socketPrefix + onEvent.name, Function(onEvent.action).bind(this))
+      }
+    })
   },
   methods: {
     emitTest () {
       this.pluginActionHander('my_event', { hoge: 1 })
     },
-    pluginActionHander (event, ...args) {
+    pluginActionHander (event, args) {
       this.$socket.emit(this.socketPrefix + event, args)
     }
   },

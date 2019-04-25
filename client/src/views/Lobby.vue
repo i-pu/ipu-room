@@ -46,14 +46,6 @@ export default {
   mounted() {
     console.log(this.$route.params.userId)
     this.$socket.emit('visit', { user_name: 'AAA' })
-  },
-  methods: {
-    test () {
-      this.$socket.emit('register_plugin', {
-        plugin_name: 'counter',
-        python_file: "class Plugin():\n  count = 0\n\n  @classmethod\n  def on_connect(cls):\n    print('connected', flush=True)\n\n  @classmethod\n  def on_disconnect(cls):\n      print('disconnected', flush=True)\n\n  @classmethod\n  def on_my_event(cls, data=None):\n    cls.count += 1\n    print('on_my_event')\n    return {'count': cls.count}\n\n  @classmethod\n  def all(cls) -> dict:\n    return {\n      # todo: event 名の最初になんかの prefix を付ける必要がある\n      'my_connect': cls.on_connect,\n      'my_disconnect': cls.on_disconnect,\n      'my_event': cls.on_my_event\n    }"
-      })
-    }
-  },
+  }
 }
 </script>

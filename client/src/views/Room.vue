@@ -28,9 +28,11 @@ import Status from '@/components/room/Status'
 import Settings from '@/components/room/Settings'
 
 import { ROOMS_MOCK } from '@/api/mock'
+import PluginApi from '@/api/plugin'
 
 export default {
   name: 'Room',
+  mixins: [ PluginApi ],
   components: { Desk, Chat, Status, Settings },
   data () {
     return {
@@ -40,14 +42,7 @@ export default {
   methods: {
     exitRoom () {
       this.$router.push('/lobby/1234')
-    },
-
-    activate () {
-      this.$socket.emit('activate_plugin', {
-        plugin_name: this.room.plugins[0],
-        room_id: 'xxxx-yyyy-zzzz'
-      })
-    },
+    }
   }
 }
 </script>
