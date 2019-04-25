@@ -18,13 +18,14 @@
                       img(:src="member.avatar_url")
                   span {{ member.name }}
             v-card-actions
-              v-btn(color="info" @click="onClickJoin") 入室
+              v-btn(color="info" @click="join(room.room_id)") 入室
 </template>
 
 <script>
 export default {
   name: '',
   props: {
+    userId: String,
     rooms: Array
   },
   data () {
@@ -33,9 +34,14 @@ export default {
     }
   },
   methods: {
-    onClickJoin () {
+    join (roomId) {
+      this.$router.push({
+        path: `/room/${roomId}`,
+        params: {
+          roomId: roomId
+        }
+      })
       // this.$socket.emit('enter_room', { room_name: this.roomNameInput })
-      this.$router.push('/room')
     }
   }
 }

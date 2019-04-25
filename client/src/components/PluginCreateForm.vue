@@ -100,8 +100,6 @@ export default {
     submit () {
       this.dialog = false
 
-      
-
       this.$socket.emit('register_plugin', {
         plugin_name: this.name,
         python_file: this.fileContent

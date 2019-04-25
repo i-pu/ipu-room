@@ -6,7 +6,7 @@
           v-toolbar(dense)
             v-toolbar-title {{ room.room_name }} {{ room.plugins.join(',') }}
             v-spacer
-            v-btn(color="primary" @click="activate") プラグインを有効にする
+            // v-btn(color="primary" @click="activate") プラグインを有効にする
             settings
             v-btn(color="error" @click="exitRoom") 退出
         v-flex(d-flex xs12 sm12 md9)
@@ -39,7 +39,17 @@ export default {
       room: ROOMS_MOCK[0]
     }
   },
+  mounted() {
+    this.onEnterRoom()
+    console.log(this.$route.params.roomId)
+  },
   methods: {
+    onEnterRoom () {
+      this.$socket.emit('room/enter', {
+        user_id: this.$socket.id,
+        room_id: this.$route.params.roomId
+      })
+    },
     exitRoom () {
       this.$router.push('/lobby/1234')
     }

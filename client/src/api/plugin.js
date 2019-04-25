@@ -8,8 +8,8 @@ export default {
     },
     activate (roomId, plugins) {
       this.$socket.emit('plugin/activate', {
-        plugin_name: plugins,
-        room_id: roomId,
+        plugins: plugins, // id
+        room_id: roomId
       })
     }
   }

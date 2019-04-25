@@ -15,6 +15,7 @@
                 v-flex(xs12 sm12)
                   v-select(
                     v-model="selectedPlugins"
+                    
                     :items="plugins"
                     label="プラグイン"
                     multiple
@@ -31,21 +32,26 @@
 export default {
   name: '',
   props: {
-    userId: Number
+    userId: String
   },
   data () {
     return {
       dialog: false,
       roomNameInput: '',
-      plugins: ['カウンター'],
+      plugins: ['counter'],
       selectedPlugins: []
     }
   },
   methods: {
     onClickCreate () {
-      console.log(this.userId)
       console.log(this.roomNameInput)
-      this.$socket.emit('create_room', { room_name: this.roomNameInput, user_id: this.userId })
+      console.log(this.selectedPlugins)
+
+      this.$socket.emit('room/create', {
+        room_name: this.roomNameInput,
+        plugins: this.selectedPlugins
+      })
+      
       this.dialog = false
       this.roomNameInput = ''
     }

@@ -2,10 +2,9 @@
   div
     v-toolbar(app)
       v-toolbar-title.headline.text-uppercase
-        span.pr-3 ipu
+        span.pr-3 ipu {{ userId }}
         // span.pr-3 {{ name }} さん
       v-spacer
-      v-btn(@click="test") テスト
       plugin-create-form
       room-create-form
     room-list(:rooms="rooms" :userId="userId")
@@ -24,28 +23,32 @@ export default {
   data () {
     return {
       rooms: ROOMS_MOCK,
-      userId: -1,
+      userId: '',
       name: 'ななし'
     }
   },
   sockets: {
-    room (data) {
+    'room/create' (data) {
       console.log(data)
       this.rooms.push(data.room)
     },
     lobby (data) {
-      console.log(data.rooms)
-      this.rooms = data.rooms
+      console.log(data)
+      // this.rooms = data.rooms
     },
     visit (data) {
       console.log(data)
       this.userId = data.user_id
-      this.$socket.emit('lobby', { user_id: data.user_id })
+      this.$socket.emit('lobby', {
+        user_id: data.user_id
+      })
     }
   },
   mounted() {
     console.log(this.$route.params.userId)
-    this.$socket.emit('visit', { user_name: 'AAA' })
+    this.$socket.emit('visit', {
+      user_name: 'AAA'
+    })
   }
 }
 </script>
