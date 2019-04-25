@@ -1,55 +1,54 @@
 
 <template lang="pug">
   #desk
-    vue-p5(
-      ref="p5canvas"
-      @setup="setup" 
-      @draw="draw"
-      @keypressed="keyPressed"
-      @mousemoved="mouseMoved"
-      @mousedragged="mouseDragged"
-    )
+    v-btn(color="info" @click="onEnterRoom") EnterRoom
+    // v-btn(color="primary" @click="trigger") トリガー
+
+    div(v-html="pluginHtml")
 </template>
 
 <script>
-import VueP5 from "vue-p5"
-
 export default {
   name: 'Desk',
-  components: { VueP5 },
+  props: {
+    room: Object
+  },
   data () {
     return {
-      lines: []
+      pluginHtml: '',
+    }
+  },
+  sockets: {
+    'plugin/trigger' ({ html }) {
+      this.pluginHtml = html
+    },
+    'room/enter' (data) {
+      this.loadPlugin(data)
     }
   },
   mounted() {
-    const { clientWidth, clientHeight } = this.$refs.p5canvas.$el
-    console.log(`${clientWidth} x ${clientHeight}`)
   },
   methods: {
-    mouseDragged ({ mouseX, mouseY, pmouseX, pmouseY }) {
-      this.lines.push({ mouseX, mouseY, pmouseX, pmouseY })
-    },
-    setup (sketch) {
-      const { clientWidth, clientHeight } = this.$refs.p5canvas.$el
-      sketch.createCanvas(clientWidth, clientHeight)
-      sketch.background(255)
-    },
-    draw (sketch) {
-      for(const line of this.lines) {
-        sketch.line(line.pmouseX, line.pmouseY, line.mouseX, line.mouseY)
-      }
+    loadPlugin ({ html }) {
+      console.log(html)
+      this.pluginHtml = html
+      const events = [
+        { id: 'a', name: 'plus' }
+      ]
+      this.$nextTick(() => {
+        for (let emitEvent of events) {
+          document.getElementById(emitEvent.id).addEventListener('click', () => {
+            console.log(`event: ${emitEvent.name} fired`)
+            this.$socket.emit('plugin/trigger', {
+              event: emitEvent.name,
+              plugin_id: 'counter',
+              room_id: this.room.room_id,
+              args: [1]
+            })
+          })
+        }
+      })
     }
   },
 }
 </script>
-
-<style scoped>
-#desk {
-  height: 100%;
-}
-
-#desk div {
-  height: 100%;
-}
-</style>
