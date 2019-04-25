@@ -1,11 +1,11 @@
 import Vue from 'vue'
 import './plugins/vuetify'
-// import VueSocketIO from 'vue-socket.io'
+import VueSocketIO from 'vue-socket.io'
 
-// Vue.use(new VueSocketIO({
-//   connection: 'http://10.160.163.229:8000',
-//   // options: { path: '/socket.io/' }
-// }))
+Vue.use(new VueSocketIO({
+  connection: 'http://10.160.163.229:8000',
+  // options: { path: '/socket.io/' }
+}))
 
 Vue.productionTip = false
 
