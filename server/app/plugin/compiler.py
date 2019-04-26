@@ -6,14 +6,9 @@
 from html_interpreter import Parser
 
 def plugin_compiler(plugin):
-  parser = Parser()
-  parser.feed(plugin)
-  print(parser.html)
-  print(parser.events)
-  print(parser.python)
-  return parser.html, parser.events, parser.python
+  return Parser.compile(plugin)
 
-plugin_compiler(
+html, events, python = plugin_compiler(
 '''
 <html>
   <button event="plus(1)"> カウント </button>
@@ -36,3 +31,7 @@ class Plugin():
 </python>
 '''
 )
+
+print('html:\n {}'.format(html))
+print('events:\n {}'.format(events))
+print('python:\n {}'.format(python))

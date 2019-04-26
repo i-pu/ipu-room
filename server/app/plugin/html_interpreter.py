@@ -2,6 +2,14 @@
 html_interpreter.py
 """
 from html.parser import HTMLParser
+import re
+import random
+import string
+
+def uuidv4():
+  x = lambda: string.hexdigits[random.randint(0, 15)]
+  h = lambda digits: ''.join([x() for _ in range(0, digits)])
+  return h(8) + '-' + h(4) + '-' + h(4) + '-' + h(4) + '-' + h(12)
 
 class Parser(HTMLParser):
   def __init__(self):
@@ -33,15 +41,21 @@ class Parser(HTMLParser):
         self.in_python = True
 
       if self.in_html:
-        id = 'hoge'
-
+        # template
+        matched = re.match(r'.*\{\{(.*)\}\}.*', content)
+        if matched:
+          template, = matched.groups()
+          print('template: {}'.format(template))
+          # TODO replace {{ hoge }}
+        # event
         if 'event' in self.attrs:
+          event = self.attrs.get('event')
+          name, args_str = re.match('^(.*)\((.*)\)$', event).groups()
           self.events.append(
             {
-              'id': id,
-              # TODO parse args
-              'event': self.attrs.get('event'),
-              'args': []
+              'id': uuidv4(),
+              'event': name,
+              'args': args_str.split(',')
             }
           )
 
@@ -55,3 +69,9 @@ class Parser(HTMLParser):
       self.html += '</{}>'.format(tag)
     self.tag = ''
     self.attrs = {}
+
+  @staticmethod
+  def compile(plugin):
+    parser = Parser()
+    parser.feed(plugin)
+    return parser.html, parser.events, parser.python
