@@ -9,7 +9,14 @@ from . import utils
 from .io import WriteFile
 
 
-# todo: data['user_id'] -> request.sid
+# todo: skip id を 使ってみる
+
+@socketio.on('sample')
+@utils.byte_data_to_dict
+@utils.debug_wrapper
+def sample(data):
+    pprint.pprint(data)
+    print('socket id:', request.sid)
 
 
 @socketio.on('plugin/register')
@@ -40,8 +47,6 @@ def activate_plugin_handler(data):
 
 
 # todo: plugin は pluginイベントを定義してその中でevent_nameとマッチした関数を呼び出すようにしたい
-
-
 @socketio.on('plugin/trigger')
 @utils.byte_data_to_dict
 @utils.check_user
@@ -49,6 +54,7 @@ def activate_plugin_handler(data):
 def plugin_trigger(data):
     # event name
     # plugin name
+    # todo: 受け取るもの管理する
     room_id = data['room_id']
     plugin_args = data['args']
     invoked = g.plugins[room_id + 'sample_plugin'].plus(*plugin_args)
@@ -114,7 +120,7 @@ def visit(data):
 @utils.debug_wrapper
 def room_crate(data):
     """
-    create room -> insert into rooms -> emit room
+    room/create -> insert into rooms -> emit room
 
     Args:
         data: {'room_name': str, 'plugins': [plugin_name]}
@@ -189,8 +195,8 @@ def room_enter(data):
     print('room:', room, flush=True)
 
     join_room(room_id)
+
     user.room_id = room_id
-    db.session.add(user)
     db.session.commit()
 
     users = User.query.filter_by(room_id=room_id).all()
@@ -201,7 +207,7 @@ def room_enter(data):
                       'comments': comments,
                       'room_name': room.name,
                       'room_id': room.id,
-                      'html': g.plugins[room_id+'sample_plugin'].constructor(),
+                      'html': g.plugins[room_id + 'sample_plugin'].constructor(),
                       'event': []
                   }, room=room_id)
 
@@ -227,7 +233,7 @@ def chat(data):
 @utils.check_user
 def exit_room(data):
     room_id = data['room_id']
-    user_id = data['user_id']
+    user_id = request.sid
 
     user = User.query.filter_by(id=user_id).one()
     user.query.update({'room_id': None})
@@ -244,12 +250,6 @@ def delete_user(data):
     print('disconnect', flush=True)
     print(data, flush=True)
     # todo: delete user from database
-
-
-@socketio.on('sample')
-@utils.byte_data_to_dict
-def sample(data):
-    print('socket id:', request.sid)
 
 
 @socketio.on_error()
