@@ -6,7 +6,7 @@ class Comment(db.Model):
 
     id = db.Column(db.String(36), primary_key=True, default=uuid4_for_str)
     user_id = db.Column(db.String(255), db.ForeignKey('users.id'))
-    room_id = db.Column(db.String(255), db.ForeignKey('rooms.id'))
+    room_id = db.Column(db.String(36), db.ForeignKey('rooms.id'))
     content = db.Column(db.Text)
     created_at = db.Column(db.Time)
 
