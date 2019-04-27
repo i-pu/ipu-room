@@ -34,18 +34,6 @@ def register_plugin_handler(data):
     # WriteFile(plugin_name + '.py', plugin_python_file)
 
 
-@socketio.on('plugin/activate')
-@utils.byte_data_to_dict
-@utils.debug_wrapper
-def activate_plugin_handler(data):
-    print('plugin/activate', flush=True)
-    print(data)
-    room_id = str(data['room_id'])
-    plugin_name = data['plugin_name']
-
-    utils.activate_plugin(plugin_name, socketio, room_id)
-
-
 # todo: plugin は pluginイベントを定義してその中でevent_nameとマッチした関数を呼び出すようにしたい
 @socketio.on('plugin/trigger')
 @utils.byte_data_to_dict
@@ -59,33 +47,6 @@ def plugin_trigger(data):
     plugin_args = data['args']
     invoked = g.plugins[room_id + 'sample_plugin'].plus(*plugin_args)
     socketio.emit('plugin/trigger', data={'html': invoked}, room=room_id)
-
-
-def html_compiler():
-    # TODO
-    return '<button type="button" id="_plugin_btn_1_"> Add </button>'
-
-
-def plugin_compiler(plugin):
-    # TODO
-    html = html_compiler()
-    python = 'hoge'
-    '''
-    class Plugin():
-      count = 0
-  
-      @classmethod
-      def on_plus(cls, data):
-        cls.count += data
-        return { 'count': cls.count }
-  
-      @classmethod
-      def all(cls) -> dict:
-        return {
-          'plus': cls.on_plus
-        }
-    '''
-    return html, python
 
 
 @socketio.on('visit')
@@ -182,7 +143,6 @@ def lobby(data):
 @utils.debug_wrapper
 @utils.check_user
 def room_enter(data):
-    # todo: 部屋に入っているかどうかもこちらで判断する
     user = User.query.filter_by(id=request.sid).one_or_none()
     if user is None:
         raise RuntimeError('user_id: {} does not exist'.format(request.sid))
@@ -196,17 +156,12 @@ def room_enter(data):
 
     join_room(room_id)
 
-    user.room_id = room_id
+    room.users.append(user)
     db.session.commit()
 
-    users = User.query.filter_by(room_id=room_id).all()
-    comments = Comment.query.filter_by(room_id=room_id).all()
     socketio.emit('room/enter',
                   data={
-                      'users': users,
-                      'comments': comments,
-                      'room_name': room.name,
-                      'room_id': room.id,
+                      **room.__to_dict__(),
                       'html': g.plugins[room_id + 'sample_plugin'].constructor(),
                       'event': []
                   }, room=room_id)
@@ -233,9 +188,8 @@ def chat(data):
 @utils.check_user
 def exit_room(data):
     room_id = data['room_id']
-    user_id = request.sid
 
-    user = User.query.filter_by(id=user_id).one()
+    user = User.query.filter_by(id=request.sid).one()
     user.query.update({'room_id': None})
     db.session.commit()
 
@@ -246,10 +200,12 @@ def exit_room(data):
 @socketio.on('disconnect')
 @utils.byte_data_to_dict
 @utils.check_user
-def delete_user(data):
+def disconnect(data):
     print('disconnect', flush=True)
     print(data, flush=True)
-    # todo: delete user from database
+
+    user = User.query.filter_by(id=request.sid).one()
+    db.session.delete(user)
 
 
 @socketio.on_error()
