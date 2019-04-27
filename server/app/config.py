@@ -1,7 +1,7 @@
 import os
 
 from flask_socketio import SocketIO
-from flask import Flask
+from flask import Flask, g
 
 from .models import init_db
 
@@ -52,6 +52,7 @@ def create_app(env=None):
         app.config.from_object(Development)
     with app.app_context():
         init_db(app)
+        g.plugins = {}
     from .chat import socketio
 
     return app, socketio

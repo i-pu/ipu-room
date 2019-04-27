@@ -4,6 +4,7 @@ from .config import db
 class User(db.Model):
     __tablename__ = 'users'
 
+    # id is socket_id
     id = db.Column(db.String(255), primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     room_id = db.Column(db.String(255), db.ForeignKey('rooms.id'), nullable=True)

@@ -1,0 +1,17 @@
+[html]
+<button event="plus(5)"> {{count}} </button>
+[python]
+class Plugin():
+  count = 0
+
+  @classmethod
+  def on_plus(cls, data):
+    cls.count += data
+    return '<p> 5 </p>'
+
+  @classmethod
+  def all(cls) -> dict:
+    return {
+      'plus': cls.on_plus
+  }
+
