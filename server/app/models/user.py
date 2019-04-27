@@ -9,6 +9,9 @@ class User(db.Model):
     name = db.Column(db.String(255), nullable=False)
     room_id = db.Column(db.String(255), db.ForeignKey('rooms.id'), nullable=True)
 
+    room = db.relationship('Room', back_populates='users')
+    comments = db.relationship('Comment', back_populates='user', cascade='save-update')
+
     def __repr__(self):
         return 'id: {}, name: {}, room_id: {}'\
             .format(self.id, self.name, self.room_id)
