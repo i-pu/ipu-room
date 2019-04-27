@@ -45,7 +45,7 @@ class Parser(HTMLParser):
         matched = re.match(r'.*\{\{(.*)\}\}.*', content)
         if matched:
           template, = matched.groups()
-          print('template: {}'.format(template))
+          print('template: {}'.format(template.strip()))
           # TODO replace {{ hoge }}
         # event
         if 'event' in self.attrs:
