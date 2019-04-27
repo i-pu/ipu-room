@@ -20,3 +20,7 @@ yarn-error.log*
 *.sln
 *.sw*
 *.db
+
+# python
+__pycache__/
+*.py[cod]
