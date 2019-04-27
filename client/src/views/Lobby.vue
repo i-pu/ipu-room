@@ -2,7 +2,7 @@
   div
     v-toolbar(app)
       v-toolbar-title.headline.text-uppercase
-        span.pr-3 ipu {{ userId }}
+        span.pr-3 ipu-room {{ userId }}
         // span.pr-3 {{ name }} さん
       v-spacer
       plugin-create-form

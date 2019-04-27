@@ -33,7 +33,6 @@ class Parser(HTMLParser):
             if self.tag == 'python':
                 self.in_html = False
                 self.in_python = True
-
             if self.in_html:
                 # template
                 matched = re.match(r'.*\{\{(.*)\}\}.*', content)
