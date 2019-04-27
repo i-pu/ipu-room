@@ -3,4 +3,5 @@
 docker-compose.yaml
 Dockerfile
 __pycache__/
+*.py[cod]
 
