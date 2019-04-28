@@ -34,7 +34,16 @@ export default {
       pluginLoaded: false
     }
   },
+  computed: {
+    eventElements () {
+      return this.pluginElements.filter(element => element.type === 'event')
+    },
+    viewElements () {
+      return this.pluginElements.filter(element => element.type === 'view')
+    }
+  },
   sockets: {
+    // from server
     'plugin/trigger' ({ html }) {
       this.pluginHtml = html
     },
@@ -47,16 +56,33 @@ export default {
   methods: {
     // test methods in local
     trigger ({ event, args }) {
+      // invoke plugin function
       const { changed } = this.plugin[event](args)
+      // reflact changes
       this.pluginElements.filter(element => element.type === 'view' && element.bind === changed).forEach(element => {
-        const target = document.getElementById(element.id)
-        target.innerText = this.replacer(element)
+        this.updateElement(element)
       })
     },
-
-    replacer (element) {
+    attachEvent (element) {
+      document.getElementById(element.id).addEventListener('click', () => {
+        console.log(`event: ${element.event} fired`)
+        const payload = {
+          event: element.event,
+          plugin_id: 'counter',
+          room_id: this.room.room_id,
+          args: [1]
+        }
+        if (this.testInLocal) {
+          this.trigger(payload)
+        } else {
+          this.$socket.emit('plugin/trigger', payload)
+        }
+      })
+    },
+    updateElement (element) {
+      const target = document.getElementById(element.id)
       const [all, variable] = element.template.match(/\{\{(.*)\}\}/)
-      return element.template.replace(all, this.plugin[variable])
+      target.innerText = element.template.replace(all, this.plugin[variable])
     },
     onEnterRoomTest () {
       const html = `
@@ -71,39 +97,21 @@ export default {
     },
 
     activatePlugin ({ html, elements }) {
-      this.pluginElements = elements
-
-      const _attachEvent = (eventElement) => {
-        document.getElementById(eventElement.id).addEventListener('click', () => {
-          console.log(`event: ${eventElement.event} fired`)
-          const payload = {
-            event: eventElement.event,
-            plugin_id: 'counter',
-            room_id: this.room.room_id,
-            args: [1]
-          }
-          if (this.testInLocal) {
-            this.trigger(payload)
-          } else {
-            this.$socket.emit('plugin/trigger', payload)
-          }
-        })
-      }
-
-      this.plugin = new Plugin()
       this.pluginHtml = html
+      this.pluginElements = elements
+      this.plugin = new Plugin()
+
       this.$nextTick(() => {
         // register event
-        elements.filter(element => element.type === 'event').forEach(element => {
-          _attachEvent(element)
+        this.eventElements.forEach(element => {
+          this.attachEvent(element)
         })
         // render view elements
-        elements.filter(element => element.type === 'view').forEach(element => {
-          const target = document.getElementById(element.id)
-          target.innerText = this.replacer(element)
+        this.viewElements.forEach(element => {
+          this.updateElement(element)
         })
+        this.pluginLoaded = true
       })
-      this.pluginLoaded = true
     }
   },
 }
