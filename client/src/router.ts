@@ -1,11 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import Top from '@/views/Top'
-import Lobby from '@/views/Lobby'
-import Room from '@/views/Room'
-
-import PluginCreateForm from '@/components/PluginCreateForm'
+import Top from '@/views/Top.vue'
+import Lobby from '@/views/Lobby.vue'
+import Room from '@/views/Room.vue'
+import PluginCreateForm from '@/components/PluginCreateForm.vue'
 
 import 'vuetify/dist/vuetify.min'
 
@@ -13,6 +12,7 @@ Vue.use(Router)
 
 export default new Router({
   mode: 'history',
+  base: process.env.BASE_URL,
   routes: [
     {
       path: '/',
