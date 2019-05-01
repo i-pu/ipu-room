@@ -1,7 +1,7 @@
 .env
-.python-version
-docker-compose.yaml
+.dockerignore
 Dockerfile
 __pycache__/
 *.py[cod]
+test.db
 
