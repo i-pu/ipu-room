@@ -19,12 +19,6 @@
           )
         v-flex(d-flex xs4 sm4 md4)  
           v-btn(color="info" @click="comment") 送信
-            // v-flex(xs2 md2)
-            //   v-btn(fab dark small color="pink")
-            //     v-icon(dark) favorite
-            // v-flex(xs2 md2)
-            //   v-btn(fab dark small color="pink")
-            //     v-icon(dark) favorite 
 </template>
 
 <script lang="ts">
@@ -44,13 +38,6 @@ import { Comment } from '@/model'
 export default class Chat extends Vue {
   private comments: Comment[] = []
   private chatInput: string = ''
-
-  public mounted () {
-    console.log(this.$socket.id)
-    this.$socket.emit('enter_room', {
-      roomId: 'chat_room',
-    })
-  }
 
   public comment () {
     // mock
@@ -73,9 +60,11 @@ export default class Chat extends Vue {
       return
     }
 
-    // Local
-    // this.comments.push(comment)
-    this.$socket.emit('chat', comment)
+    if (this.$store.getters.localOnly) {
+      this.comments.push(comment)
+    } else {
+      this.$socket.emit('chat', comment)
+    }
   }
 
   public beforeComment (comment: Comment): boolean {

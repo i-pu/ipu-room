@@ -56,7 +56,7 @@
             v-btn(
               :disabled="!valid"
               color="success"
-              @click="submit"
+              @click="requestCreatePlugin"
             ) 作成
 </template>
 
@@ -64,7 +64,13 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 
-@Component
+@Component({
+  sockets: {
+    register (data) {
+      this.responseCreatePlugin(data)
+    }
+  }
+})
 export default class PluginCreateForm extends Vue {
   private dialog: boolean = false
   private valid: boolean = false
@@ -77,7 +83,7 @@ export default class PluginCreateForm extends Vue {
   private loading: boolean = false
   private agreed: boolean = false
 
-  public onFileSelected (event: Event) {
+  onFileSelected (event: Event) {
     this.loader = 'loading'
     this.loading = true
     if (event.target instanceof HTMLInputElement) {
@@ -99,13 +105,20 @@ export default class PluginCreateForm extends Vue {
     }
   }
 
-  public submit () {
-    this.dialog = false
+  requestCreatePlugin () {
+    if (this.$store.getters.localOnly) {
+      this.responseCreatePlugin({})
+    } else { 
+      this.$socket.emit('register_plugin', {
+        plugin_name: this.name,
+        python_file: this.fileContent,
+      })
+    }
+  }
 
-    this.$socket.emit('register_plugin', {
-      plugin_name: this.name,
-      python_file: this.fileContent,
-    })
+  responseCreatePlugin (data: {}) {
+    console.log(data)
+    this.dialog = false
   }
 }
 </script>

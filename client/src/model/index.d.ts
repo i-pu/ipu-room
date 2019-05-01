@@ -17,5 +17,7 @@ export interface Room {
 }
 
 export interface User {
-  name: string, avatar_url: string
+  name: string,
+  id: string,
+  avatar_url: string
 }

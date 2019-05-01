@@ -25,17 +25,12 @@ const plugins: { [pluginName: string]: VueConstructor<Record<never, any> & Vue> 
   plugin: new PluginManager().component(template),
 }
 
-Vue.config.warnHandler = (err, vm, info) => {
-  console.log({ err, vm, info })
-}
+// Vue.config.warnHandler = (err, vm, info) => {
+//   console.log({ err, vm, info })
+// }
 
 @Component<Desk>({
-  components: plugins,
-  sockets: {
-    'room/enter' (data) {
-      // this.loadPlugin(data)
-    },
-  },
+  components: plugins
 })
 export default class Desk extends Vue {
   @Prop() public room!: Room

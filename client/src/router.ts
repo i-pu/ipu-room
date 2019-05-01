@@ -4,7 +4,6 @@ import Router from 'vue-router'
 import Top from '@/views/Top.vue'
 import Lobby from '@/views/Lobby.vue'
 import Room from '@/views/Room.vue'
-import PluginCreateForm from '@/components/PluginCreateForm.vue'
 
 import 'vuetify/dist/vuetify.min'
 
@@ -20,7 +19,7 @@ export default new Router({
       component: Top,
     },
     {
-      path: '/lobby/:userId',
+      path: '/lobby',
       name: 'Lobby',
       component: Lobby,
     },
@@ -28,11 +27,6 @@ export default new Router({
       path: '/room/:roomId',
       name: 'Room',
       component: Room,
-    },
-    {
-      path: '/test',
-      name: 'PluginCreateForm',
-      component: PluginCreateForm,
-    },
+    }
   ],
 })
