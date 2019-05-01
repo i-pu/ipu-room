@@ -8,10 +8,10 @@ export const ROOMS_MOCK: Room[] = [
     members: [
       { name: 'Tom', avatar_url: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460' },
       { name: 'John', avatar_url: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460' },
-      { name: 'Alice', avatar_url: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460' }
+      { name: 'Alice', avatar_url: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460' },
     ],
-    plugins: ['counter']
-  }
+    plugins: ['counter'],
+  },
 ]
 
 // : User
@@ -21,7 +21,7 @@ export const USER_MOCK: User = { name: 'Tom', avatar_url: 'https://avatars0.gith
 export const ROOM_MEMBER_MOCK: User[] = [
   { name: 'Tom', avatar_url: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460' },
   { name: 'John', avatar_url: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460' },
-  { name: 'Alice', avatar_url: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460' }
+  { name: 'Alice', avatar_url: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460' },
 ]
 
 // : Comment[]

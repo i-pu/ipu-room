@@ -2,7 +2,7 @@
   div
     v-toolbar(app)
       v-toolbar-title.headline.text-uppercase
-        span.pr-3 ipu {{ userId }}
+        span.pr-3 ipu-room {{ userId }}
         // span.pr-3 {{ name }} さん
       v-spacer
       plugin-create-form
@@ -29,29 +29,29 @@ import { ROOMS_MOCK } from '@/api/mock'
       console.log(data)
       this.rooms.push(data.room)
     },
-    lobby (data) {
+    'lobby' (data) {
       console.log(data)
       // this.rooms = data.rooms
     },
-    visit (data) {
+    'visit' (data) {
       console.log(data)
       this.userId = data.user_id
       this.$socket.emit('lobby', {
-        user_id: data.user_id
+        user_id: data.user_id,
       })
-    }
-  }
+    },
+  },
 })
 
 export default class Lobby extends Vue {
-  rooms: Room[] = ROOMS_MOCK
-  userId: string = ''
-  name: string = 'ななし'
+  public rooms: Room[] = ROOMS_MOCK
+  public userId: string = ''
+  public name: string = 'ななし'
 
-  mounted () {
+  public mounted () {
     console.log(this.$route.params.userId)
     this.$socket.emit('visit', {
-      user_name: 'AAA'
+      user_name: 'AAA',
     })
   }
 }

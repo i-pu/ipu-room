@@ -1,5 +1,3 @@
 from .config import create_app, socketio, app
-from .chat import *
+from .socketio_handler import *
 from .models.config import init_db
-
-

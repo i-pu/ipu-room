@@ -77,16 +77,12 @@ export default class PluginCreateForm extends Vue {
   private loading: boolean = false
   private agreed: boolean = false
 
-  created () {
-
-  }
-
-  onFileSelected (e: Event) {
+  public onFileSelected (event: Event) {
     this.loader = 'loading'
     this.loading = true
-    if (e.target instanceof HTMLInputElement) {
-      if (!e.target.files) return
-      const file = e.target.files[0]
+    if (event.target instanceof HTMLInputElement) {
+      if (!event.target.files) { return }
+      const file = event.target.files[0]
       const reader = new FileReader()
       reader.onload = (e: Event) => {
         this.fileContent = reader.result as string
@@ -103,12 +99,12 @@ export default class PluginCreateForm extends Vue {
     }
   }
 
-  submit () {
+  public submit () {
     this.dialog = false
 
     this.$socket.emit('register_plugin', {
       plugin_name: this.name,
-      python_file: this.fileContent
+      python_file: this.fileContent,
     })
   }
 }

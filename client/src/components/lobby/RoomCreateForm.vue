@@ -32,26 +32,25 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Prop } from 'vue-property-decorator'
- 
+
 @Component
 export default class RoomCreateForm extends Vue {
-  @Prop({ type: String })
-  userId: string
+  @Prop() public userId!: string
 
   private dialog: boolean = false
   private roomNameInput: string = ''
   private plugins: string[] = ['counter']
   private selectedPlugins: string[] = []
 
-  onClickCreate () {
+  public onClickCreate () {
     console.log(this.roomNameInput)
     console.log(this.selectedPlugins)
 
     this.$socket.emit('room/create', {
       room_name: this.roomNameInput,
-      plugins: this.selectedPlugins
+      plugins: this.selectedPlugins,
     })
-    
+
     this.dialog = false
     this.roomNameInput = ''
   }

@@ -30,19 +30,17 @@ import { Room } from '@/model'
 
 @Component<RoomList>({})
 export default class RoomList extends Vue {
-  @Prop()
-  userId: string
-  @Prop()
-  rooms: Room[]
+  @Prop() public userId!: string
+  @Prop() public rooms!: Room[]
 
   private roomNameInput: string = ''
 
-  join (roomId: string) {
+  public join (roomId: string) {
     this.$router.push({
       path: `/room/${roomId}`,
       params: {
-        roomId: roomId
-      }
+        roomId,
+      },
     })
     // this.$socket.emit('enter_room', { room_name: this.roomNameInput })
   }

@@ -35,24 +35,24 @@ import { Room } from '@/model'
 import PluginApi from '@/api/plugin'
 
 @Component({
-  components: { Desk, Chat, Status, Settings }
+  components: { Desk, Chat, Status, Settings },
 })
 export default class RoomView extends Mixins<PluginApi>(PluginApi) {
-  room: Room = ROOMS_MOCK[0]
+  public room: Room = ROOMS_MOCK[0]
 
-  mounted () {
+  public mounted () {
     this.onEnterRoom()
     console.log(this.$route.params.roomId)
   }
 
-  onEnterRoom () {
+  public onEnterRoom () {
     this.$socket.emit('room/enter', {
       user_id: this.$socket.id,
-      room_id: this.$route.params.roomId
+      room_id: this.$route.params.roomId,
     })
   }
 
-  exitRoom () {
+  public exitRoom () {
     this.$router.push('/lobby/1234')
   }
 }

@@ -30,16 +30,16 @@ import Component from 'vue-class-component'
       this.$router.push({
         path: `/lobby/${data.user_id}`,
         params: {
-          userId: data.user_id
-        }
+          userId: data.user_id,
+        },
       })
-    }
-  }
+    },
+  },
 })
 export default class Top extends Vue {
   private userName: string = ''
 
-  toLobby () {
+  public toLobby () {
     this.$socket.emit('visit', { user_name: this.userName })
   }
 }

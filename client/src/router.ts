@@ -17,22 +17,22 @@ export default new Router({
     {
       path: '/',
       name: 'Top',
-      component: Top
+      component: Top,
     },
     {
       path: '/lobby/:userId',
       name: 'Lobby',
-      component: Lobby
+      component: Lobby,
     },
     {
       path: '/room/:roomId',
       name: 'Room',
-      component: Room
+      component: Room,
     },
     {
       path: '/test',
       name: 'PluginCreateForm',
-      component: PluginCreateForm
-    }
-  ]
+      component: PluginCreateForm,
+    },
+  ],
 })

@@ -1,4 +1,4 @@
-export type Comment = {
+export interface Comment {
   type: string,
   avatar: string,
   comment_id: string,
@@ -8,7 +8,7 @@ export type Comment = {
   commented_at: Date
 }
 
-export type Room = {
+export interface Room {
   room_name: string,
   room_id: string,
   thumbnail_url: string,
@@ -16,6 +16,6 @@ export type Room = {
   plugins: string[]
 }
 
-export type User = {
+export interface User {
   name: string, avatar_url: string
 }

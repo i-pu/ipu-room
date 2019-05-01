@@ -1,12 +1,18 @@
-# client
+# Run client
 ```
-cd client && yarn install && yarn serve
+cd client && docker-compose up --build
 ```
-## Docker setup
+
+### Delete server
+```
+docker-compose down
+```
+
 ### Run server
 ```
 cd server && docker-compose up --build
 ```
+
 ### Delete server
 ```
 docker-compose down

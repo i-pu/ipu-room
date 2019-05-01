@@ -33,12 +33,6 @@ import { User } from '@/model'
 
 @Component
 export default class Status extends Vue {
-  constructor () {
-    super()
-    this.members = []
-  }
-
-  @Prop()
-  members: User[]
+  @Prop() public members!: User[]
 }
 </script>

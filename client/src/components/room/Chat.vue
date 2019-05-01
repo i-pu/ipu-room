@@ -37,22 +37,22 @@ import { Comment } from '@/model'
   sockets: {
     chat (comment: Comment) {
       this.comments.push(comment)
-    }
-  }
+    },
+  },
 })
 
 export default class Chat extends Vue {
   private comments: Comment[] = []
   private chatInput: string = ''
-  
-  mounted () {
+
+  public mounted () {
     console.log(this.$socket.id)
     this.$socket.emit('enter_room', {
-      roomId: 'chat_room'
+      roomId: 'chat_room',
     })
   }
 
-  comment () {
+  public comment () {
     // mock
     const comment: Comment = {
       type: 'comment',
@@ -61,7 +61,7 @@ export default class Chat extends Vue {
       user_name: 'John',
       user_id: 'xxxx',
       text: this.chatInput,
-      commented_at: new Date()
+      commented_at: new Date(),
     }
 
     // fook
@@ -74,11 +74,11 @@ export default class Chat extends Vue {
     }
 
     // Local
-    //this.comments.push(comment)
+    // this.comments.push(comment)
     this.$socket.emit('chat', comment)
   }
 
-  beforeComment (comment: Comment): boolean {
+  public beforeComment (comment: Comment): boolean {
     console.log(comment)
     return true
   }
