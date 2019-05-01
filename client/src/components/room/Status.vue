@@ -29,9 +29,15 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Prop } from 'vue-property-decorator'
 
-import { User } from '@/model/user'
+import { User } from '@/model'
 
-export class Status extends Vue {
+@Component
+export default class Status extends Vue {
+  constructor () {
+    super()
+    this.members = []
+  }
+
   @Prop()
   members: User[]
 }

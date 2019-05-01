@@ -32,7 +32,7 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 
 @Component
-export class Settings extends Vue {
+export default class Settings extends Vue {
   private dialog: boolean = false
   private roomName: string = 'ほげ'
   private setting1: boolean = false

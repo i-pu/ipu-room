@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import './plugins/vuetify'
-import './plugins/vuetify'
 import store from './store'
 import VueSocketIO from 'vue-socket.io-extended'
 import io from 'socket.io-client'

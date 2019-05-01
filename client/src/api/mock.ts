@@ -1,5 +1,4 @@
-import { Room } from '@/model/room'
-import { User } from '@/model/user'
+import { Room, User, Comment } from '@/model'
 
 export const ROOMS_MOCK: Room[] = [
   {
@@ -16,10 +15,14 @@ export const ROOMS_MOCK: Room[] = [
 ]
 
 // : User
-export const USER_MOCK: User = {}
+export const USER_MOCK: User = { name: 'Tom', avatar_url: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460' }
 
 // : User[]
-export const ROOM_MEMBER_MOCK: User[] = []
+export const ROOM_MEMBER_MOCK: User[] = [
+  { name: 'Tom', avatar_url: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460' },
+  { name: 'John', avatar_url: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460' },
+  { name: 'Alice', avatar_url: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460' }
+]
 
 // : Comment[]
 export const COMMENTS_MOCK = []

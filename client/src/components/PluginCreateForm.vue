@@ -65,7 +65,7 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 
 @Component
-export class PluginCreateForm extends Vue {
+export default class PluginCreateForm extends Vue {
   private dialog: boolean = false
   private valid: boolean = false
   private name: string = ''

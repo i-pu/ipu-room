@@ -12,10 +12,10 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Prop } from 'vue-property-decorator'
 
-import { Room } from '@/model/room'
+import { Room } from '@/model'
 import { ROOMS_MOCK } from '@/api/mock'
 
-@Component({
+@Component<Desk>({
   sockets: {
     'plugin/trigger' ({ html }) {
       this.pluginHtml = html
@@ -26,7 +26,12 @@ import { ROOMS_MOCK } from '@/api/mock'
   }
 })
 
-export class Desk extends Vue {
+export default class Desk extends Vue {
+  constructor () {
+    super()
+    this.room = ROOMS_MOCK[0]
+  }
+
   @Prop()
   room: Room
 

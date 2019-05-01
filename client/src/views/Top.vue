@@ -20,7 +20,7 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 
-@Component({
+@Component<Top>({
   props: {
   },
   sockets: {
@@ -36,8 +36,7 @@ import Component from 'vue-class-component'
     }
   }
 })
-
-export class Top extends Vue {
+export default class Top extends Vue {
   private userName: string = ''
 
   toLobby () {

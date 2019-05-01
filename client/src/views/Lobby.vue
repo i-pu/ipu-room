@@ -14,15 +14,15 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 
-import Room from '@/model/room'
+import { Room } from '@/model'
 
-import RoomList from '@/components/lobby/RoomList'
-import RoomCreateForm from '@/components/lobby/RoomCreateForm'
-import PluginCreateForm from '@/components/PluginCreateForm'
+import RoomList from '@/components/lobby/RoomList.vue'
+import RoomCreateForm from '@/components/lobby/RoomCreateForm.vue'
+import PluginCreateForm from '@/components/PluginCreateForm.vue'
 
 import { ROOMS_MOCK } from '@/api/mock'
 
-@Component({
+@Component<Lobby>({
   components: { RoomList, RoomCreateForm, PluginCreateForm },
   sockets: {
     'room/create' (data) {
@@ -43,12 +43,12 @@ import { ROOMS_MOCK } from '@/api/mock'
   }
 })
 
-export class LobbyView extends Vue {
-  private rooms: Room[] = ROOMS_MOCK
-  private userId: string = ''
-  private name: string = 'ななし'
+export default class Lobby extends Vue {
+  rooms: Room[] = ROOMS_MOCK
+  userId: string = ''
+  name: string = 'ななし'
 
-  mounted() {
+  mounted () {
     console.log(this.$route.params.userId)
     this.$socket.emit('visit', {
       user_name: 'AAA'

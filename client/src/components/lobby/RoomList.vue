@@ -26,9 +26,10 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Prop } from 'vue-property-decorator'
 
-import { Room } from '@/model/room'
+import { Room } from '@/model'
 
-export class RoomList extends Vue {
+@Component<RoomList>({})
+export default class RoomList extends Vue {
   @Prop()
   userId: string
   @Prop()

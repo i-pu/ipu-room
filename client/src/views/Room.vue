@@ -23,23 +23,21 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import Component from 'vue-class-component'
+import { Component, Mixins } from 'vue-mixin-decorator'
 
-import Desk from '@/components/room/Desk'
-import Chat from '@/components/room/Chat'
-import Status from '@/components/room/Status'
-import Settings from '@/components/room/Settings'
+import Desk from '@/components/room/Desk.vue'
+import Chat from '@/components/room/Chat.vue'
+import Status from '@/components/room/Status.vue'
+import Settings from '@/components/room/Settings.vue'
 
 import { ROOMS_MOCK } from '@/api/mock'
-import { Room } from '@/model/room'
+import { Room } from '@/model'
 import PluginApi from '@/api/plugin'
 
 @Component({
-  mixins: [ PluginApi ],
   components: { Desk, Chat, Status, Settings }
 })
-
-export class RoomView extends Vue {
+export default class RoomView extends Mixins<PluginApi>(PluginApi) {
   room: Room = ROOMS_MOCK[0]
 
   mounted () {

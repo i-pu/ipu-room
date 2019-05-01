@@ -8,6 +8,6 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 
-@Component
-export class App extends Vue {}
+@Component<App>({})
+export default class App extends Vue {}
 </script>

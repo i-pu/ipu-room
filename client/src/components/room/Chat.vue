@@ -31,9 +31,9 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 
-import { Comment } from '@/model/comment'
+import { Comment } from '@/model'
 
-@Component({
+@Component<Chat>({
   sockets: {
     chat (comment: Comment) {
       this.comments.push(comment)
@@ -41,7 +41,7 @@ import { Comment } from '@/model/comment'
   }
 })
 
-export class Chat extends Vue {
+export default class Chat extends Vue {
   private comments: Comment[] = []
   private chatInput: string = ''
   
