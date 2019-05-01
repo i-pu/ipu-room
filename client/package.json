@@ -52,6 +52,9 @@
     "> 1%",
     "last 2 versions"
   ],
+  "vue": {
+    "runtimeCompiler": true
+  },
   "jest": {
     "moduleFileExtensions": [
       "js",
