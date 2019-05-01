@@ -21,38 +21,41 @@
             status#status(:members="room.members")
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+import Component from 'vue-class-component'
+
 import Desk from '@/components/room/Desk'
 import Chat from '@/components/room/Chat'
 import Status from '@/components/room/Status'
 import Settings from '@/components/room/Settings'
 
 import { ROOMS_MOCK } from '@/api/mock'
+import { Room } from '@/model/room'
 import PluginApi from '@/api/plugin'
 
-export default {
-  name: 'Room',
+@Component({
   mixins: [ PluginApi ],
-  components: { Desk, Chat, Status, Settings },
-  data () {
-    return {
-      room: ROOMS_MOCK[0]
-    }
-  },
-  mounted() {
+  components: { Desk, Chat, Status, Settings }
+})
+
+export class RoomView extends Vue {
+  room: Room = ROOMS_MOCK[0]
+
+  mounted () {
     this.onEnterRoom()
     console.log(this.$route.params.roomId)
-  },
-  methods: {
-    onEnterRoom () {
-      this.$socket.emit('room/enter', {
-        user_id: this.$socket.id,
-        room_id: this.$route.params.roomId
-      })
-    },
-    exitRoom () {
-      this.$router.push('/lobby/1234')
-    }
+  }
+
+  onEnterRoom () {
+    this.$socket.emit('room/enter', {
+      user_id: this.$socket.id,
+      room_id: this.$route.params.roomId
+    })
+  }
+
+  exitRoom () {
+    this.$router.push('/lobby/1234')
   }
 }
 </script>

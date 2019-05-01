@@ -24,14 +24,15 @@
             v-card-actions
 </template>
 
-<script>
-export default {
-  name: 'Status',
-  props: {
-    members: Array
-  },
-  methods: {
+<script lang="ts">
+import Vue from 'vue'
+import Component from 'vue-class-component'
+import { Prop } from 'vue-property-decorator'
 
-  }
+import { User } from '@/model/user'
+
+export class Status extends Vue {
+  @Prop()
+  members: User[]
 }
 </script>

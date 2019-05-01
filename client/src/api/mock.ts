@@ -1,5 +1,7 @@
-// : Room[]
-export const ROOMS_MOCK = [
+import { Room } from '@/model/room'
+import { User } from '@/model/user'
+
+export const ROOMS_MOCK: Room[] = [
   {
     room_name: '雑談部屋1',
     room_id: 'xxxx-yyyy-zzzz',
@@ -14,10 +16,10 @@ export const ROOMS_MOCK = [
 ]
 
 // : User
-export const USER_MOCK = {}
+export const USER_MOCK: User = {}
 
 // : User[]
-export const ROOM_MEMBER_MOCK = []
+export const ROOM_MEMBER_MOCK: User[] = []
 
 // : Comment[]
 export const COMMENTS_MOCK = []

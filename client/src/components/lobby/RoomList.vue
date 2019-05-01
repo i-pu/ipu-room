@@ -21,28 +21,29 @@
               v-btn(color="info" @click="join(room.room_id)") 入室
 </template>
 
-<script>
-export default {
-  name: '',
-  props: {
-    userId: String,
-    rooms: Array
-  },
-  data () {
-    return {
-      roomNameInput: ''
-    }
-  },
-  methods: {
-    join (roomId) {
-      this.$router.push({
-        path: `/room/${roomId}`,
-        params: {
-          roomId: roomId
-        }
-      })
-      // this.$socket.emit('enter_room', { room_name: this.roomNameInput })
-    }
+<script lang="ts">
+import Vue from 'vue'
+import Component from 'vue-class-component'
+import { Prop } from 'vue-property-decorator'
+
+import { Room } from '@/model/room'
+
+export class RoomList extends Vue {
+  @Prop()
+  userId: string
+  @Prop()
+  rooms: Room[]
+
+  private roomNameInput: string = ''
+
+  join (roomId: string) {
+    this.$router.push({
+      path: `/room/${roomId}`,
+      params: {
+        roomId: roomId
+      }
+    })
+    // this.$socket.emit('enter_room', { room_name: this.roomNameInput })
   }
 }
 </script>

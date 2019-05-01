@@ -1,4 +1,4 @@
-<template lang='pug'>
+<template lang="pug">
   div
     v-parallax(dark src="https://cdn.vuetifyjs.com/images/backgrounds/vbanner.jpg")
       v-layout(align-center column justify-center)
@@ -16,13 +16,12 @@
                   v-icon(right dark) arrow_right_alt
 </template>
 
-<script>
-export default {
-  name: '',
-  data () {
-    return {
-      userName: ''
-    }
+<script lang="ts">
+import Vue from 'vue'
+import Component from 'vue-class-component'
+
+@Component({
+  props: {
   },
   sockets: {
     visit (data) {
@@ -35,15 +34,14 @@ export default {
         }
       })
     }
-  },
-  methods: {
-    toLobby () {
-      this.$socket.emit('visit', { user_name: this.userName })
-    }
+  }
+})
+
+export class Top extends Vue {
+  private userName: string = ''
+
+  toLobby () {
+    this.$socket.emit('visit', { user_name: this.userName })
   }
 }
 </script>
-
-<style scoped lang='stylus'>
-
-</style>

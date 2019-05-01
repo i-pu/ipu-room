@@ -10,23 +10,20 @@
     room-list(:rooms="rooms" :userId="userId")
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+import Component from 'vue-class-component'
+
+import Room from '@/model/room'
+
 import RoomList from '@/components/lobby/RoomList'
 import RoomCreateForm from '@/components/lobby/RoomCreateForm'
 import PluginCreateForm from '@/components/PluginCreateForm'
 
 import { ROOMS_MOCK } from '@/api/mock'
 
-export default {
-  name: 'Lobby',
+@Component({
   components: { RoomList, RoomCreateForm, PluginCreateForm },
-  data () {
-    return {
-      rooms: ROOMS_MOCK,
-      userId: '',
-      name: 'ななし'
-    }
-  },
   sockets: {
     'room/create' (data) {
       console.log(data)
@@ -43,7 +40,14 @@ export default {
         user_id: data.user_id
       })
     }
-  },
+  }
+})
+
+export class LobbyView extends Vue {
+  private rooms: Room[] = ROOMS_MOCK
+  private userId: string = ''
+  private name: string = 'ななし'
+
   mounted() {
     console.log(this.$route.params.userId)
     this.$socket.emit('visit', {

@@ -27,56 +27,60 @@
             //     v-icon(dark) favorite 
 </template>
 
-<script>
-export default {
-  name: 'Chat',
-  data () {
-    return {
-      chatInput: '',
-      comments: []
-    }
-  },
+<script lang="ts">
+import Vue from 'vue'
+import Component from 'vue-class-component'
+
+import { Comment } from '@/model/comment'
+
+@Component({
   sockets: {
-    chat (comment) {
+    chat (comment: Comment) {
       this.comments.push(comment)
     }
-  },
+  }
+})
+
+export class Chat extends Vue {
+  private comments: Comment[] = []
+  private chatInput: string = ''
+  
   mounted () {
     console.log(this.$socket.id)
     this.$socket.emit('enter_room', {
       roomId: 'chat_room'
     })
-  },
-  methods: {
-    comment () {
-      const comment = {
-        type: 'comment',
-        avatar: `https://cdn.vuetifyjs.com/images/lists/${1}.jpg`,
-        comment_id: Math.random().toString(36),
-        user_name: 'John',
-        user_id: 'xxxx',
-        text: this.chatInput,
-        commented_at: new Date()
-      }
+  }
 
-      // fook
-      const cancelled = !this.beforeComment(comment)
-
-      this.chatInput = ''
-
-      if (cancelled) {
-        return
-      }
-
-      // Local
-      //this.comments.push(comment)
-      this.$socket.emit('chat', comment)
-    },
-
-    beforeComment (comment) {
-      console.log(comment)
-      return true
+  comment () {
+    // mock
+    const comment: Comment = {
+      type: 'comment',
+      avatar: `https://cdn.vuetifyjs.com/images/lists/${1}.jpg`,
+      comment_id: Math.random().toString(36),
+      user_name: 'John',
+      user_id: 'xxxx',
+      text: this.chatInput,
+      commented_at: new Date()
     }
+
+    // fook
+    const cancelled = !this.beforeComment(comment)
+
+    this.chatInput = ''
+
+    if (cancelled) {
+      return
+    }
+
+    // Local
+    //this.comments.push(comment)
+    this.$socket.emit('chat', comment)
+  }
+
+  beforeComment (comment: Comment): boolean {
+    console.log(comment)
+    return true
   }
 }
 </script>

@@ -28,33 +28,32 @@
             v-btn(color="blue darken-1" flat @click="onClickCreate") 作成
 </template>
 
-<script>
-export default {
-  name: '',
-  props: {
-    userId: String
-  },
-  data () {
-    return {
-      dialog: false,
-      roomNameInput: '',
-      plugins: ['counter'],
-      selectedPlugins: []
-    }
-  },
-  methods: {
-    onClickCreate () {
-      console.log(this.roomNameInput)
-      console.log(this.selectedPlugins)
+<script lang="ts">
+import Vue from 'vue'
+import Component from 'vue-class-component'
+import { Prop } from 'vue-property-decorator'
+ 
+@Component
+export class RoomCreateForm extends Vue {
+  @Prop({ type: String })
+  userId: string
 
-      this.$socket.emit('room/create', {
-        room_name: this.roomNameInput,
-        plugins: this.selectedPlugins
-      })
-      
-      this.dialog = false
-      this.roomNameInput = ''
-    }
+  private dialog: boolean = false
+  private roomNameInput: string = ''
+  private plugins: string[] = ['counter']
+  private selectedPlugins: string[] = []
+
+  onClickCreate () {
+    console.log(this.roomNameInput)
+    console.log(this.selectedPlugins)
+
+    this.$socket.emit('room/create', {
+      room_name: this.roomNameInput,
+      plugins: this.selectedPlugins
+    })
+    
+    this.dialog = false
+    this.roomNameInput = ''
   }
 }
 </script>

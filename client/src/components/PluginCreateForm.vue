@@ -60,55 +60,56 @@
             ) 作成
 </template>
 
-<script>
-export default {
-  name: 'PluginCreateForm',
-  data () {
-    return {
-      dialog: false,
-      valid: false,
-      name: '',
-      description: '',
-      loader: null,
-      fileName: '',
-      fileUploaded: false,
-      fileContent: '',
-      loading: false,
-      agreed: false
-    }
-  },
-  created () {},
-  methods: {
-    onFileSelected (e) {
-      this.loader = 'loading'
-      this.loading = true
-      const files = e.target.files || e.dataTransfer.files
-      let reader = new FileReader()
-      reader.onload = (e) => {
-        this.fileContent = e.target.result
+<script lang="ts">
+import Vue from 'vue'
+import Component from 'vue-class-component'
+
+@Component
+export class PluginCreateForm extends Vue {
+  private dialog: boolean = false
+  private valid: boolean = false
+  private name: string = ''
+  private description: string = ''
+  private loader: any = null
+  private fileName: string = ''
+  private fileUploaded: boolean = false
+  private fileContent: string = ''
+  private loading: boolean = false
+  private agreed: boolean = false
+
+  created () {
+
+  }
+
+  onFileSelected (e: Event) {
+    this.loader = 'loading'
+    this.loading = true
+    if (e.target instanceof HTMLInputElement) {
+      if (!e.target.files) return
+      const file = e.target.files[0]
+      const reader = new FileReader()
+      reader.onload = (e: Event) => {
+        this.fileContent = reader.result as string
         this.loader = null
         this.loading = false
         this.fileUploaded = true
-        this.fileName = files[0].name
+        this.fileName = file.name
 
         if (this.name === '') {
-          this.name = this.fileName.match(/(.*)(?:\.([^.]+$))/)[1]
+          this.name = this.fileName.match(/(.*)(?:\.([^.]+$))/)!![1]
         }
       }
-      reader.readAsText(files[0])
-    },
-    submit () {
-      this.dialog = false
-
-      this.$socket.emit('register_plugin', {
-        plugin_name: this.name,
-        python_file: this.fileContent
-      })
+      reader.readAsText(file)
     }
+  }
+
+  submit () {
+    this.dialog = false
+
+    this.$socket.emit('register_plugin', {
+      plugin_name: this.name,
+      python_file: this.fileContent
+    })
   }
 }
 </script>
-
-<style scoped lang='stylus'>
-
-</style>

@@ -7,17 +7,15 @@
     div(v-html="pluginHtml")
 </template>
 
-<script>
-export default {
-  name: 'Desk',
-  props: {
-    room: Object
-  },
-  data () {
-    return {
-      pluginHtml: '',
-    }
-  },
+<script lang="ts">
+import Vue from 'vue'
+import Component from 'vue-class-component'
+import { Prop } from 'vue-property-decorator'
+
+import { Room } from '@/model/room'
+import { ROOMS_MOCK } from '@/api/mock'
+
+@Component({
   sockets: {
     'plugin/trigger' ({ html }) {
       this.pluginHtml = html
@@ -25,30 +23,38 @@ export default {
     'room/enter' (data) {
       this.loadPlugin(data)
     }
-  },
-  mounted() {
-  },
-  methods: {
-    loadPlugin ({ html }) {
-      console.log(html)
-      this.pluginHtml = html
-      const events = [
-        { id: 'a', name: 'plus' }
-      ]
-      this.$nextTick(() => {
-        for (let emitEvent of events) {
-          document.getElementById(emitEvent.id).addEventListener('click', () => {
-            console.log(`event: ${emitEvent.name} fired`)
-            this.$socket.emit('plugin/trigger', {
-              event: emitEvent.name,
-              plugin_id: 'counter',
-              room_id: this.room.room_id,
-              args: [1]
-            })
+  }
+})
+
+export class Desk extends Vue {
+  @Prop()
+  room: Room
+
+  private pluginHtml: string = ''
+
+  mounted() {}
+
+  loadPlugin ({ html }: { html: string }) {
+    console.log(html)
+    this.pluginHtml = html
+    const events = [
+      { id: 'a', name: 'plus' }
+    ]
+    this.$nextTick(() => {
+      for (let emitEvent of events) {
+        const target = document.getElementById(emitEvent.id)
+        if (!target) continue
+        target.addEventListener('click', () => {
+          console.log(`event: ${emitEvent.name} fired`)
+          this.$socket.emit('plugin/trigger', {
+            event: emitEvent.name,
+            plugin_id: 'counter',
+            room_id: this.room.room_id,
+            args: [1]
           })
-        }
-      })
-    }
-  },
+        })
+      }
+    })
+  }
 }
 </script>
