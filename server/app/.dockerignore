@@ -1,7 +1,15 @@
+# docker
 .env
 .dockerignore
 Dockerfile
+
+# python
 __pycache__/
 *.py[cod]
+
+# sqlite
 test.db
+
+# test
+test
 
