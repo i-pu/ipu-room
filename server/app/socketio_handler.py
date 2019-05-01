@@ -20,38 +20,6 @@ def sample(data):
     print('socket id:', request.sid)
 
 
-@socketio.on('plugin/register')
-@utils.byte_data_to_dict
-@utils.debug_wrapper
-def register_plugin_handler(data):
-    print('plugin/register', flush=True)
-    print('data:', data, flush=True)
-    plugin_name: str = data['plugin_name']
-    plugin_file = data['plugin_file']
-
-    html, _, python = plugin_compiler(plugin_file)
-
-    plugin = Plugin(name=plugin_name, python=python, html=html)
-    db.session.add(plugin)
-    db.session.commit()
-
-
-@socketio.on('plugin/trigger')
-@utils.byte_data_to_dict
-@utils.check_user
-@utils.debug_wrapper
-def plugin_trigger(data):
-    room_id = data['room_id']
-    plugin_id = data['plugin_id']
-    event_name = data['event_name']
-    event_args: List[Any] = data['args']
-
-    user_plugin = g.plugins[room_id + plugin_id]
-    exec('event_func = user_plugin.{}'.format(event_name))
-    result = event_func(event_args)
-    socketio.emit('plugin/trigger', data={'html': result}, room=room_id)
-
-
 @socketio.on('visit')
 @utils.byte_data_to_dict
 @utils.debug_wrapper
@@ -76,6 +44,20 @@ def visit(data):
 
     print('user:', user, flush=True)
     socketio.emit('visit', data=user.__to_dict__())
+
+
+@socketio.on('lobby')
+@utils.byte_data_to_dict
+@utils.debug_wrapper
+@utils.check_user
+def lobby():
+    all_room = Room.query.all()
+    pprint.pprint(rooms(request.sid))
+
+    socketio.emit('lobby',
+                  data={
+                      'rooms': list(map(Room.__to_dict__, all_room)),
+                  })
 
 
 @socketio.on('room/create')
@@ -134,20 +116,6 @@ def room_crate(data):
     })
 
 
-@socketio.on('lobby')
-@utils.byte_data_to_dict
-@utils.debug_wrapper
-@utils.check_user
-def lobby():
-    all_room = Room.query.all()
-    pprint.pprint(rooms(request.sid))
-
-    socketio.emit('lobby',
-                  data={
-                      'rooms': list(map(Room.__to_dict__, all_room)),
-                  })
-
-
 @socketio.on('room/enter')
 @utils.byte_data_to_dict
 @utils.debug_wrapper
@@ -175,6 +143,22 @@ def room_enter(data):
                       'html': g.plugins[room_id + 'sample_plugin'].constructor(),
                       'event': []
                   }, room=room_id)
+
+
+@socketio.on('plugin/trigger')
+@utils.byte_data_to_dict
+@utils.check_user
+@utils.debug_wrapper
+def plugin_trigger(data):
+    room_id = data['room_id']
+    plugin_id = data['plugin_id']
+    event_name = data['event_name']
+    event_args: List[Any] = data['args']
+
+    user_plugin = g.plugins[room_id + plugin_id]
+    exec('event_func = user_plugin.{}'.format(event_name))
+    result = event_func(event_args)
+    socketio.emit('plugin/trigger', data={'html': result}, room=room_id)
 
 
 @socketio.on('chat')
