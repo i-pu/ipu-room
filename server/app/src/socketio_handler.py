@@ -50,7 +50,7 @@ def visit(data):
 @utils.byte_data_to_dict
 @utils.debug_wrapper
 @utils.check_user
-def lobby():
+def lobby(data):
     all_room = Room.query.all()
     pprint.pprint(rooms(request.sid))
 
@@ -60,10 +60,32 @@ def lobby():
                   })
 
 
+@socketio.on('plugin/register')
+@utils.byte_data_to_dict
+@utils.debug_wrapper
+@utils.check_user
+def plugin_register(data):
+    print('plugin/register', flush=True)
+    print('data:', data, flush=True)
+    plugin_name: str = data['plugin_name']
+    plugin_file = data['plugin_file']
+
+    html, _, python = plugin_compiler(plugin_file)
+
+    plugin = Plugin(name=plugin_name, python=python, html=html)
+    try:
+        db.session.add(plugin)
+        db.session.commit()
+        socketio.emit('plugin/register', data={'state': True})
+    except Exception as e:
+        socketio.emit('plugin/register', data={'state': False})
+        raise e
+
+
 @socketio.on('room/create')
 @utils.byte_data_to_dict
-@utils.check_user
 @utils.debug_wrapper
+@utils.check_user
 def room_crate(data):
     # todo: html と renderigin はいろいろ細かいところが決まっていないのでしていない
     """
@@ -99,7 +121,7 @@ def room_crate(data):
         if plugin is None:
             raise RuntimeError('plugin_id: {} does not exist')
 
-        active_plugin = ActivatePlugin(room_id=room.id, plugin_id=plugin_id)
+        active_plugin = ActivePlugin(room_id=room.id, plugin_id=plugin_id)
         db.session.add(active_plugin)
         db.session.commit()
 
@@ -147,8 +169,8 @@ def room_enter(data):
 
 @socketio.on('plugin/trigger')
 @utils.byte_data_to_dict
-@utils.check_user
 @utils.debug_wrapper
+@utils.check_user
 def plugin_trigger(data):
     room_id = data['room_id']
     plugin_id = data['plugin_id']
@@ -163,6 +185,7 @@ def plugin_trigger(data):
 
 @socketio.on('chat')
 @utils.byte_data_to_dict
+@utils.debug_wrapper
 @utils.check_user
 def chat(data):
     room_id = data['room_id']
@@ -179,6 +202,7 @@ def chat(data):
 
 @socketio.on('room/exit')
 @utils.byte_data_to_dict
+@utils.debug_wrapper
 @utils.check_user
 def exit_room(data):
     room_id = data['room_id']
@@ -193,6 +217,7 @@ def exit_room(data):
 
 @socketio.on('disconnect')
 @utils.byte_data_to_dict
+@utils.debug_wrapper
 @utils.check_user
 def disconnect(data):
     print('disconnect', flush=True)

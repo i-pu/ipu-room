@@ -48,7 +48,8 @@ def byte_data_to_dict(handler: FunctionType):
     @wraps(handler)
     def data_is_dict(*args, **kwargs):
         print('byte data to dict', flush=True)
-
+        if len(args) == 0:
+            args = (None,)
         data = args[0]
         print('data type is {}'.format(type(data)), flush=True)
         if (type(data) is not dict) and (data is not None):
