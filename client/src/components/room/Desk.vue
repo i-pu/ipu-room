@@ -22,7 +22,7 @@ const template = `
 `
 
 const plugins: { [pluginName: string]: VueConstructor<Record<never, any> & Vue> } = {
-  plugin: new PluginManager().component(template, []),
+  plugin: new PluginManager().component(template),
 }
 
 Vue.config.warnHandler = (err, vm, info) => {

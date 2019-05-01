@@ -1,32 +1,13 @@
 import Vue, { VueConstructor } from 'vue'
-import { Element, Event, View } from './index'
 import { SamplePlugin } from '@/logic/plugin/sample'
 
 export class PluginManager {
   private instance?: SamplePlugin
-  private elements: Element[] = []
-
-  get eventElements (): Event[] {
-    return this.elements
-      .filter(((element) => element.type === 'event') as (element: Element) => element is Event)
-  }
-
-  get viewElements (): View[] {
-    return this.elements
-      .filter(((element) => element.type === 'view') as (element: Element) => element is View)
-  }
 
   public component (
-    template: string,
-    elements: Element[],
+    template: string
   ): VueConstructor<Record<never, any> & Vue> {
     this.instance = new SamplePlugin()
-    this.elements = elements
-
-    const triggers = []
-    this.eventElements.forEach((event) => {
-      // TODO
-    })
     return Vue.extend({
       template,
       sockets: {
