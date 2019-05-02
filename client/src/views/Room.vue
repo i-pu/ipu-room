@@ -39,26 +39,26 @@ import { Room } from '@/model'
       this.responseEnterRoom(data)
     },
     // unused
-    activate (roomId: string, plugins: string[]) {
+    'activate' (roomId: string, plugins: string[]) {
       this.$socket.emit('plugin/activate', {
         plugins, // id
         room_id: roomId,
       })
-    }
-  }
+    },
+  },
 })
 export default class RoomView extends Vue {
   private room: Room | null = null
 
-  get roomId () {
+  private get roomId () {
     return this.$route.params.roomId
   }
 
-  mounted () {
+  private mounted () {
     this.requestEnterRoom({ room_id: this.roomId })
   }
 
-  requestEnterRoom (data: { room_id: string }) {
+  private requestEnterRoom (data: { room_id: string }) {
     if (this.$store.getters.localOnly) {
       this.responseEnterRoom({ room: ROOMS_MOCK[0] })
     } else {
@@ -69,11 +69,11 @@ export default class RoomView extends Vue {
     }
   }
 
-  responseEnterRoom (data: { room: Room }) {
+  private responseEnterRoom (data: { room: Room }) {
     this.room = data.room
   }
 
-  exitRoom () {
+  private exitRoom () {
     this.$router.push('/lobby')
   }
 }

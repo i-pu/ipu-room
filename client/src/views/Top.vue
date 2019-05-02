@@ -30,7 +30,7 @@ import Component from 'vue-class-component'
 export default class Top extends Vue {
   private userName: string = ''
 
-  requestToLobby () {
+  private requestToLobby () {
     if (this.$store.getters.localOnly) {
       this.toLobby({ user_id: 'random-uuid' })
     } else {
@@ -38,7 +38,7 @@ export default class Top extends Vue {
     }
   }
 
-  toLobby ({ user_id }: { user_id: string }) {
+  private toLobby ({ user_id }: { user_id: string }) {
     this.$store.dispatch('setUserName', this.userName)
     this.$store.dispatch('setUserId', user_id)
     this.$router.push('/lobby')

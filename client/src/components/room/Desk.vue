@@ -12,17 +12,18 @@ import { Prop } from 'vue-property-decorator'
 
 import { Room } from '@/model'
 import { PluginManager } from '@/logic/plugin/component'
+import { SamplePlugin } from '@/logic/plugin/sample'
 import { ROOMS_MOCK } from '@/api/mock'
 
 const template = `
-  <div>
+<div>
     <p> {{ count }} </p>
-    <input type="button" value="add" @click="plus()"> </input>
-  </div>
+    <input type="button" value="add" @click="plus"> </input>
+</div>
 `
 
 const plugins: { [pluginName: string]: VueConstructor<Record<never, any> & Vue> } = {
-  plugin: new PluginManager().component(template),
+  plugin: new PluginManager(new SamplePlugin(), template).component(),
 }
 
 // Vue.config.warnHandler = (err, vm, info) => {
@@ -30,7 +31,7 @@ const plugins: { [pluginName: string]: VueConstructor<Record<never, any> & Vue> 
 // }
 
 @Component<Desk>({
-  components: plugins
+  components: plugins,
 })
 export default class Desk extends Vue {
   @Prop() public room!: Room

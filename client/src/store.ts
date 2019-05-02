@@ -7,7 +7,7 @@ export default new Vuex.Store({
   state: {
     isLocalOnly: true,
     userName: '',
-    userId: ''
+    userId: '',
   },
   mutations: {
     userName (state, payload: string) {
@@ -15,7 +15,7 @@ export default new Vuex.Store({
     },
     userId (state, payload: string) {
       state.userId = payload
-    }
+    },
   },
   getters: {
     localOnly (state) {
@@ -26,7 +26,7 @@ export default new Vuex.Store({
     },
     userId (state) {
       return state.userId
-    }
+    },
   },
   actions: {
     setUserName ({ commit }, payload) {
@@ -34,6 +34,6 @@ export default new Vuex.Store({
     },
     setUserId ({ commit }, payload) {
       commit('userId', payload)
-    }
-  }
+    },
+  },
 })

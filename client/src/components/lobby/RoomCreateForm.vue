@@ -38,7 +38,7 @@ import { Prop } from 'vue-property-decorator'
     'room/create' (data) {
       this.$emit('create', data)
     },
-  }
+  },
 })
 export default class RoomCreateForm extends Vue {
   @Prop() public userId!: string
@@ -57,7 +57,7 @@ export default class RoomCreateForm extends Vue {
           thumbnail_url: 'https://public.potaufeu.asahi.com/686b-p/picture/12463073/5c4a362cea9cb2f5d90b60e2f2a6c85f.jpg',
           members: [],
           plugins: this.selectedPlugins,
-        }
+        },
       })
     } else {
       this.$socket.emit('room/create', {

@@ -64,12 +64,12 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 
-@Component({
+@Component<PluginCreateForm>({
   sockets: {
     register (data) {
       this.responseCreatePlugin(data)
-    }
-  }
+    },
+  },
 })
 export default class PluginCreateForm extends Vue {
   private dialog: boolean = false
@@ -83,7 +83,7 @@ export default class PluginCreateForm extends Vue {
   private loading: boolean = false
   private agreed: boolean = false
 
-  onFileSelected (event: Event) {
+  public onFileSelected (event: Event) {
     this.loader = 'loading'
     this.loading = true
     if (event.target instanceof HTMLInputElement) {
@@ -105,10 +105,10 @@ export default class PluginCreateForm extends Vue {
     }
   }
 
-  requestCreatePlugin () {
+  public requestCreatePlugin () {
     if (this.$store.getters.localOnly) {
       this.responseCreatePlugin({})
-    } else { 
+    } else {
       this.$socket.emit('register_plugin', {
         plugin_name: this.name,
         python_file: this.fileContent,
@@ -116,7 +116,7 @@ export default class PluginCreateForm extends Vue {
     }
   }
 
-  responseCreatePlugin (data: {}) {
+  public responseCreatePlugin (data: {}) {
     console.log(data)
     this.dialog = false
   }

@@ -24,23 +24,23 @@ import { ROOMS_MOCK } from '@/api/mock'
 @Component<Lobby>({
   components: { RoomList, RoomCreateForm, PluginCreateForm },
   sockets: {
-    'visit' () {
+    visit () {
       this.responseVisit()
     },
-    'lobby' (data) {
+    lobby (data) {
       this.responseLobby(data)
-    }
-  }
+    },
+  },
 })
 
 export default class Lobby extends Vue {
   public rooms: Room[] = []
 
-  get userId () {
+  private get userId () {
     return this.$store.getters.userId
   }
 
-  mounted () {
+  private mounted () {
     if (this.$store.getters.localOnly) {
       this.responseVisit()
     } else {
@@ -50,7 +50,7 @@ export default class Lobby extends Vue {
     }
   }
 
-  responseVisit () {
+  private responseVisit () {
     if (this.$store.getters.localOnly) {
       this.responseLobby({ rooms: ROOMS_MOCK })
     } else {
@@ -60,11 +60,11 @@ export default class Lobby extends Vue {
     }
   }
 
-  responseLobby (data: { rooms: Room[] }) {
+  private responseLobby (data: { rooms: Room[] }) {
     this.rooms = data.rooms
   }
 
-  responseCreateRoom (data: { room: Room }) {
+  private responseCreateRoom (data: { room: Room }) {
     this.rooms.push(data.room)
   }
 }
