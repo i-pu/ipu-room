@@ -25,7 +25,7 @@
                         span {{ item }}
           v-card-actions
             v-spacer
-            v-btn(color="blue darken-1" flat @click="onClickCreate") 作成
+            v-btn(color="blue darken-1" flat @click="requestCreateRoom") 作成
 </template>
 
 <script lang="ts">
@@ -33,7 +33,13 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Prop } from 'vue-property-decorator'
 
-@Component
+@Component({
+  sockets: {
+    'room/create' (data) {
+      this.$emit('create', data)
+    },
+  },
+})
 export default class RoomCreateForm extends Vue {
   @Prop() public userId!: string
 
@@ -42,14 +48,23 @@ export default class RoomCreateForm extends Vue {
   private plugins: string[] = ['counter']
   private selectedPlugins: string[] = []
 
-  public onClickCreate () {
-    console.log(this.roomNameInput)
-    console.log(this.selectedPlugins)
-
-    this.$socket.emit('room/create', {
-      room_name: this.roomNameInput,
-      plugins: this.selectedPlugins,
-    })
+  public requestCreateRoom () {
+    if (this.$store.getters.localOnly) {
+      this.$emit('create', {
+        room: {
+          room_name: this.roomNameInput,
+          room_id: Math.random().toString(32),
+          thumbnail_url: 'https://public.potaufeu.asahi.com/686b-p/picture/12463073/5c4a362cea9cb2f5d90b60e2f2a6c85f.jpg',
+          members: [],
+          plugins: this.selectedPlugins,
+        },
+      })
+    } else {
+      this.$socket.emit('room/create', {
+        room_name: this.roomNameInput,
+        plugins: this.selectedPlugins,
+      })
+    }
 
     this.dialog = false
     this.roomNameInput = ''
