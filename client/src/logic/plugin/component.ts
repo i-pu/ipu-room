@@ -1,10 +1,41 @@
 import Vue, { VueConstructor } from 'vue'
-import { SamplePlugin } from '@/logic/plugin/sample'
+import * as VuetifyComponents from 'vuetify/lib'
 
-type Component = VueConstructor<Record<never, any> & Vue>
+import { Counter } from '@/logic/plugin/counter'
+
+export type PluginComponent = VueConstructor<Record<never, any> & Vue>
+
+export class PPM {
+  public pluginNames: string[] = [] 
+  public plugins: Record<string, PluginComponent> = {}
+
+  private async fetchPlugin (pluginName: string): Promise<PluginComponent> {
+    const template = `
+      <div>
+          <h3> {{ count }} </h3>
+          <v-btn @click="plus"> Add </v-btn>
+      </div>
+    `
+    return new PluginManager(new Counter(), template).component()
+  }
+
+  public async installPlugins () {
+    for (const pluginName of this.pluginNames) {
+      this.plugins[pluginName] = await this.fetchPlugin(pluginName)
+      console.log(`[ppm] ${pluginName} has been installed`)
+    }
+  }
+
+  public installedPlugins (): string[] {
+    return this.pluginNames
+  }
+
+  constructor (plugins: string[]) {
+    this.pluginNames = plugins
+  }
+}
 
 export class PluginManager {
-
   private static __getMethods (instance: any) {
     const proto = Object.getPrototypeOf (instance)
     const names = Object.getOwnPropertyNames (proto)
@@ -12,10 +43,9 @@ export class PluginManager {
   }
   private instance: any
   private template: string
-  private properties: Record<string, any> = {}
   private methods: Record<string, Function> = {}
 
-  constructor (plugin: SamplePlugin, template: string) {
+  constructor (plugin: any, template: string) {
     this.instance = plugin
     this.template = template
 
@@ -35,12 +65,22 @@ export class PluginManager {
       })
   }
 
-  public component (): Component {
+  public component (): PluginComponent {
     const that = this
-    console.log(that.properties)
+
+    // const res = Vue.compile(this.template)
+    const addons: Record<string, any> = {}
+
+    // dafault addons: Vuetify
+    for (const [key, component] of Object.entries(VuetifyComponents)) {
+      if (key[0] === 'V') {
+        addons[key] = component
+      }
+    }
 
     return Vue.extend({
       template: this.template,
+      components: addons,
       sockets: {
         // from server
         'plugin/trigger' (data) {

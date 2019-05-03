@@ -1,5 +1,5 @@
 // test in local
-export class SamplePlugin {
+export class Counter {
   public count: number
 
   constructor () {
@@ -8,6 +8,5 @@ export class SamplePlugin {
 
   public plus () {
     this.count++
-    console.log(this.count)
   }
 }

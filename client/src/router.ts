@@ -1,5 +1,6 @@
 import Vue from 'vue'
-import Router from 'vue-router'
+import Router, { Route } from 'vue-router'
+import store from '@/store'
 
 import Top from '@/views/Top.vue'
 import Lobby from '@/views/Lobby.vue'
@@ -9,7 +10,7 @@ import 'vuetify/dist/vuetify.min'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   routes: [
@@ -30,3 +31,15 @@ export default new Router({
     },
   ],
 })
+
+router.beforeEach((to: Route, from: Route, next: Function) => {
+  if (to.name === 'Room') {
+    store.dispatch('enterRoom', ['counter', 'counter2']).then(() => {
+      next()
+    })
+  } else {
+    next()
+  }
+})
+
+export default router

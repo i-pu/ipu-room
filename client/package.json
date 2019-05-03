@@ -53,7 +53,14 @@
     "last 2 versions"
   ],
   "vue": {
-    "runtimeCompiler": true
+    "runtimeCompiler": true,
+    "configureWebpack": {
+      "resolve": {
+        "alias": {
+          "vue$": "vue/dist/vue.common.js"
+        }
+      }
+    }
   },
   "jest": {
     "moduleFileExtensions": [
