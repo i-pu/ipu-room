@@ -1,13 +1,14 @@
 FROM node:8.11.3-alpine
 # FROM cypress/browsers:node8.9.3-chrome73
 
-WORKDIR /app
+WORKDIR /
 
 RUN apk update && \
-    npm install -g npm && \
-    npm install @vue/cli
+    yarn global add @vue/cli
 
-COPY package.json ./
-RUN npm install
+RUN vue create -d app
+RUN cd app
+COPY package.json .
+RUN yarn install
 COPY . .
-CMD ["npm", "run", "serve"]
+CMD ["yarn", "serve"]
