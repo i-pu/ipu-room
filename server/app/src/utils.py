@@ -3,42 +3,45 @@ import pprint
 import json
 from functools import wraps
 from types import FunctionType
+from logging import basicConfig, getLogger, DEBUG
 
 from flask_socketio import SocketIO
 from flask import request
 
 from .models import User
 
+basicConfig()
+mylogger = getLogger(__name__)
+mylogger.setLevel(DEBUG)
 
-def debug_wrapper(handler: FunctionType):
+
+def function_info_wrapper(handler: FunctionType):
     @wraps(handler)
-    def debug_wrapped(*args, **kwargs):
-        print('------- debug --------')
+    def wrapped(*args, **kwargs):
+        mylogger.info('------- {} --------'.format(handler.__name__))
 
-        print(handler.__name__, flush=True)
-        print('args', end='', flush=True)
-        pprint.pprint(args)
-        print('kwargs', end='', flush=True)
-        pprint.pprint(kwargs)
+        mylogger.info('- - args: {}'.format(args))
+        mylogger.info('- - kwargs: {}'.format(kwargs))
 
         ret = handler(*args, **kwargs)
 
-        print('------- debug end --------')
+        mylogger.info('------- {} end --------'.format(handler.__name__))
+
         return ret
 
-    return debug_wrapped
+    return wrapped
 
 
 def check_user(handler: FunctionType):
     @wraps(handler)
     def already_registered(*args, **kwargs):
-        print('check_user', flush=True)
+        mylogger.info('-------- check user -----------')
 
         user = User.query.filter_by(id=request.sid).one_or_none()
         if user is None:
             raise RuntimeError("user is not defined.")
 
-        print('user is', user, flush=True)
+        mylogger.debug('- - user is {}'.format(user))
         return handler(*args, **kwargs)
 
     return already_registered
@@ -47,28 +50,32 @@ def check_user(handler: FunctionType):
 def byte_data_to_dict(handler: FunctionType):
     @wraps(handler)
     def data_is_dict(*args, **kwargs):
-        print('byte data to dict', flush=True)
+        mylogger.info('------ byte data to dict ------')
         if len(args) == 0:
             args = (None,)
+
         data = args[0]
-        print('data type is {}'.format(type(data)), flush=True)
+
+        mylogger.debug('- - data type is {}'.format(type(data)))
         if (type(data) is not dict) and (data is not None):
-            print('therefor change to dict', flush=True)
+            mylogger.debug('- - therefor change to dict')
             data = json.loads(data)
-        print('data:', data, flush=True)
+        mylogger.debug('- - data: {}'.format(data))
+
         return handler(data, *args[1:], **kwargs)
 
     return data_is_dict
 
 
+# todo: will be deprecated
 def wrapping_emit(handler: FunctionType, plugin, socketio: SocketIO, plugin_name: str, room_id: str, event: str):
     @wraps(handler)
     def wrapped_event(*args, **kwargs):
-        print('wrapped event', flush=True)
+        mylogger.info('wrapped event')
 
         handle_return = handler(plugin, *args[1:], **kwargs)
         if (handle_return is not None) and (type(handle_return) is not dict):
-            print('error:', 'type of return:', type(handle_return), flush=True)
+            mylogger.error('error:', 'type of return:', type(handle_return), flush=True)
             raise RuntimeError()
 
         socketio.emit(plugin_name + room_id + event, handle_return, room=room_id)
@@ -85,12 +92,3 @@ def activate_plugin(plugin_name: str, socketio: SocketIO, room_id: str):
     for event_name, func in plugin.all().items():
         socketio.on(room_id + plugin_name + event_name) \
             (wrapping_emit(func, plugin, socketio, room_id, plugin_name, event_name))
-
-
-class PluginWrapper(object):
-    plugin = None
-
-
-# def activate_plugin(plugin_name: str, room_id: str):
-#     plugin = importlib.import_module(plugin_name).Plugin
-    

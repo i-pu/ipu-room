@@ -1,4 +1,5 @@
 import pprint
+from logging import basicConfig, DEBUG, getLogger
 from typing import List, Any
 
 from flask_socketio import join_room, leave_room, rooms
@@ -9,20 +10,23 @@ from .models import db, Room, Comment, User, Plugin, ActivePlugin
 from . import utils
 from .plugin.compiler import plugin_compiler
 
-
 # todo: skip id を 使ってみる
+
+mylogger = getLogger(__name__)
+mylogger.setLevel(DEBUG)
+
 
 @socketio.on('sample')
 @utils.byte_data_to_dict
-@utils.debug_wrapper
+@utils.function_info_wrapper
 def sample(data):
     pprint.pprint(data)
-    print('socket id:', request.sid)
+    mylogger.debug('- - socket id: {}'.format(request.sid))
 
 
 @socketio.on('visit')
 @utils.byte_data_to_dict
-@utils.debug_wrapper
+@utils.function_info_wrapper
 def visit(data):
     """
     login procedure
@@ -42,17 +46,16 @@ def visit(data):
     db.session.add(user)
     db.session.commit()
 
-    print('user:', user, flush=True)
+    mylogger.debug('- - user: {}'.format(user))
     socketio.emit('visit', data=user.__to_dict__())
 
 
 @socketio.on('lobby')
 @utils.byte_data_to_dict
-@utils.debug_wrapper
 @utils.check_user
+@utils.function_info_wrapper
 def lobby(data):
     all_room = Room.query.all()
-    pprint.pprint(rooms(request.sid))
 
     socketio.emit('lobby',
                   data={
@@ -62,11 +65,10 @@ def lobby(data):
 
 @socketio.on('plugin/register')
 @utils.byte_data_to_dict
-@utils.debug_wrapper
 @utils.check_user
+@utils.function_info_wrapper
 def plugin_register(data):
-    print('plugin/register', flush=True)
-    print('data:', data, flush=True)
+    mylogger.debug('- - data: {}'.format(data))
     plugin_name: str = data['plugin_name']
     plugin_file = data['plugin_file']
 
@@ -84,8 +86,8 @@ def plugin_register(data):
 
 @socketio.on('room/create')
 @utils.byte_data_to_dict
-@utils.debug_wrapper
 @utils.check_user
+@utils.function_info_wrapper
 def room_crate(data):
     # todo: html と rendering はいろいろ細かいところが決まっていないのでしていない
     """
@@ -115,7 +117,6 @@ def room_crate(data):
     htmls = []
 
     for plugin_id in plugins:
-        print(plugin_id, flush=True)
         plugin = Plugin.query.filter_by(id=plugin_id).one_or_none()
 
         if plugin is None:
@@ -140,19 +141,19 @@ def room_crate(data):
 
 @socketio.on('room/enter')
 @utils.byte_data_to_dict
-@utils.debug_wrapper
 @utils.check_user
+@utils.function_info_wrapper
 def room_enter(data):
     user = User.query.filter_by(id=request.sid).one_or_none()
     if user is None:
         raise RuntimeError('user_id: {} does not exist'.format(request.sid))
-    print('user', user, flush=True)
+    mylogger.debug('- - user: {}'.format(user))
 
     room_id = data['room_id']
     room = Room.query.filter_by(id=room_id).one_or_none()
     if room is None:
         raise RuntimeError('room_id: {} does not exist'.format(room_id))
-    print('room:', room, flush=True)
+    mylogger.debug('- - room: {}'.format(room))
 
     join_room(room_id)
 
@@ -169,8 +170,8 @@ def room_enter(data):
 
 @socketio.on('plugin/trigger')
 @utils.byte_data_to_dict
-@utils.debug_wrapper
 @utils.check_user
+@utils.function_info_wrapper
 def plugin_trigger(data):
     room_id = data['room_id']
     plugin_id = data['plugin_id']
@@ -185,8 +186,8 @@ def plugin_trigger(data):
 
 @socketio.on('chat')
 @utils.byte_data_to_dict
-@utils.debug_wrapper
 @utils.check_user
+@utils.function_info_wrapper
 def chat(data):
     room_id = data['room_id']
     user_id = request.sid
@@ -202,8 +203,8 @@ def chat(data):
 
 @socketio.on('room/exit')
 @utils.byte_data_to_dict
-@utils.debug_wrapper
 @utils.check_user
+@utils.function_info_wrapper
 def exit_room(data):
     room_id = data['room_id']
 
@@ -217,11 +218,10 @@ def exit_room(data):
 
 @socketio.on('disconnect')
 @utils.byte_data_to_dict
-@utils.debug_wrapper
 @utils.check_user
+@utils.function_info_wrapper
 def disconnect(data):
-    print('disconnect', flush=True)
-    print(data, flush=True)
+    mylogger.debug('- - data: {}'.format(data))
 
     user = User.query.filter_by(id=request.sid).one()
     db.session.delete(user)
@@ -229,5 +229,5 @@ def disconnect(data):
 
 @socketio.on_error()
 def on_error(e):
-    print('---------- error happen!!! --------- ', flush=True)
-    print(e, flush=True)
+    mylogger.error('---------- error happen!!! --------- ')
+    mylogger.error(e)
