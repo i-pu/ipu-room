@@ -103,7 +103,7 @@ def room_crate(data):
 
     """
     room_name = data['room_name']
-    plugins: List[str] = data['plugins']
+    plugins = data['plugins']
     room = Room(name=room_name)
 
     db.session.add(room)

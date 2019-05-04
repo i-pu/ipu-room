@@ -4,7 +4,7 @@ import unittest
 import socketio
 
 
-class TestSocketIOHandlers(unittest.TestCase):
+class TestSocketIOHandler(unittest.TestCase):
     sio = None
     expected = None
     actual = None
