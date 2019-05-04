@@ -87,7 +87,7 @@ def plugin_register(data):
 @utils.debug_wrapper
 @utils.check_user
 def room_crate(data):
-    # todo: html と renderigin はいろいろ細かいところが決まっていないのでしていない
+    # todo: html と rendering はいろいろ細かいところが決まっていないのでしていない
     """
     room/create -> insert into rooms -> emit room
 
