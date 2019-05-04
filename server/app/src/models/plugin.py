@@ -11,7 +11,7 @@ class Plugin(db.Model):
     html = db.Column(db.Text)
 
     def __repr__(self):
-        return 'id: {}, name: {}, description: {}' \
+        return 'Plugin(id: {}, name: {}, description: {})' \
             .format(self.id, self.name, self.description)
 
     def __to_dict__(self):

@@ -13,8 +13,8 @@ class Room(db.Model):
     comments = db.relationship("Comment", back_populates="room", cascade='save-update, delete, delete-orphan')
 
     def __repr__(self):
-        return 'id: {}, name: {}, created_at: {}, thumbnail_url: {}, users: {}'. \
-            format(self.id, self.name, self.created_at, self.thumbnail_url, self.users)
+        return 'Room(id: {}, name: {}, created_at: {}, thumbnail_url: {}, users: {})' \
+            .format(self.id, self.name, self.created_at, self.thumbnail_url, self.users)
 
     def __to_dict__(self):
         return {
