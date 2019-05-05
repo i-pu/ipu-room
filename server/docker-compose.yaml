@@ -12,15 +12,8 @@ services:
     entrypoint:
       - "./entry.sh"
       - "uwsgi"
-      - "--http"
-      - ":8000"
-      - "--gevent"
-      - "1000"
-      - "--http-websockets"
-      - "--master"
-      - "--wsgi-file"
-      - "server.py"
-      - "--callable app"
+      - "--ini"
+      - "uwsgi.ini"
 
   db:
     container_name: db
