@@ -10,8 +10,7 @@
             v-btn(color="error" @click="exitRoom") 退出
         v-flex(d-flex xs12 sm12 md9)
           // v-responsive(:aspect-ratio="16/9")
-          v-card(white)
-            desk#desk(:room="room")
+          desk#desk(:room="room")
         v-flex(d-flex xs12 sm12 md3)
           v-card(white)
             chat#chat

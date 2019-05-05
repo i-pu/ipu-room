@@ -10,13 +10,7 @@ export class PPM {
   public plugins: Record<string, PluginComponent> = {}
 
   private async fetchPlugin (pluginName: string): Promise<PluginComponent> {
-    const template = `
-      <div>
-          <h3> {{ count }} </h3>
-          <v-btn @click="plus"> Add </v-btn>
-      </div>
-    `
-    return new PluginManager(new Counter(), template).component()
+    return new PluginManager(new Counter()).component()
   }
 
   public async installPlugins () {
@@ -24,10 +18,6 @@ export class PPM {
       this.plugins[pluginName] = await this.fetchPlugin(pluginName)
       console.log(`[ppm] ${pluginName} has been installed`)
     }
-  }
-
-  public installedPlugins (): string[] {
-    return this.pluginNames
   }
 
   constructor (plugins: string[]) {
@@ -45,9 +35,9 @@ export class PluginManager {
   private template: string
   private methods: Record<string, Function> = {}
 
-  constructor (plugin: any, template: string) {
+  constructor (plugin: any) {
     this.instance = plugin
-    this.template = template
+    this.template = plugin.template
 
     PluginManager.__getMethods(plugin)
       .forEach((method) => {
@@ -77,6 +67,8 @@ export class PluginManager {
         addons[key] = component
       }
     }
+
+    console.log(Object(that.instance))
 
     return Vue.extend({
       template: this.template,

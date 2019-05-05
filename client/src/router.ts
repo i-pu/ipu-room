@@ -34,7 +34,7 @@ const router = new Router({
 
 router.beforeEach((to: Route, from: Route, next: Function) => {
   if (to.name === 'Room') {
-    store.dispatch('enterRoom', ['counter', 'counter2']).then(() => {
+    store.dispatch('enterRoom', ['counter']).then(() => {
       next()
     })
   } else {

@@ -1,8 +1,8 @@
 
 <template lang="pug">
   #desk
-    .plugin
-      component(v-for="name in $store.getters.plugins" :is="name")
+    v-card(white v-for="name in $store.getters.plugins")
+      component(:is="name")
 </template>
 
 <script lang="ts">
@@ -15,7 +15,6 @@ import store from '@/store'
 import { Room } from '@/model'
 import { PluginManager, PluginComponent, PPM } from '@/logic/plugin/component'
 import { ROOMS_MOCK } from '@/api/mock'
-import { mount } from '@vue/test-utils'
 
 // Vue.config.warnHandler = (err, vm, info) => {
 //   console.log({ err, vm, info })
