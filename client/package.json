@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "npx vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:e2e": "vue-cli-service test:e2e",
@@ -11,6 +11,7 @@
     "cypress": "cypress run --browser chrome"
   },
   "dependencies": {
+    "@types/pug": "^2.0.4",
     "core-js": "^2.6.5",
     "socket.io-client": "^2.2.0",
     "vue": "^2.6.10",
