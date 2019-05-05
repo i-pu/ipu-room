@@ -10,9 +10,17 @@ services:
       - PYTHONUNBUFFERED=1
     restart: on-failure
     entrypoint:
-      - ./entry.sh
-      - python3
-      - server.py
+      - "./entry.sh"
+      - "uwsgi"
+      - "--http"
+      - ":8000"
+      - "--gevent"
+      - "1000"
+      - "--http-websockets"
+      - "--master"
+      - "--wsgi-file"
+      - "server.py"
+      - "--callable app"
 
   db:
     container_name: db

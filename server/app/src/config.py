@@ -8,8 +8,12 @@ from .models import init_db
 
 class Development(object):
     DEBUG = True
-
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
+    SQLITE_PATH = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        'models',
+        'test.db',
+    )
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + SQLITE_PATH
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     SECRET_KEY = 'dev'
@@ -33,14 +37,17 @@ app = Flask(__name__)
 socketio = SocketIO(app)
 
 
-def create_app(env=None):
+def create_app(env):
     if env == 'docker-compose':
         app.config.from_object(Staging)
     else:
         app.config.from_object(Development)
+
+    # init
     with app.app_context():
         init_db(app)
         g.plugins = {}
+
     from .socketio_handler import socketio
 
     return app, socketio

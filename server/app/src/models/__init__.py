@@ -1,4 +1,4 @@
-from .config import init_db, db
+from .config import db, init_db
 from .room import Room
 from .user import User
 from .comment import Comment
