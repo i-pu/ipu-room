@@ -225,6 +225,7 @@ def disconnect(data):
 
     user = User.query.filter_by(id=request.sid).one()
     db.session.delete(user)
+    db.session.commit()
 
 
 @socketio.on_error()
