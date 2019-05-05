@@ -11,6 +11,7 @@
     "cypress": "cypress run --browser chrome"
   },
   "dependencies": {
+    "@types/pug": "^2.0.4",
     "core-js": "^2.6.5",
     "socket.io-client": "^2.2.0",
     "vue": "^2.6.10",

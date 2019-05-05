@@ -37,7 +37,7 @@ export default class Desk extends Vue {
     for (const [name, comp] of Object.entries(VuetifyComponents)) {
       if (name[0] === 'V') addons[name] = comp
     }
-    // this.plugins.push(Plugin.compile({ instance: new Counter(), template: counterTemplate, addons }))
+    this.plugins.push(Plugin.compile({ instance: new Counter(), template: counterTemplate, addons }))
     this.plugins.push(Plugin.compile({ instance: new Chat(), template: chatTemplate, addons }))
   }
 }

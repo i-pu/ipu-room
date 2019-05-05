@@ -14,9 +14,6 @@
 
     v-container(fluid grid-list-md text-xs-center)
       v-layout(row wrap)
-        v-flex(d-flex xs12 sm12 md3)
-          v-card(white)
-            chat#chat
         v-flex(d-flex xs12 sm12 md12)
           v-card(white)
             status#status(:members="room.members")
@@ -27,7 +24,6 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 
 import Desk from '@/components/room/Desk.vue'
-import Chat from '@/components/room/Chat.vue'
 import Status from '@/components/room/Status.vue'
 import Settings from '@/components/room/Settings.vue'
 
@@ -35,7 +31,7 @@ import { ROOMS_MOCK } from '@/api/mock'
 import { Room } from '@/model'
 
 @Component<RoomView>({
-  components: { Desk, Chat, Status, Settings },
+  components: { Desk, Status, Settings },
   sockets: {
     'room/enter' (data: { room: Room }) {
       this.responseEnterRoom(data)
