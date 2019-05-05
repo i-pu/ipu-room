@@ -1,6 +1,6 @@
 <template lang='pug'>
-  div
-    v-container(fluid grid-list-md text-xs-center v-if="room")
+  div(v-if="room")
+    v-container(fluid grid-list-md text-xs-center)
       v-layout(row wrap)
         v-flex(d-flex xs12 sm12 md12)
           v-toolbar(dense)
@@ -8,9 +8,12 @@
             v-spacer
             settings
             v-btn(color="error" @click="exitRoom") 退出
-        v-flex(d-flex xs12 sm12 md9)
-          // v-responsive(:aspect-ratio="16/9")
-          desk#desk(:room="room")
+
+    // v-responsive(:aspect-ratio="16/9")
+    desk#desk(:room="room")
+
+    v-container(fluid grid-list-md text-xs-center)
+      v-layout(row wrap)
         v-flex(d-flex xs12 sm12 md3)
           v-card(white)
             chat#chat

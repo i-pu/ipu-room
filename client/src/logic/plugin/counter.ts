@@ -1,16 +1,14 @@
-// test in local
-export class Counter {
-  static template: string =
-  `
-    <div>
-        <h3> {{ count }} </h3>
-        <v-btn @click="plus"> Add </v-btn>
-    </div>
-  `
+// ========================
+//  Example plugin counter
+// ========================
+import { BasePlugin } from '../baseplugin'
 
+// test in local
+export class Counter extends BasePlugin {
   public count: number
 
   constructor () {
+    super()
     this.count = 0
   }
 
@@ -18,3 +16,11 @@ export class Counter {
     this.count++
   }
 }
+
+export const counterTemplate: string =
+`
+  <div>
+      <h3> {{ count }} </h3>
+      <v-btn @click="plus"> Add </v-btn>
+  </div>
+`
