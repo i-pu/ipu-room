@@ -1,8 +1,9 @@
 export class BasePlugin {
   [trigger: string]: any
-  static template: string = '<p> Hello, Plugin </p>'
+  public name: string
+  public enabled: boolean = true
 
-  constructor () {
-    
+  constructor (name: string) {
+    this.name = name
   }
 }
