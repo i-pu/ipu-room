@@ -3,22 +3,22 @@
     v-container(fluid grid-list-md)
       v-layout(row wrap)
         v-flex(
-          v-for="room in rooms" :key="room.room_id"
+          v-for="room in rooms" :key="room.id"
           d-flex xs12 sm6 md3
         )
           v-card
             v-img(:src="room.thumbnail_url" height="200px")
             v-card-title
-              h3.headline {{ room.room_name }}
+              h3.headline {{ room.name }}
             v-card-text
-              template(v-for="member, i in room.members")
+              template(v-for="member, i in room.users")
                 v-tooltip.mr-2(top :key="i")
                   template(v-slot:activator="{ on }")
                     v-avatar(v-on="on" size="60")
                       img(:src="member.avatar_url")
                   span {{ member.name }}
             v-card-actions
-              v-btn(color="info" @click="join(room.room_id)") 入室
+              v-btn(color="info" @click="join(room.id)") 入室
 </template>
 
 <script lang="ts">
@@ -38,11 +38,8 @@ export default class RoomList extends Vue {
   public join (roomId: string) {
     this.$router.push({
       path: `/room/${roomId}`,
-      params: {
-        roomId,
-      },
+      params: { roomId },
     })
-    // this.$socket.emit('enter_room', { room_name: this.roomNameInput })
   }
 }
 </script>

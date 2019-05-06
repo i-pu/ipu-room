@@ -39,11 +39,11 @@
                   v-flex(xs6 sm6)
                     v-select(
                       v-model="selectedPlugin"
-                      :items="['counter']"
+                      :items="['counter', 'chat']"
                       label="プラグイン"
                     )
                   v-flex(xs6 sm6)
-                    v-btn(color="success" block @click="$emit('add-plugin')") を追加
+                    v-btn(color="success" block @click="$emit('add-plugin', selectedPlugin)") を追加
           v-card-actions
 </template>
 

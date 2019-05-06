@@ -29,10 +29,10 @@ import Settings from '@/components/room/Settings.vue'
 import { ROOMS_MOCK } from '@/api/mock'
 import { Room } from '@/model'
 
-import { compile, PluginComponent } from '@/logic/plugin/component'
+import { compile, compileLocal, Plugin } from '@/logic/plugin/component'
 // import YoutubePlugin from '@/logic/plugin/youtubePlayer'
-import Counter, { CounterServer } from '@/logic/plugin/counter'
-// import Chat from '@/logic/plugin/chat'
+import { CounterServer, counter } from '@/logic/plugin/counter'
+import Chat, { ChatServer } from '@/logic/plugin/chat'
 
 @Component<RoomView>({
   components: { Desk, Status, Settings },
@@ -40,13 +40,9 @@ import Counter, { CounterServer } from '@/logic/plugin/counter'
     'room/enter' (data: { room: Room }) {
       this.responseEnterRoom(data)
     },
-    // unused
-    'activate' (roomId: string, plugins: string[]) {
-      this.$socket.emit('plugin/activate', {
-        plugins, // id
-        room_id: roomId,
-      })
-    },
+    'plugin/add' (data: Plugin) {
+      this.addPlugin({ name: 'counter', enabled: true }, data)
+    }
   },
 })
 export default class RoomView extends Vue {
@@ -64,32 +60,52 @@ export default class RoomView extends Vue {
     if (this.$store.getters.localOnly) {
       this.responseEnterRoom({ room: ROOMS_MOCK[0] })
     } else {
-      this.$socket.emit('room/enter', {
-        user_id: this.$store.getters.userId,
-        room_id: this.roomId,
-      })
+      this.$socket.emit('room/enter', { room_id: this.roomId })
     }
   }
 
   private responseEnterRoom (data: { room: Room }) {
     this.room = data.room
     this.room.plugins = []
-    this.addPlugin()
+    this.addPlugin({ name: 'counter', enabled: true }, {
+      template: counter.template,
+      events: { plus: {} },
+      addons: counter.addons,
+      record: { count: 0 }
+    })
   }
 
   private exitRoom () {
     this.$router.push('/lobby')
   }
 
-  private addPlugin () {
-    // counter
-    this.room!!.plugins.push({
-      component: compile({ ...Counter, server: new CounterServer() }),
-      config: {
-        name: 'Counter',
-        enabled: true
+  private addPlugin (
+    config: { name: string, enabled: boolean }, 
+    plugin?: Plugin
+  ) {
+    if (!plugin) {
+      // counter
+      if (config.name === 'Counter') {
+        this.room!!.plugins.push({
+          component: compileLocal({ 
+            template: counter.template,
+            addons: counter.addons,
+            server: new CounterServer()
+          }),
+          config
+        })
+      } else if (config.name === 'Chat') {
+        // this.room!!.plugins.push({
+        //   component: compileLocal({ ...Chat, server: new ChatServer() }),
+        //   config
+        // })
       }
-    })
+    } else {
+      this.room!!.plugins.push({
+        component: compile({ ...plugin!! }),
+        config
+      })
+    }
   }
 }
 </script>

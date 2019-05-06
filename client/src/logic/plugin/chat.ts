@@ -5,7 +5,7 @@ import { BasePlugin } from '../baseplugin'
 import { Comment } from '@/model'
 
 // test in local
-class Chat extends BasePlugin {
+export class ChatServer extends BasePlugin {
   private comments: Comment[] = []
   private chatInput: string = ''
 
@@ -60,7 +60,6 @@ for (const [k, v] of Object.entries(VuetifyComponents)) {
 }
 
 export default {
-  instance: new Chat(),
   template: chatTemplate,
   addons: vuetifyComponents,
 }

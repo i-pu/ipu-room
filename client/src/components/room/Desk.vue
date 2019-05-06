@@ -21,7 +21,6 @@ import store from '@/store'
 
 import { Room } from '@/model'
 import { ROOMS_MOCK } from '@/api/mock'
-import { PluginComponent } from '@/logic/plugin/component'
 
 // Vue.config.warnHandler = (err, vm, info) => {
 //   console.log({ err, vm, info })

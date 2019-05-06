@@ -12,8 +12,8 @@ import { PluginComponent } from '@/logic/plugin/component'
 import { BasePlugin } from '@/logic/baseplugin'
 
 export interface Room {
-  room_name: string,
-  room_id: string,
+  name: string,
+  id: string,
   thumbnail_url: string,
   members: User[],
   plugins: Array<{ component: PluginComponent, config: { name: string, enabled: boolean } }>
