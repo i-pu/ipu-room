@@ -9,7 +9,6 @@
             settings(:room="room")
             v-btn(color="error" @click="exitRoom") 退出
 
-    // v-responsive(:aspect-ratio="16/9")
     desk#desk(:room="room")
 
     v-container(fluid grid-list-md text-xs-center)
@@ -30,10 +29,10 @@ import Settings from '@/components/room/Settings.vue'
 import { ROOMS_MOCK } from '@/api/mock'
 import { Room } from '@/model'
 
-import { Plugin, PluginComponent } from '@/logic/plugin/component'
-import YoutubePlugin from '@/logic/plugin/youtubePlayer'
-import Counter from '@/logic/plugin/counter'
-import Chat from '@/logic/plugin/chat'
+import { compile, PluginComponent } from '@/logic/plugin/component'
+// import YoutubePlugin from '@/logic/plugin/youtubePlayer'
+import Counter, { CounterServer } from '@/logic/plugin/counter'
+// import Chat from '@/logic/plugin/chat'
 
 @Component<RoomView>({
   components: { Desk, Status, Settings },
@@ -77,15 +76,12 @@ export default class RoomView extends Vue {
     this.room.plugins = []
     // counter
     this.room.plugins.push({
-      instance: Counter.instance,
-      component: Plugin.compile(Counter),
+      component: compile({ ...Counter, server: new CounterServer() }),
+      config: {
+        name: 'Counter',
+        enabled: true
+      }
     })
-    // chat
-    this.room.plugins.push({
-      instance: Chat.instance,
-      component: Plugin.compile(Chat),
-    })
-
   }
 
   private exitRoom () {

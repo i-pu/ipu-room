@@ -3,8 +3,7 @@
 // ========================
 import { BasePlugin } from '../baseplugin'
 
-// test in local
-class Counter extends BasePlugin {
+export class CounterServer extends BasePlugin {
   public count: number
 
   constructor () {
@@ -28,7 +27,6 @@ const counterTemplate: string =
 import { VBtn } from 'vuetify/lib'
 
 export default {
-  instance: new Counter(),
   template: counterTemplate,
   addons: { VBtn },
 }

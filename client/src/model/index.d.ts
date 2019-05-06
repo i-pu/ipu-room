@@ -16,7 +16,7 @@ export interface Room {
   room_id: string,
   thumbnail_url: string,
   members: User[],
-  plugins: Array<{ component: PluginComponent, instance: BasePlugin }>
+  plugins: Array<{ component: PluginComponent, config: { name: string, enabled: boolean } }>
 }
 
 export interface User {

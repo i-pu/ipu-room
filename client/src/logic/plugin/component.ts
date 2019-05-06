@@ -2,40 +2,57 @@ import Vue, { VueConstructor } from 'vue'
 import { BasePlugin } from '../baseplugin'
 export type PluginComponent = VueConstructor<Record<never, any> & Vue>
 
-export const compile = <Plugin extends BasePlugin> (
-  { instance, template, addons }: { instance: Plugin, template: string, addons: Record<string, any> },
+export const compile = (
+  { server, template, addons }: { server: any, template: string, addons: Record<string, any> },
 ): PluginComponent => {
-  const methods: Record<string, (...args: any[]) => any> = {}
-  const methodNames = Object
-    .getOwnPropertyNames(Object.getPrototypeOf(instance))
-    .filter ((name) => typeof instance[name] === 'function' && name !== 'constructor')
-  const hook = (method: string) => ((...args: any[]): any => {
-    console.log(`event: ${method} fired`)
-    const res = instance[method](...args)
-    // const payload = {
-    //   room_id: '1234',
-    //   plugin_id: 'counter',
-    //   event: method,
-    //   args,
-    // }
-    // this.$socket.emit('plugin/trigger', payload)
-    return res
+  const sockets: Record<string, (...args: any[]) => any> = {}
+
+  // 1. generate client class
+  const client = new (class Client {
+    [trigger: string]: (...args: any[]) => void
   })
 
-  console.log('[Plugin compiler] register hooks')
-  methodNames.forEach((method) => { methods[method] = hook(method) })
+  // 2. define methods
+  const methodNames = Object
+    .getOwnPropertyNames(Object.getPrototypeOf(server))
+    .filter ((name) => typeof server[name] === 'function' && name !== 'constructor')
 
-  console.log('[Plugin compiler] componentize')
+  const hooks: Record<string, (vm: any, ...args: any) => void> = {}
+  methodNames.map(method => {
+    hooks[method] = function(...args: any[]): void {
+      server[method](...args)
+      const record = Object(server)
+      this.callbackFromServer(record)
+    }
+  })
+
+  // 3. define members
+  for (const key of Object.keys(Object(server))) {
+    client[key] = server[key]
+  }
+
+  console.log(`[Plugin compiler] componentize ${client.pluginName}`)
+
+  // 4. create dynamic component
   return Vue.extend({
     template,
     components: addons,
-    // sockets: {
-    //   // from server
-    //   'plugin/trigger' (data) {
-    //     console.log(data)
-    //   },
-    // },
-    data: () => Object(instance),
-    methods,
+    sockets: {
+      // from server
+      'plugin/trigger' (data: Record<string, any>) {
+        this.callbackFromServer(data)
+      },
+    },
+    data: () => Object(client),
+    methods: {
+      ...hooks,
+      // callback from server
+      callbackFromServer (data: Record<string, any>) {
+        console.log(`[${this.pluginName}] callback from server`)
+        for (const [k, _] of Object.entries(this.$data)) {
+          this.$set(this, k, data[k])
+        }
+      }
+    },
   })
 }

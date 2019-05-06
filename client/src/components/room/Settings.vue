@@ -29,10 +29,11 @@
 
                     h3 プラグイン
 
-                    template(v-for="{ instance, component } in room.plugins")
+                    template(v-for="{ config } in room.plugins")
                       v-switch(
-                        v-model="instance.enabled"
-                        :label="instance.name"
+                        v-model="config.enabled"
+                        :label="config.name"
+                        @change="onChangePluginSettings(config.name)"
                       )
 
                     v-btn(color="success" block) プラグインを追加
@@ -52,5 +53,9 @@ export default class Settings extends Vue {
   private dialog: boolean = false
   private roomName: string = 'ほげ'
   private setting1: boolean = false
+
+  onChangePluginSettings (pluginName: string) {
+    
+  }
 }
 </script>
