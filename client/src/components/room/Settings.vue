@@ -47,7 +47,7 @@ import { Room } from '@/model'
 
 @Component
 export default class Settings extends Vue {
-  @Prop() room!: Room
+  @Prop() public room!: Room
 
   private dialog: boolean = false
   private roomName: string = 'ほげ'

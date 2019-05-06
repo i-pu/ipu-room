@@ -78,12 +78,12 @@ export default class RoomView extends Vue {
     // counter
     this.room.plugins.push({
       instance: Counter.instance,
-      component: Plugin.compile(Counter)
+      component: Plugin.compile(Counter),
     })
     // chat
     this.room.plugins.push({
       instance: Chat.instance,
-      component: Plugin.compile(Chat)
+      component: Plugin.compile(Chat),
     })
 
   }

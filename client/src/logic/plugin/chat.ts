@@ -62,5 +62,5 @@ for (const [k, v] of Object.entries(VuetifyComponents)) {
 export default {
   instance: new Chat(),
   template: chatTemplate,
-  addons: vuetifyComponents
+  addons: vuetifyComponents,
 }

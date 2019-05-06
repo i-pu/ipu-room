@@ -9,13 +9,13 @@ export interface State {
   userId: string
 }
 
-const state: State = {
+const storeState: State = {
   isLocalOnly: true,
   userName: '',
   userId: '',
 }
 
-export const getters = {
+const getters = {
   localOnly (state: State) {
     return state.isLocalOnly
   },
@@ -24,7 +24,7 @@ export const getters = {
   },
   userId (state: State) {
     return state.userId
-  }
+  },
 }
 
 const mutations = {
@@ -33,21 +33,21 @@ const mutations = {
   },
   userId (state: State, payload: string) {
     state.userId = payload
-  }
+  },
 }
 
-export const actions = {
+const actions = {
   setUserName ({ commit }: { commit: Commit }, payload: string) {
     commit('userName', payload)
   },
   setUserId ({ commit }: { commit: Commit }, payload: string) {
     commit('userId', payload)
-  }
+  },
 }
 
 export default new Vuex.Store({
-  state,
+  state: storeState,
   mutations,
   getters,
-  actions
+  actions,
 })

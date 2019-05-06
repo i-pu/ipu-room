@@ -25,6 +25,6 @@ import { PluginComponent } from '@/logic/plugin/component'
 
 @Component
 export default class Desk extends Vue {
-  @Prop() room!: Room
+  @Prop() public room!: Room
 }
 </script>

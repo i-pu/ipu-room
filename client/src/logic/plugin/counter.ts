@@ -30,5 +30,5 @@ import { VBtn } from 'vuetify/lib'
 export default {
   instance: new Counter(),
   template: counterTemplate,
-  addons: { VBtn }
+  addons: { VBtn },
 }

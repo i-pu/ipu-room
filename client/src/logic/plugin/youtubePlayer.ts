@@ -7,7 +7,7 @@ import { Youtube } from 'vue-youtube'
 // test in local
 export class YoutubePlayer extends BasePlugin {
   public videoId: string = 'SX_ViT4Ra7k'
- 
+
   constructor () {
     super('Youtube')
   }
@@ -21,7 +21,7 @@ const youtubeTemplate = `
 `
 
 export default {
-  instance: new YoutubePlayer,
+  instance: new YoutubePlayer(),
   template: youtubeTemplate,
-  addons: { player: Youtube }
+  addons: { player: Youtube },
 }
