@@ -4,9 +4,9 @@
       v-layout(row wrap)
         v-flex(d-flex xs12 sm12 md12)
           v-toolbar(dense)
-            v-toolbar-title {{ room.room_name }} {{ room.plugins.join(',') }}
+            v-toolbar-title {{ room.room_name }}
             v-spacer
-            settings
+            settings(:room="room")
             v-btn(color="error" @click="exitRoom") 退出
 
     // v-responsive(:aspect-ratio="16/9")
@@ -29,6 +29,11 @@ import Settings from '@/components/room/Settings.vue'
 
 import { ROOMS_MOCK } from '@/api/mock'
 import { Room } from '@/model'
+
+import { Plugin, PluginComponent } from '@/logic/plugin/component'
+import YoutubePlugin from '@/logic/plugin/youtubePlayer'
+import Counter from '@/logic/plugin/counter'
+import Chat from '@/logic/plugin/chat'
 
 @Component<RoomView>({
   components: { Desk, Status, Settings },
@@ -69,6 +74,18 @@ export default class RoomView extends Vue {
 
   private responseEnterRoom (data: { room: Room }) {
     this.room = data.room
+    this.room.plugins = []
+    // counter
+    this.room.plugins.push({
+      instance: Counter.instance,
+      component: Plugin.compile(Counter)
+    })
+    // chat
+    this.room.plugins.push({
+      instance: Chat.instance,
+      component: Plugin.compile(Chat)
+    })
+
   }
 
   private exitRoom () {

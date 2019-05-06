@@ -4,11 +4,11 @@
 import { BasePlugin } from '../baseplugin'
 
 // test in local
-export class Counter extends BasePlugin {
+class Counter extends BasePlugin {
   public count: number
 
   constructor () {
-    super()
+    super('Counter')
     this.count = 0
   }
 
@@ -17,10 +17,18 @@ export class Counter extends BasePlugin {
   }
 }
 
-export const counterTemplate: string =
+const counterTemplate: string =
 `
   <div>
       <h3> {{ count }} </h3>
       <v-btn @click="plus"> Add </v-btn>
   </div>
 `
+
+import { VBtn } from 'vuetify/lib'
+
+export default {
+  instance: new Counter(),
+  template: counterTemplate,
+  addons: { VBtn }
+}

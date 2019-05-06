@@ -9,7 +9,7 @@ export class YoutubePlayer extends BasePlugin {
   public videoId: string = 'SX_ViT4Ra7k'
  
   constructor () {
-    super()
+    super('Youtube')
   }
 }
 
@@ -19,6 +19,7 @@ const youtubeTemplate = `
   <player :video-id="videoId" player-width="1280" player-height="750" :player-vars="{autoplay: 1}" />
 </div>
 `
+
 export default {
   instance: new YoutubePlayer,
   template: youtubeTemplate,

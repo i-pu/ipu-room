@@ -8,12 +8,15 @@ export interface Comment {
   commented_at: Date
 }
 
+import { PluginComponent } from '@/logic/plugin/component'
+import { BasePlugin } from '@/logic/baseplugin'
+
 export interface Room {
   room_name: string,
   room_id: string,
   thumbnail_url: string,
   members: User[],
-  plugins: string[]
+  plugins: Array<{ component: PluginComponent, instance: BasePlugin }>
 }
 
 export interface User {
