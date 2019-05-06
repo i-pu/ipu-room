@@ -16,13 +16,15 @@ import { Prop } from 'vue-property-decorator'
 import store from '@/store'
 
 import { Room } from '@/model'
-import { Plugin, PluginComponent, PPM } from '@/logic/plugin/component'
+import { Plugin, PluginComponent } from '@/logic/plugin/component'
 import { ROOMS_MOCK } from '@/api/mock'
 
-import { Counter, counterTemplate } from '@/logic/plugin/counter'
-import { Chat, chatTemplate } from '@/logic/plugin/chat'
 import * as VuetifyComponents from 'vuetify/lib'
 
+import YoutubePlugin from '@/logic/plugin/youtubePlayer'
+
+// import { Counter, counterTemplate } from '@/logic/plugin/counter'
+// import { Chat, chatTemplate } from '@/logic/plugin/chat'
 // Vue.config.warnHandler = (err, vm, info) => {
 //   console.log({ err, vm, info })
 // }
@@ -33,12 +35,17 @@ export default class Desk extends Vue {
   private plugins: Array<PluginComponent> = []
 
   mounted () {
-    const addons = {}
+    const vuetifyComponents: Record<string, any> = {}
     for (const [name, comp] of Object.entries(VuetifyComponents)) {
-      if (name[0] === 'V') addons[name] = comp
+      if (name[0] === 'V') vuetifyComponents[name] = comp
     }
-    this.plugins.push(Plugin.compile({ instance: new Counter(), template: counterTemplate, addons }))
-    this.plugins.push(Plugin.compile({ instance: new Chat(), template: chatTemplate, addons }))
+    YoutubePlugin.addons = {
+      ...YoutubePlugin.addons,
+      ...vuetifyComponents
+    }
+    // this.plugins.push(Plugin.compile({ instance: new Counter(), template: counterTemplate, addons }))
+    // this.plugins.push(Plugin.compile({ instance: new Chat(), template: chatTemplate, addons }))
+    this.plugins.push(Plugin.compile(YoutubePlugin))
   }
 }
 </script>
