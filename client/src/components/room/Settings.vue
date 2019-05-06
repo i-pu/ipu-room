@@ -36,7 +36,14 @@
                         @change="onChangePluginSettings(config.name)"
                       )
 
-                    v-btn(color="success" block) プラグインを追加
+                  v-flex(xs6 sm6)
+                    v-select(
+                      v-model="selectedPlugin"
+                      :items="['counter']"
+                      label="プラグイン"
+                    )
+                  v-flex(xs6 sm6)
+                    v-btn(color="success" block @click="$emit('add-plugin')") を追加
           v-card-actions
 </template>
 
@@ -53,8 +60,10 @@ export default class Settings extends Vue {
   private dialog: boolean = false
   private roomName: string = 'ほげ'
   private setting1: boolean = false
+  private addPluginDialog: boolean = false
+  private selectedPlugin: string = ''
 
-  onChangePluginSettings (pluginName: string) {
+  private onChangePluginSettings (pluginName: string) {
     
   }
 }

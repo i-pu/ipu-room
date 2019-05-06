@@ -6,7 +6,7 @@
           v-toolbar(dense)
             v-toolbar-title {{ room.room_name }}
             v-spacer
-            settings(:room="room")
+            settings(:room="room" @add-plugin="addPlugin")
             v-btn(color="error" @click="exitRoom") 退出
 
     desk#desk(:room="room")
@@ -74,18 +74,22 @@ export default class RoomView extends Vue {
   private responseEnterRoom (data: { room: Room }) {
     this.room = data.room
     this.room.plugins = []
+    this.addPlugin()
+  }
+
+  private exitRoom () {
+    this.$router.push('/lobby')
+  }
+
+  private addPlugin () {
     // counter
-    this.room.plugins.push({
+    this.room!!.plugins.push({
       component: compile({ ...Counter, server: new CounterServer() }),
       config: {
         name: 'Counter',
         enabled: true
       }
     })
-  }
-
-  private exitRoom () {
-    this.$router.push('/lobby')
   }
 }
 </script>
