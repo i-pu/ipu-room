@@ -7,7 +7,7 @@
             v-toolbar-title {{ room.room_name }}
             v-spacer
             settings(:room="room" @add-plugin="addPlugin")
-            v-btn(color="error" @click="exitRoom") 退出
+            v-btn(color="error" @click="requestExitRoom") 退出
 
     desk#desk(:room="room")
 
@@ -22,20 +22,22 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 
+import { Room } from '@/model'
+import { Plugin, PluginConfig } from '@/model'
+
 import Desk from '@/components/room/Desk.vue'
 import Status from '@/components/room/Status.vue'
 import Settings from '@/components/room/Settings.vue'
 
 import { ROOMS_MOCK } from '@/api/mock'
-import { Room } from '@/model'
-import { compile, compileLocal, Plugin, PluginConfig } from '@/logic/plugin/component'
+import { compile, compileLocal } from '@/logic/compiler'
 
 // =================
 //  Example Plugins
 // =================
-import { CounterServer, counter } from '@/logic/plugin/counter'
-// import YoutubePlugin from '@/logic/plugin/youtubePlayer'
-// import Chat, { ChatServer } from '@/logic/plugin/chat'
+import Counter, { CounterServer } from '@/plugin_examples/counter'
+import YoutubePlayer, { YoutubePlayerServer } from '@/plugin_examples//youtubePlayer'
+import Chat, { ChatServer } from '@/plugin_examples//chat'
 
 @Component<RoomView>({
   components: { Desk, Status, Settings },
@@ -43,11 +45,22 @@ import { CounterServer, counter } from '@/logic/plugin/counter'
     'room/enter' (data: { room: Room }) {
       this.responseEnterRoom(data)
     },
-    'plugin/info' (data: Plugin) {
+    'room/exit' (data: {}) {
+      this.responseExitRoom()
+    },
+    'plugin/info' (plugin: Plugin) {
+      // Repair data from server
       // << VBtn
-      data.addons = counter.addons
-      this.addPlugin({ name: 'counter', enabled: true }, data)
-    }
+      plugin.addons = Counter.addons
+      const config: PluginConfig = {
+        room_id: this.roomId,
+        name: 'counter',
+        plugin_id: 'counter',
+        enabled: true,
+      }
+
+      this.addPlugin(config, plugin)
+    },
   },
 })
 export default class RoomView extends Vue {
@@ -72,20 +85,36 @@ export default class RoomView extends Vue {
 
   private responseEnterRoom (data: { room: Room }) {
     console.log(`[Room] entered`)
+    console.log(JSON.parse(JSON.stringify(data.room.plugins)))
     this.room = data.room
     if (this.$store.getters.localOnly) {
-      this.addPlugin({ name: 'counter', enabled: true }, {
-        template: counter.template,
-        events: { plus: {} },
-        addons: counter.addons,
-        record: { count: 0 }
-      })
+      const config: PluginConfig = {
+        room_id: this.roomId,
+        plugin_id: 'counter',
+        name: 'counter',
+        enabled: true,
+      }
+      const plugin = {
+        template: Counter.template,
+        events: ['plus'],
+        addons: Counter.addons,
+        record: { count: 0 },
+      }
+      this.addPlugin(config, plugin)
     } else {
-      this.$emit('plugin/info', { room_id: this.room.id })
+      this.$socket.emit('plugin/info', { room_id: this.room.id })
     }
   }
 
-  private exitRoom () {
+  private requestExitRoom () {
+    if (this.$store.getters.localOnly) {
+      this.responseExitRoom()
+    } else {
+      this.$socket.emit('room/exit', {})
+    }
+  }
+
+  private responseExitRoom () {
     this.$router.push('/lobby')
   }
 
@@ -94,12 +123,12 @@ export default class RoomView extends Vue {
       // counter
       if (config.name === 'counter') {
         this.room!!.plugins.push({
-          component: compileLocal({ 
-            template: counter.template,
-            addons: counter.addons,
-            server: new CounterServer()
+          component: compileLocal({
+            template: Counter.template,
+            addons: Counter.addons,
+            server: new CounterServer(),
           }),
-          config
+          config,
         })
       } else if (config.name === 'chat') {
         // this.room!!.plugins.push({
@@ -110,9 +139,10 @@ export default class RoomView extends Vue {
         console.warn(`[Room] plugin ${config.name} not found`)
       }
     } else {
+      console.log(plugin)
       this.room!!.plugins.push({
-        component: compile({ ...plugin!! }),
-        config
+        component: compile({ ...plugin!! }, config),
+        config,
       })
     }
   }
