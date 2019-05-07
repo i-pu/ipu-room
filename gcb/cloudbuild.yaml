@@ -1,0 +1,46 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'pull-latest-image'
+  args:
+  - 'pull'
+  - 'docker.io/${_DOCKER_USERNAME}/${PROJECT_ID}-server:latest'
+  waitFor: ['-']
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'build-image'
+  args:
+  - 'build'
+  - '-t'
+  - 'docker.io/${_DOCKER_USERNAME}/${PROJECT_ID}-server:${REVISION_ID}'
+  - '-t'
+  - 'docker.io/${_DOCKER_USERNAME}/${PROJECT_ID}-server:latest'
+  - '--cache-from'
+  - 'docker.io/${_DOCKER_USERNAME}/${PROJECT_ID}-server:latest'
+  - 'server/app'
+  waitFor: ['pull-latest-image']
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'docker-credentials'
+  args:
+  - 'login'
+  - '-u'
+  - '${_DOCKER_USERNAME}'
+  - '-p'
+  - '${_DOCKER_PASSWORD}'
+  waitFor: ['-']
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'push-image-latest'
+  args:
+  - 'push'
+  - 'docker.io/${_DOCKER_USERNAME}/${PROJECT_ID}-server:latest'
+  waitFor: ['docker-credentials', 'build-image']
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'push-image-revision-id'
+  args:
+  - 'push'
+  - 'docker.io/${_DOCKER_USERNAME}/${PROJECT_ID}-server:${REVISION_ID}'
+  waitFor: ['docker-credentials', 'build-image']
+
+timeout: 1800s
