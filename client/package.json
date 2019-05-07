@@ -7,7 +7,7 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:e2e": "vue-cli-service test:e2e",
-    "test:unit": "vue-cli-service test:unit",
+    "test:unit": "jest --clearCache && vue-cli-service test:unit",
     "cypress": "cypress run --browser chrome"
   },
   "dependencies": {
@@ -63,43 +63,6 @@
         "alias": {
           "vue$": "vue/dist/vue.common.js"
         }
-      }
-    }
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "jsx",
-      "json",
-      "vue",
-      "ts",
-      "tsx"
-    ],
-    "transform": {
-      "^.+\\.vue$": "vue-jest",
-      ".+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "transformIgnorePatterns": [
-      "/node_modules/"
-    ],
-    "moduleNameMapper": {
-      "^@/(.*)$": "<rootDir>/src/$1"
-    },
-    "snapshotSerializers": [
-      "jest-serializer-vue"
-    ],
-    "testMatch": [
-      "**/tests/unit/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx)"
-    ],
-    "testURL": "http://localhost/",
-    "watchPlugins": [
-      "jest-watch-typeahead/filename",
-      "jest-watch-typeahead/testname"
-    ],
-    "globals": {
-      "ts-jest": {
-        "babelConfig": true
       }
     }
   }
