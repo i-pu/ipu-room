@@ -6,6 +6,8 @@
 
 # client
 node_modules
+client/ftpdeploy
+client/dist
 
 # Log files
 npm-debug.log*
