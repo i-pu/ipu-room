@@ -1,3 +1,6 @@
+import { Component } from 'vue'
+import { PluginConfig } from '@/logic/plugin/component'
+
 export interface Comment {
   type: string,
   avatar: string,
@@ -7,10 +10,6 @@ export interface Comment {
   text: string,
   commented_at: Date
 }
-
-import { Component } from 'vue'
-import { PluginConfig } from '@/logic/plugin/component'
-import { BasePlugin } from '@/logic/baseplugin'
 
 export interface Room {
   name: string,

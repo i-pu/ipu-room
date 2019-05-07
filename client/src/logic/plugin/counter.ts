@@ -16,7 +16,7 @@ const counter: Plugin = {
   template: `<div><h3> {{ count }} </h3><v-btn @click="plus"> Add </v-btn></div>`,
   events: ['plus'],
   record: { count: 0 },
-  addons: { VBtn }
+  addons: { VBtn },
 }
 
 export default counter

@@ -41,7 +41,7 @@ const chat: Plugin = {
   events: [],
   record: {
     comments: [],
-    chatInput: ''
+    chatInput: '',
   },
   addons: vuetifyComponents,
 }

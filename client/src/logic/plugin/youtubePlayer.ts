@@ -1,17 +1,13 @@
 // ========================
 //  Example plugin counter
 // ========================
-import { BasePlugin } from '../baseplugin'
+import { Plugin } from './component'
 // @ts-ignore
 import { Youtube } from 'vue-youtube'
 
 // test in local
-export class YoutubePlayer extends BasePlugin {
+export class YoutubePlayerServer {
   public videoId: string = 'SX_ViT4Ra7k'
-
-  constructor () {
-    super('Youtube')
-  }
 }
 
 const youtubeTemplate = `
@@ -21,8 +17,13 @@ const youtubeTemplate = `
 </div>
 `
 
-export default {
-  instance: new YoutubePlayer(),
+const youtubePlayer: Plugin = {
   template: youtubeTemplate,
+  events: [],
+  record: {
+    videoId: 'SX_ViT4Ra7k',
+  },
   addons: { player: Youtube },
 }
+
+export default youtubePlayer

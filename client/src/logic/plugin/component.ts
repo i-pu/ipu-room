@@ -1,22 +1,23 @@
 import Vue, { Component } from 'vue'
+import { VSlider } from 'vuetify/lib';
 
 // typeof plugin
-export type Plugin = {
+export interface Plugin {
   // html template
   template: string,
   // trigger methods' name
-  events: string[], 
+  events: string[],
   // variables in plugin
   record: Record<string, any>,
   // custom component that be used in
-  addons: Record<string, Component> 
+  addons: Record<string, Component>
 }
 
 // typeof plugin config
-export type PluginConfig = {
-  // 
+export interface PluginConfig {
+  //
   room_id: string,
-  // 
+  //
   plugin_id: string,
   // plugin name
   name: string,
@@ -25,36 +26,37 @@ export type PluginConfig = {
 }
 
 export const compileLocal = ({
-  template, addons, server
-} : {
+  template, addons, server,
+}: {
   template: string,
   addons: Record<string, Component>,
-  server: any
+  server: any,
 }): Component => {
     // 1. generate client class
-    const client = new (class Client {
+    // tslint:disable-next-line
+    const client = (new (class Client {
       [trigger: string]: (...args: any[]) => void
-    })
-  
+    }))
+
     // 2. define methods
-    let methodNames = Object
+    const methodNames = Object
       .getOwnPropertyNames(Object.getPrototypeOf(server))
       .filter ((name) => typeof server[name] === 'function' && name !== 'constructor')
-  
+
     const hooks: Record<string, (...args: any[]) => void> = {}
-    methodNames.map(method => {
-      hooks[method] = function(...args: any[]): void {
+    methodNames.map((method) => {
+      hooks[method] = function (...args: any[]): void {
         server[method](...args)
         const record = Object(server)
         this.callbackFromServer(record)
       }
     })
-  
+
     // 3. define members
     for (const key of Object.keys(Object(server))) {
       client[key] = server[key]
     }
-  
+
     // 4. create dynamic component
     return Vue.extend({
       template,
@@ -79,28 +81,29 @@ export const compileLocal = ({
           for (const [k, _] of Object.entries(this.$data)) {
             this.$set(this, k, data[k])
           }
-        }
+        },
       },
     })
 }
 
-export const compile = ({ template, events, record, addons } : Plugin, config: PluginConfig): Component => {
+export const compile = ({ template, events, record, addons }: Plugin, config: PluginConfig): Component => {
   // 1. generate client class
+  // tslint:disable-next-line
   const client = new (class Client {
     [trigger: string]: (...args: any[]) => void
   })
 
   // 2. define methods
   const hooks: Record<string, (vm: any, ...args: any) => void> = {}
-  events.map(event => {
-    hooks[event] = function(eventObject: any, ...args: any[]): void {
+  events.map((event) => {
+    hooks[event] = function (eventObject: any, ...args: any[]): void {
       console.log(`[${config.name}] Trigger ${event} with args ${args.toString()}`)
       // @ts-ignore
       this.$socket.emit('plugin/trigger', {
         room_id: config.room_id,
         plugin_id: config.name,
         event_name: event,
-        args: args
+        args,
       })
     }
   })
@@ -116,17 +119,16 @@ export const compile = ({ template, events, record, addons } : Plugin, config: P
     components: addons,
     sockets: {
       // from server
-      'plugin/trigger' ({ record }: { record: Record<string, any> }) {
-        console.log(`[${config.name}] Response ${Object.keys(record)}`)
+      'plugin/trigger' ({ vs }: { vs: Record<string, any> }) {
         // @ts-ignore
-        this.callbackFromServer(record)
+        this.callbackFromServer(vs)
       },
     },
     data (): {
-      v: Record<string, any>
-    } { 
+      v: Record<string, any>,
+    } {
       return {
-        v: Object(client)
+        v: Object(client),
       }
     },
     mounted () {
@@ -135,13 +137,13 @@ export const compile = ({ template, events, record, addons } : Plugin, config: P
     methods: {
       ...hooks,
       // callback from server
-      callbackFromServer (record: Record<string, any>) {
-        console.log(`[${config.name}] callback from server ${Object.keys(record)}`)
-        for (const [k, v] of Object.entries(record)) {
+      callbackFromServer (vs: Record<string, any>) {
+        console.log(`[${config.name}] callback from server ${Object.keys(vs)}`)
+        for (const [k, v] of Object.entries(vs)) {
           // @ts-ignore
           this.$set(this.v, k, v)
         }
-      }
+      },
     },
   })
 }

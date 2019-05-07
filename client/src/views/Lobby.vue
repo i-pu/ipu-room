@@ -26,7 +26,7 @@ import { ROOMS_MOCK } from '@/api/mock'
   sockets: {
     lobby (data: { rooms: Room[] }) {
       this.responseLobby(data)
-    }
+    },
   },
 })
 export default class Lobby extends Vue {
