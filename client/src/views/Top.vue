@@ -1,19 +1,44 @@
 <template lang="pug">
   div
-    v-parallax(dark src="https://cdn.vuetifyjs.com/images/backgrounds/vbanner.jpg")
-      v-layout(align-center column justify-center)
-        h1.display-2.font-weight-thin.mb-3 Heya {{ $store.getters.localOnly ? 'Local' : '' }}
-        h4.subheading Please make room
+    v-container(fluid grid-list-md)
+      v-layout(row wrap)
+        v-flex(d-flex xs12 sm12 md12)
+          v-parallax(src="https://www.pakutaso.com/shared/img/thumb/YM_DSC8677_TP_V.jpg" height="200")
+            v-layout(align-center column justify-center)
+              h1.display-2.font-weight-thin.mb-3 Heya {{ $store.getters.localOnly ? 'Local' : '' }}
+              h4.subheading Please make room
 
-        v-spacer
-        
-        v-flex
-          v-card(white)
-            v-card-text
-              v-layout(align-center)
-                v-text-field(placeholder="Your name" v-model="userName")
-                v-btn(color="blue-grey" class="white--text" @click="requestToLobby") Lobby
-                  v-icon(right dark) arrow_right_alt
+        v-flex(d-flex xs4 sm4 md4)
+          v-card.elevation-0(white)
+            v-card-media.mt-4.text-xs-center(height="45px")
+              v-icon.brown--text(x-large) people
+            v-card-title(primary-title)
+              .headline(text-xs-center) 交流
+            v-card-text この文章はテストです。この文章はテストですこの文章はテストですこの文章はテストですこの文章はテストですこの文章はテストですこの文章はテストです
+        v-flex(d-flex xs4 sm4 md4)
+          v-card.elevation-0(white)
+            v-card-media.mt-4.text-xs-center(height="45px")
+              v-icon.brown--text(x-large) flash_on
+            v-card-title(primary-title)
+              .headline(text-xs-center) リアルタイム
+            v-card-text この文章はテストです。この文章はテストですこの文章はテストですこの文章はテストですこの文章はテストですこの文章はテストですこの文章はテストです
+        v-flex(d-flex xs4 sm4 md4)
+          v-card.elevation-0(white)
+            v-card-media.mt-4.text-xs-center(height="45px")
+              v-icon.brown--text(x-large) widgets
+            v-card-title(primary-title)
+              .headline(text-xs-center) プラグイン
+            v-card-text この文章はテストです。この文章はテストですこの文章はテストですこの文章はテストですこの文章はテストですこの文章はテストですこの文章はテストです
+
+        v-flex(d-flex xs12 sm12 md12)
+          v-parallax(src="https://st2.depositphotos.com/1875497/11620/i/950/depositphotos_116200084-stock-photo-abstract-blur-sport-room.jpg" height="200")
+            v-layout(align-center column justify-center)
+              v-card(white)
+                v-card-text
+                  v-layout(align-center)
+                    v-text-field(placeholder="Your name" v-model="userName")
+                    v-btn(color="blue-grey" class="white--text" @click="requestToLobby") Lobby
+                      v-icon(right dark) arrow_right_alt
 </template>
 
 <script lang="ts">
@@ -45,3 +70,6 @@ export default class Top extends Vue {
   }
 }
 </script>
+
+<style scoped>
+</style>
