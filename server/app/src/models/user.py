@@ -9,7 +9,7 @@ class User(db.Model):
     name = db.Column(db.String(255), nullable=False)
     room_id = db.Column(db.String(36), db.ForeignKey('rooms.id'), nullable=True)
 
-    room = db.relationship('Room', back_populates='users')
+    room = db.relationship('Room', back_populates='members')
     comments = db.relationship('Comment', back_populates='user', cascade='save-update')
 
     def __repr__(self):

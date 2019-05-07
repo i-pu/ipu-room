@@ -1,4 +1,6 @@
 from .config import db, uuid4_for_str
+from .user import User
+from .active_plugin import ActivePlugin
 
 
 class Room(db.Model):
@@ -9,12 +11,13 @@ class Room(db.Model):
     created_at = db.Column(db.DateTime)
     thumbnail_url = db.Column(db.String(255), nullable=True)
 
-    users = db.relationship("User", back_populates="room", cascade='save-update')
+    members = db.relationship("User", back_populates="room", cascade='save-update')
     comments = db.relationship("Comment", back_populates="room", cascade='save-update, delete, delete-orphan')
+    active_plugins = db.relationship("ActivePlugin", back_populates="room", cascade='all')
 
     def __repr__(self):
-        return 'Room(id: {}, name: {}, created_at: {}, thumbnail_url: {}, users: {})' \
-            .format(self.id, self.name, self.created_at, self.thumbnail_url, self.users)
+        return 'Room(id: {}, name: {}, created_at: {}, thumbnail_url: {}, members: {}, active_plugins: {})' \
+            .format(self.id, self.name, self.created_at, self.thumbnail_url, self.members, self.active_plugins)
 
     def __to_dict__(self):
         return {
@@ -23,7 +26,8 @@ class Room(db.Model):
                 'name': self.name,
                 'created_at': self.created_at,
                 'thumbnail_url': self.thumbnail_url,
-                'users': self.users,
-                'comments': self.comments
+                'members': list(map(User.__to_dict__, self.members)),
+                'comments': self.comments,
+                'plugins': list(map(lambda x: {'name': x.name}, self.active_plugins)),
             }
         }

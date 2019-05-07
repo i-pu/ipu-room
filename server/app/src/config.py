@@ -1,7 +1,7 @@
 import os
 
 from flask_socketio import SocketIO
-from flask import Flask, g
+from flask import Flask
 
 from .models import init_db
 
@@ -36,6 +36,8 @@ class Staging(object):
 app = Flask(__name__)
 socketio = SocketIO(app)
 
+global_plugins = {}
+
 
 def create_app(env):
     if env == 'docker-compose':
@@ -46,7 +48,6 @@ def create_app(env):
     # init
     with app.app_context():
         init_db(app)
-        g.plugins = {}
 
     from .socketio_handler import socketio
 

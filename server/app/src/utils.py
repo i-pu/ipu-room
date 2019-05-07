@@ -39,7 +39,7 @@ def check_user(handler: FunctionType):
 
         user = User.query.filter_by(id=request.sid).one_or_none()
         if user is None:
-            raise RuntimeError("user is not defined.")
+            raise RuntimeError("user.id: {} is not defined.".format(request.sid))
 
         mylogger.debug('- - user is {}'.format(user))
         return handler(*args, **kwargs)
