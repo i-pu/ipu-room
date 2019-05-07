@@ -46,14 +46,12 @@ class TestSocketIOHandler(unittest.TestCase):
     def test_room_create(self):
         @self.sio.on('room/create')
         def room_create(data):
-            self.expected = {'room_name': data['room']['name'], 'htmls': data['htmls']}
-            self.actual = {'room_name': 'some_room', 'htmls': []}
+            self.expected = {'room_name': data['room']['name']}
+            self.actual = {'room_name': 'some_room'}
 
         self.sio.emit('visit', {'user_name': 'room/create user'})
         self.sio.emit('room/create', {'room_name': 'some_room', 'plugins': []})
         self.sio.sleep(1)
-        self.assertIsNotNone(self.expected)
-        self.assertIsNotNone(self.actual)
         self.assertEqual(self.expected, self.actual)
 
     def test_plugin_register(self):
@@ -62,10 +60,30 @@ class TestSocketIOHandler(unittest.TestCase):
             self.expected = True
             self.actual = data['state']
 
-        plugin_name = 'test_plugin_name'
-        with open(os.path.join(os.path.dirname(__file__), 'sample_plugin.py.txt'), mode='r') as f:
+        plugin_name = 'counter'
+        with open(os.path.join(os.path.dirname(__file__), plugin_name + '.py'), mode='r') as f:
             plugin_file = f.read()
         self.sio.emit('visit', {'user_name': 'plugin_register user'})
         self.sio.emit('plugin/register', {'plugin_name': plugin_name, 'plugin_file': plugin_file})
         self.sio.sleep(1)
         self.assertEqual(self.expected, self.actual)
+
+    def test_room_create_with_plugin(self):
+        @self.sio.on('room/create')
+        def room_create(data):
+            self.expected = [{'name': 'counter'}]
+            self.actual = data['room']['plugins']
+
+        self.sio.emit('visit', {'user_name': 'room/create user'})
+        self.sio.emit('room/create', {'room_name': 'some_room', 'plugins': ['counter']})
+        self.sio.sleep(1)
+        self.assertEqual(self.expected, self.actual)
+
+    # 最後に実行したいので zzz をつけている
+    def test_zzz_sample(self):
+        @self.sio.on('sample')
+        def sample(data):
+            print(data, flush=True)
+
+        self.sio.emit('sample')
+        self.sio.sleep(1)
