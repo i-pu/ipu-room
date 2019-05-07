@@ -22,21 +22,22 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 
+import { Room } from '@/model'
+import { Plugin, PluginConfig } from '@/model'
+
 import Desk from '@/components/room/Desk.vue'
 import Status from '@/components/room/Status.vue'
 import Settings from '@/components/room/Settings.vue'
 
 import { ROOMS_MOCK } from '@/api/mock'
-import { Room } from '@/model'
-import { compile, compileLocal, Plugin, PluginConfig } from '@/logic/plugin/component'
+import { compile, compileLocal } from '@/logic/compiler'
 
 // =================
 //  Example Plugins
 // =================
-import Counter, { CounterServer } from '@/logic/plugin/counter'
-import YoutubePlayer, { YoutubePlayerServer } from '@/logic/plugin/youtubePlayer'
-import Chat, { ChatServer } from '@/logic/plugin/chat'
-import { PluginConfig, PluginConfig } from '../logic/plugin/component';
+import Counter, { CounterServer } from '@/plugin_examples/counter'
+import YoutubePlayer, { YoutubePlayerServer } from '@/plugin_examples//youtubePlayer'
+import Chat, { ChatServer } from '@/plugin_examples//chat'
 
 @Component<RoomView>({
   components: { Desk, Status, Settings },
@@ -54,7 +55,7 @@ import { PluginConfig, PluginConfig } from '../logic/plugin/component';
       const config: PluginConfig = {
         room_id: this.roomId,
         name: 'counter',
-        plugin_name: 'counter',
+        plugin_id: 'counter',
         enabled: true,
       }
 

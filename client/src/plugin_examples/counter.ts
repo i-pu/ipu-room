@@ -1,7 +1,7 @@
 // ========================
 //  Example plugin counter
 // ========================
-import { Plugin } from '@/logic/plugin/component'
+import { Plugin } from '@/model'
 import { VBtn } from 'vuetify/lib'
 
 export class CounterServer {

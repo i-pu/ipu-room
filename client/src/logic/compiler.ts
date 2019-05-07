@@ -1,29 +1,5 @@
 import Vue, { Component } from 'vue'
-import { VSlider } from 'vuetify/lib';
-
-// typeof plugin
-export interface Plugin {
-  // html template
-  template: string,
-  // trigger methods' name
-  events: string[],
-  // variables in plugin
-  record: Record<string, any>,
-  // custom component that be used in
-  addons: Record<string, Component>
-}
-
-// typeof plugin config
-export interface PluginConfig {
-  //
-  room_id: string,
-  //
-  plugin_id: string,
-  // plugin name
-  name: string,
-  // plugin enabled
-  enabled: boolean
-}
+import { Plugin, PluginConfig } from '@/model'
 
 export const compileLocal = ({
   template, addons, server,

@@ -3,7 +3,7 @@
 // =====================
 import { Comment } from '@/model'
 import * as VuetifyComponents from 'vuetify/lib'
-import { Plugin } from './component'
+import { Plugin } from '../model'
 
 const vuetifyComponents: Record<string, any> = {}
 for (const [k, v] of Object.entries(VuetifyComponents)) {

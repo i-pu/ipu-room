@@ -1,7 +1,7 @@
 // ========================
 //  Example plugin counter
 // ========================
-import { Plugin } from './component'
+import { Plugin } from '../model'
 // @ts-ignore
 import { Youtube } from 'vue-youtube'
 
