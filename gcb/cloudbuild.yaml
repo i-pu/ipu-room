@@ -49,12 +49,12 @@ steps:
 - name: 'gcr.io/cloud-builders/gcloud'
   id: 'get-cluster-credential'
   args:
-    - 'container'
-    - 'clusters'
-    - 'get-credentials'
-    - 'cluster'
-    - '--zone=${_ZONE}'
-    - '--project=${PROJECT_ID}'
+  - 'container'
+  - 'clusters'
+  - 'get-credentials'
+  - 'cluster'
+  - '--zone=${_ZONE}'
+  - '--project=${PROJECT_ID}'
   waitFor: ['-']
 
 
@@ -67,25 +67,11 @@ steps:
   waitFor: ['push-image-revision-id']
 
 - name: 'gcr.io/cloud-builders/kubectl'
-  id: 'docker-credential'
-  args:
-  - 'create'
-  - 'secret' 
-  - '--save-config'
-  - 'docker-registry'
-  - 'docker-auth'
-  - '--docker-server=docker.io'
-  - '--docker-username=${_DOCKER_USERNAME}' 
-  - '--docker-password=${_DOCKER_PASSWORD}' 
-  - '--docker-email=${_DOCKER_EMAIL}'
-  waitFor: ['-']
-
-- name: 'gcr.io/cloud-builders/kubectl'
   id: 'deploy'
   args:
-    - 'apply'
-    - '-f' 
-    - 'gcb/kube'
+  - 'apply'
+  - '-f'
+  - 'gcb/kube'
   waitFor: ['sed-file', 'get-cluster-credential']
 
 timeout: 1800s
