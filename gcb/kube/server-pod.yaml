@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: server
+  labels:
+    app: server 
+spec:
+  imagePullSecrets:
+  - name: docker-auth
+  containers:
+  - name: server 
+    image: docker.io/DOCKER_USERNAME/IMAGE:TAG
+    imagePullPolicy: IfNotPresent
+    env:
+      - name: POSTGRES_HOST
+        value: localhost
+    envFrom:
+      - configMapRef:
+          name: postgres-configmap
+    ports:
+      - containerPort: 8000
+  - name: postgres
+    image: postgres
+    envFrom:
+    - configMapRef:
+        name: postgres-configmap
+    ports:
+      - containerPort: 5432

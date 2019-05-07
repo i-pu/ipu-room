@@ -21,7 +21,7 @@ steps:
   waitFor: ['pull-latest-image']
 
 - name: 'gcr.io/cloud-builders/docker'
-  id: 'docker-credentials'
+  id: 'docker-login'
   args:
   - 'login'
   - '-u'
@@ -35,13 +35,57 @@ steps:
   args:
   - 'push'
   - 'docker.io/${_DOCKER_USERNAME}/${PROJECT_ID}-server:latest'
-  waitFor: ['docker-credentials', 'build-image']
+  waitFor: ['docker-login', 'build-image']
 
 - name: 'gcr.io/cloud-builders/docker'
   id: 'push-image-revision-id'
   args:
   - 'push'
   - 'docker.io/${_DOCKER_USERNAME}/${PROJECT_ID}-server:${REVISION_ID}'
-  waitFor: ['docker-credentials', 'build-image']
+  waitFor: ['docker-login', 'build-image']
+
+# deploy
+
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: 'get-cluster-credential'
+  args:
+    - 'container'
+    - 'clusters'
+    - 'get-credentials'
+    - 'cluster'
+    - '--zone=${_ZONE}'
+    - '--project=${PROJECT_ID}'
+  waitFor: ['-']
+
+
+- name: 'gcr.io/cloud-builders/kubectl'
+  id: 'sed-file'
+  entrypoint: '/bin/bash'
+  args:
+  - '-c'
+  - 'gcb/sed.sh ${PROJECT_ID} ${_DOCKER_USERNAME} ${REVISION_ID}'
+  waitFor: ['push-image-revision-id']
+
+- name: 'gcr.io/cloud-builders/kubectl'
+  id: 'docker-credential'
+  args:
+  - 'create'
+  - 'secret' 
+  - '--save-config'
+  - 'docker-registry'
+  - 'docker-auth'
+  - '--docker-server=docker.io'
+  - '--docker-username=${_DOCKER_USERNAME}' 
+  - '--docker-password=${_DOCKER_PASSWORD}' 
+  - '--docker-email=${_DOCKER_EMAIL}'
+  waitFor: ['-']
+
+- name: 'gcr.io/cloud-builders/kubectl'
+  id: 'deploy'
+  args:
+    - 'apply'
+    - '-f' 
+    - 'gcb/kube'
+  waitFor: ['sed-file', 'get-cluster-credential']
 
 timeout: 1800s
