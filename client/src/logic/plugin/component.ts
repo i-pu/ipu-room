@@ -5,7 +5,7 @@ export type Plugin = {
   // html template
   template: string,
   // trigger methods' name
-  events: Record<string, any>, 
+  events: string[], 
   // variables in plugin
   record: Record<string, any>,
   // custom component that be used in
@@ -92,7 +92,7 @@ export const compile = ({ template, events, record, addons } : Plugin, config: P
 
   // 2. define methods
   const hooks: Record<string, (vm: any, ...args: any) => void> = {}
-  Object.keys(events).map(event => {
+  events.map(event => {
     hooks[event] = function(eventObject: any, ...args: any[]): void {
       console.log(`[${config.name}] Trigger ${event} with args ${args.toString()}`)
       // @ts-ignore

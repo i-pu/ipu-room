@@ -7,7 +7,7 @@
             v-toolbar-title {{ room.room_name }}
             v-spacer
             settings(:room="room" @add-plugin="addPlugin")
-            v-btn(color="error" @click="exitRoom") 退出
+            v-btn(color="error" @click="requestExitRoom") 退出
 
     desk#desk(:room="room")
 
@@ -33,7 +33,7 @@ import { compile, compileLocal, Plugin, PluginConfig } from '@/logic/plugin/comp
 // =================
 //  Example Plugins
 // =================
-import { CounterServer, counter } from '@/logic/plugin/counter'
+import Counter, { CounterServer } from '@/logic/plugin/counter'
 // import YoutubePlugin from '@/logic/plugin/youtubePlayer'
 // import Chat, { ChatServer } from '@/logic/plugin/chat'
 
@@ -43,9 +43,12 @@ import { CounterServer, counter } from '@/logic/plugin/counter'
     'room/enter' (data: { room: Room }) {
       this.responseEnterRoom(data)
     },
+    'room/exit' (data: {}) {
+      this.responseExitRoom()
+    },
     'plugin/info' (plugin: Plugin) {
       // << VBtn
-      plugin.addons = counter.addons
+      plugin.addons = Counter.addons
       this.addPlugin({ room_id: this.roomId, name: 'counter', enabled: true }, plugin)
     }
   },
@@ -76,9 +79,9 @@ export default class RoomView extends Vue {
     this.room = data.room
     if (this.$store.getters.localOnly) {
       this.addPlugin({ name: 'counter', enabled: true }, {
-        template: counter.template,
-        events: { plus: {} },
-        addons: counter.addons,
+        template: Counter.template,
+        events: ['plus'],
+        addons: Counter.addons,
         record: { count: 0 }
       })
     } else {
@@ -86,7 +89,15 @@ export default class RoomView extends Vue {
     }
   }
 
-  private exitRoom () {
+  private requestExitRoom () {
+    if (this.$store.getters.localOnly) {
+      this.responseExitRoom()
+    } else {
+      this.$socket.emit('room/exit', {})
+    }
+  }
+
+  private responseExitRoom () {
     this.$router.push('/lobby')
   }
 
@@ -96,8 +107,8 @@ export default class RoomView extends Vue {
       if (config.name === 'counter') {
         this.room!!.plugins.push({
           component: compileLocal({ 
-            template: counter.template,
-            addons: counter.addons,
+            template: Counter.template,
+            addons: Counter.addons,
             server: new CounterServer()
           }),
           config

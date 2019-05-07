@@ -47,7 +47,7 @@ export default class Lobby extends Vue {
   }
 
   private responseLobby (data: { rooms: Room[] }) {
-    // console.log(JSON.parse(JSON.stringify(data.rooms[0])))
+    console.log(JSON.parse(JSON.stringify(data.rooms)))
     this.rooms = data.rooms
   }
 
