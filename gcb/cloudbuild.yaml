@@ -1,9 +1,10 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
   id: 'pull-latest-image'
+  entrypoint: '/bin/bash'
   args:
-  - 'pull'
-  - 'docker.io/${_DOCKER_USERNAME}/${PROJECT_ID}-server:latest'
+  - '-c'
+  - 'docker pull docker.io/${_DOCKER_USERNAME}/${PROJECT_ID}-server:latest || true'
   waitFor: ['-']
 
 - name: 'gcr.io/cloud-builders/docker'
