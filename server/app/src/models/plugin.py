@@ -15,8 +15,6 @@ class Plugin(db.Model):
 
     def __to_dict__(self):
         return {
-            'plugin': {
-                'name': self.name,
-                'description': self.description
-            }
+            'name': self.name,
+            'description': self.description
         }

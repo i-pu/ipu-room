@@ -11,5 +11,5 @@ class ActivePlugin(db.Model):
     room = db.relationship('Room', back_populates='active_plugins', cascade='all')
 
     def __repr__(self):
-        return 'id: {}, room_id: {}, name: {}' \
+        return 'ActivePlugin(id: {}, room_id: {}, name: {})' \
             .format(self.id, self.room_id, self.name)

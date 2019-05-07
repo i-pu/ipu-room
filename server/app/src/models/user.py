@@ -13,14 +13,12 @@ class User(db.Model):
     comments = db.relationship('Comment', back_populates='user', cascade='save-update')
 
     def __repr__(self):
-        return 'User(id: {}, name: {}, room_id: {})'\
+        return 'User(id: {}, name: {}, room_id: {})' \
             .format(self.id, self.name, self.room_id)
 
     def __to_dict__(self):
         return {
-            'user': {
-                'id': self.id,
-                'name': self.name,
-                'room_id': self.room_id,
-            },
+            'id': self.id,
+            'name': self.name,
+            'room_id': self.room_id,
         }

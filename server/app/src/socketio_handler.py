@@ -49,7 +49,7 @@ def visit(data):
     db.session.commit()
 
     mylogger.debug('- - user: {}'.format(user))
-    socketio.emit('visit', data=user.__to_dict__())
+    socketio.emit('visit', data={'user': user.__to_dict__()})
 
 
 @socketio.on('lobby')
@@ -76,7 +76,7 @@ def plugin_register(data):
 
     # html, _, python = plugin_compiler(plugin_file)
 
-    plugin = Plugin(name=plugin_name, python=plugin_file)
+    plugin = Plugin(name=plugin_name, python_code=plugin_file)
     try:
         db.session.add(plugin)
         db.session.commit()
@@ -90,7 +90,7 @@ def plugin_register(data):
 @utils.byte_data_to_dict
 @utils.check_user
 @utils.function_info_wrapper
-def room_crate(data):
+def room_create(data):
     """
     新しく部屋を作り，
     plugin を作成して
@@ -127,15 +127,13 @@ def room_crate(data):
         db.session.add(active_plugin)
         db.session.commit()
 
-        exec(plugin.python)
+        exec(plugin.python_code)
 
         config.global_plugins[room.id + '-' + plugin_name] = eval('UserPlugin()')
         mylogger.info('--------------- plugins ---------------')
         mylogger.info(config.global_plugins[room.id + '-' + plugin_name])
 
-    socketio.emit('room/create', data={
-        **room.__to_dict__(),
-    })
+    socketio.emit('room/create', data={'room': room.__to_dict__()})
 
 
 @socketio.on('room/enter')
@@ -157,9 +155,8 @@ def room_enter(data):
     mylogger.debug('- - room: {}'.format(room))
 
     socketio.emit('room/enter',
-                  data={
-                      **room.__to_dict__(),
-                  }, room=room_id)
+                  data={'room': room.__to_dict__()},
+                  room=room_id)
 
 
 @socketio.on('plugin/info')
@@ -168,16 +165,18 @@ def room_enter(data):
 @utils.function_info_wrapper
 def plugin_info(data):
     # room_id から plugin を呼び出す．
-    active_plugin = ActivePlugin.query.filter_by(room_id=data['room_id']).all()
-
+    # 今のplugins の状態を返す
+    # todo: とりあえず 1つ
+    active_plugin = ActivePlugin.query.filter_by(room_id=data['room_id']).first()
     mylogger.debug('active_plugins: {}'.format(active_plugin))
 
-    # todo: 固定になっているので 動的に生成する
+    plugin = config.global_plugins[data['room_id'] + '-' + active_plugin.name]
+
     socketio.emit('plugin/info',
                   data={
-                      'template': '<div><h3> {{ count }} </h3><v-btn @click="plus"> Add </v-btn></div>',
-                      'events': {'plus': []},
-                      'record': {'count': 0},
+                      'template': '<div><h3> {{ v.count }} </h3><v-btn @click="plus"> Add </v-btn></div>',
+                      'events': plugin.all(),
+                      'record': plugin.constructor(),
                   })
 
 
@@ -193,8 +192,10 @@ def plugin_trigger(data):
 
     user_plugin = config.global_plugins[room_id + '-' + plugin_id]
     event_func = eval('user_plugin.{}'.format(event_name))
-    result = event_func(event_args)
-    socketio.emit('plugin/trigger', data={'html': result}, room=room_id)
+    result = {'record': event_func(*event_args)}
+
+    socketio.emit('plugin/trigger', data=result, room=room_id)
+    # plugin trigger の返り値にはrecord を指定するので，UserPluginは辞書を返す関数だと嬉しい
 
 
 @socketio.on('chat')
@@ -211,22 +212,25 @@ def chat(data):
     db.session.add(comment)
     db.session.commit()
 
-    socketio.emit('chat', data=comment.__to_dict(), room=room_id)
+    socketio.emit('chat', data={'comment': comment.__to_dict()}, room=room_id)
 
 
 @socketio.on('room/exit')
 @utils.byte_data_to_dict
 @utils.check_user
 @utils.function_info_wrapper
-def exit_room(data):
-    room_id = data['room_id']
-
+def room_exit(data):
     user = User.query.filter_by(id=request.sid).one()
+    room_id = user.room_id
+    leave_room(room_id)
+
     user.query.update({'room_id': None})
     db.session.commit()
 
-    leave_room(room_id)
-    socketio.emit('room/exit', room=room_id)
+    socketio.emit('room/exit')  # 抜けた人に通知
+    socketio.emit('room/exit',  # 残ってる人に通知
+                  data={'user': user.__to_dict__()},
+                  room=room_id)
 
 
 @socketio.on('disconnect')

@@ -71,7 +71,7 @@ class TestSocketIOHandler(unittest.TestCase):
     def test_room_create_with_plugin(self):
         @self.sio.on('room/create')
         def room_create(data):
-            self.expected = [{'name': 'counter'}]
+            self.expected = [{'config': {'name': 'counter', 'enabled': True}}]
             self.actual = data['room']['plugins']
 
         self.sio.emit('visit', {'user_name': 'room/create user'})

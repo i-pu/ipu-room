@@ -7,6 +7,9 @@ class UserPlugin:
         self.count += 1
         return {'count': self.count}
 
+    def constructor(self):
+        return {'count': self.count}
+
     @staticmethod
     def all() -> list:
         return ['plus']

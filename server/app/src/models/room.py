@@ -21,13 +21,11 @@ class Room(db.Model):
 
     def __to_dict__(self):
         return {
-            'room': {
-                'id': self.id,
-                'name': self.name,
-                'created_at': self.created_at,
-                'thumbnail_url': self.thumbnail_url,
-                'members': list(map(User.__to_dict__, self.members)),
-                'comments': self.comments,
-                'plugins': list(map(lambda x: {'name': x.name}, self.active_plugins)),
-            }
+            'id': self.id,
+            'name': self.name,
+            'created_at': self.created_at,
+            'thumbnail_url': self.thumbnail_url,
+            'members': list(map(User.__to_dict__, self.members)),
+            'comments': self.comments,
+            'plugins': list(map(lambda x: {'config': {'name': x.name, 'enabled': True}}, self.active_plugins)),
         }
