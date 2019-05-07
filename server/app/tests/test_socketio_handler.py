@@ -25,7 +25,7 @@ class TestSocketIOHandler(unittest.TestCase):
             self.actual = data['user']['name']
 
         self.sio.emit('visit', {'user_name': 'alis'})
-        self.sio.sleep(1)
+        self.sio.sleep(2)
         self.assertIsNotNone(self.expected)
         self.assertIsNotNone(self.actual)
         self.assertEqual(self.expected, self.actual, 'expect alis')
@@ -38,7 +38,7 @@ class TestSocketIOHandler(unittest.TestCase):
 
         self.sio.emit('visit', {'user_name': 'lobby user'})
         self.sio.emit('lobby')
-        self.sio.sleep(1)
+        self.sio.sleep(2)
         self.assertIsNotNone(self.expected)
         self.assertIsNotNone(self.actual)
         self.assertTrue(self.expected == len(self.actual))

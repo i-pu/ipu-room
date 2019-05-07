@@ -9,11 +9,6 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
     restart: on-failure
-    entrypoint:
-      - "./entry.sh"
-      - "uwsgi"
-      - "--ini"
-      - "uwsgi.ini"
 
   db:
     container_name: db

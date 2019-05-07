@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-configmap
+data:
+  POSTGRES_USER: server
+  POSTGRES_PASSWORD: hogehogepassword
+  POSTGRES_DB: ipu
+  ENV: docker-compose

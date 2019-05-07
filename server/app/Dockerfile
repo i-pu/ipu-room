@@ -17,6 +17,8 @@ RUN python3 -m pip install -r requirements.txt
 
 COPY . ./
 
-CMD [ "echo" , "please override" ]
+ENTRYPOINT [ "./entry.sh" ]
+
+CMD [ "uwsgi" , "--ini" , "uwsgi.ini" ]
 
 USER nobody
