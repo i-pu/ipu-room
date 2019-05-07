@@ -13,14 +13,11 @@
 </template>
 
 <script lang="ts">
-import Vue, { VueConstructor } from 'vue'
-import { Route } from 'vue-router'
+import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Prop } from 'vue-property-decorator'
-import store from '@/store'
 
 import { Room } from '@/model'
-import { ROOMS_MOCK } from '@/api/mock'
 
 // Vue.config.warnHandler = (err, vm, info) => {
 //   console.log({ err, vm, info })

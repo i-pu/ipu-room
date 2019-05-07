@@ -1,10 +1,23 @@
 import Vue, { Component } from 'vue'
 
-export type Plugin = { 
-  template: string, 
+// typeof plugin
+export type Plugin = {
+  // html template
+  template: string,
+  // trigger methods' name
   events: Record<string, any>, 
-  record: Record<string, any>, 
+  // variables in plugin
+  record: Record<string, any>,
+  // custom component that be used in
   addons: Record<string, Component> 
+}
+
+// typeof plugin config
+export type PluginConfig = {
+  // plugin name
+  name: string,
+  // plugin enabled
+  enabled: boolean
 }
 
 export const compileLocal = ({
@@ -24,7 +37,7 @@ export const compileLocal = ({
       .getOwnPropertyNames(Object.getPrototypeOf(server))
       .filter ((name) => typeof server[name] === 'function' && name !== 'constructor')
   
-    const hooks: Record<string, (vm: any, ...args: any) => void> = {}
+    const hooks: Record<string, (...args: any[]) => void> = {}
     methodNames.map(method => {
       hooks[method] = function(...args: any[]): void {
         server[method](...args)
@@ -96,8 +109,7 @@ export const compile = ({ template, events, record, addons } : Plugin): Componen
     },
     data: () => Object(client),
     mounted () {
-      console.log(`[${this.pluginName}] activate`)
-      this.$socket.emit('plugin/info', { name: this.pluginName })
+      console.log(`[${this.pluginName}] active`)
     },
     methods: {
       ...hooks,

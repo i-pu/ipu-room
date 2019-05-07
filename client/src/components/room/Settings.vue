@@ -63,6 +63,10 @@ export default class Settings extends Vue {
   private addPluginDialog: boolean = false
   private selectedPlugin: string = ''
 
+  mounted() {
+    console.log(this.room.plugins)
+  }
+
   private onChangePluginSettings (pluginName: string) {
     
   }

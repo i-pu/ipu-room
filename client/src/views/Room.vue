@@ -28,11 +28,14 @@ import Settings from '@/components/room/Settings.vue'
 
 import { ROOMS_MOCK } from '@/api/mock'
 import { Room } from '@/model'
+import { compile, compileLocal, Plugin, PluginConfig } from '@/logic/plugin/component'
 
-import { compile, compileLocal, Plugin } from '@/logic/plugin/component'
-// import YoutubePlugin from '@/logic/plugin/youtubePlayer'
+// =================
+//  Example Plugins
+// =================
 import { CounterServer, counter } from '@/logic/plugin/counter'
-import Chat, { ChatServer } from '@/logic/plugin/chat'
+// import YoutubePlugin from '@/logic/plugin/youtubePlayer'
+// import Chat, { ChatServer } from '@/logic/plugin/chat'
 
 @Component<RoomView>({
   components: { Desk, Status, Settings },
@@ -40,7 +43,9 @@ import Chat, { ChatServer } from '@/logic/plugin/chat'
     'room/enter' (data: { room: Room }) {
       this.responseEnterRoom(data)
     },
-    'plugin/add' (data: Plugin) {
+    'plugin/info' (data: Plugin) {
+      // << VBtn
+      data.addons = counter.addons
       this.addPlugin({ name: 'counter', enabled: true }, data)
     }
   },
@@ -48,7 +53,7 @@ import Chat, { ChatServer } from '@/logic/plugin/chat'
 export default class RoomView extends Vue {
   private room: Room | null = null
 
-  private get roomId () {
+  private get roomId (): string {
     return this.$route.params.roomId
   }
 
@@ -57,6 +62,7 @@ export default class RoomView extends Vue {
   }
 
   private requestEnterRoom (data: { room_id: string }) {
+    console.log(`[Room] request enter`)
     if (this.$store.getters.localOnly) {
       this.responseEnterRoom({ room: ROOMS_MOCK[0] })
     } else {
@@ -65,27 +71,28 @@ export default class RoomView extends Vue {
   }
 
   private responseEnterRoom (data: { room: Room }) {
+    console.log(`[Room] entered`)
     this.room = data.room
-    this.room.plugins = []
-    this.addPlugin({ name: 'counter', enabled: true }, {
-      template: counter.template,
-      events: { plus: {} },
-      addons: counter.addons,
-      record: { count: 0 }
-    })
+    if (this.$store.getters.localOnly) {
+      this.addPlugin({ name: 'counter', enabled: true }, {
+        template: counter.template,
+        events: { plus: {} },
+        addons: counter.addons,
+        record: { count: 0 }
+      })
+    } else {
+      this.$emit('plugin/info', { room_id: this.room.id })
+    }
   }
 
   private exitRoom () {
     this.$router.push('/lobby')
   }
 
-  private addPlugin (
-    config: { name: string, enabled: boolean }, 
-    plugin?: Plugin
-  ) {
+  private addPlugin (config: PluginConfig, plugin?: Plugin) {
     if (!plugin) {
       // counter
-      if (config.name === 'Counter') {
+      if (config.name === 'counter') {
         this.room!!.plugins.push({
           component: compileLocal({ 
             template: counter.template,
@@ -94,11 +101,13 @@ export default class RoomView extends Vue {
           }),
           config
         })
-      } else if (config.name === 'Chat') {
+      } else if (config.name === 'chat') {
         // this.room!!.plugins.push({
         //   component: compileLocal({ ...Chat, server: new ChatServer() }),
         //   config
         // })
+      } else {
+        console.warn(`[Room] plugin ${config.name} not found`)
       }
     } else {
       this.room!!.plugins.push({

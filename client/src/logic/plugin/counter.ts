@@ -17,7 +17,7 @@ export class CounterServer extends BasePlugin {
   }
 }
 
-const counterTemplate: string =`<div><h3> {{ count }} </h3><v-btn @click="plus"> Add </v-btn></div>`
+const counterTemplate: string = `<div><h3> {{ count }} </h3><v-btn @click="plus"> Add </v-btn></div>`
 
 import { VBtn } from 'vuetify/lib'
 

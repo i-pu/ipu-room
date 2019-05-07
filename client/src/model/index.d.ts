@@ -8,7 +8,8 @@ export interface Comment {
   commented_at: Date
 }
 
-import { PluginComponent } from '@/logic/plugin/component'
+import { Component } from 'vue'
+import { PluginConfig } from '@/logic/plugin/component'
 import { BasePlugin } from '@/logic/baseplugin'
 
 export interface Room {
@@ -16,7 +17,7 @@ export interface Room {
   id: string,
   thumbnail_url: string,
   members: User[],
-  plugins: Array<{ component: PluginComponent, config: { name: string, enabled: boolean } }>
+  plugins: Array<{ component: Component, config: PluginConfig }>
 }
 
 export interface User {
@@ -24,3 +25,4 @@ export interface User {
   id: string,
   avatar_url: string
 }
+

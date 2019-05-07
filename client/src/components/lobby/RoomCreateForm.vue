@@ -31,8 +31,8 @@
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component'
-import { Room } from '@/model'
 import { Prop } from 'vue-property-decorator'
+import { Room } from '@/model'
 
 @Component<RoomCreateForm>({
   sockets: {
@@ -64,7 +64,7 @@ export default class RoomCreateForm extends Vue {
     } else {
       this.$socket.emit('room/create', {
         room_name: this.roomNameInput,
-        plugins: this.selectedPlugins,
+        plugins: this.selectedPlugins
       })
     }
 
