@@ -71,7 +71,6 @@ steps:
   args:
   - 'create'
   - 'secret' 
-  - '--save-config'
   - 'docker-registry'
   - 'docker-auth'
   - '--docker-server=docker.io'
