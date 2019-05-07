@@ -4,4 +4,10 @@ node_js:
 dist: trusty
 sudo: false
 cache: yarn
-script: cd client && yarn test:unit
+before_script:
+  - echo "test"
+install:
+  - yarn install
+script:
+  - cd client
+  - yarn test:unit
