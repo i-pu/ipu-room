@@ -2,8 +2,8 @@ import { Room, User, Comment } from '@/model'
 
 export const ROOMS_MOCK: Room[] = [
   {
-    room_name: '雑談部屋1',
-    room_id: 'xxxx-yyyy-zzzz',
+    name: '雑談部屋1',
+    id: 'xxxx-yyyy-zzzz',
     // tslint:disable:max-line-length
     thumbnail_url: 'https://public.potaufeu.asahi.com/686b-p/picture/12463073/5c4a362cea9cb2f5d90b60e2f2a6c85f.jpg',
     members: [

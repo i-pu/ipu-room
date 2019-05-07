@@ -58,6 +58,7 @@ export const compileLocal = ({
       sockets: {
         // from server
         'plugin/trigger' (data: Record<string, any>) {
+          // @ts-ignore
           this.callbackFromServer(data)
         },
       },
@@ -69,6 +70,7 @@ export const compileLocal = ({
         ...hooks,
         // callback from server
         callbackFromServer (data: Record<string, any>) {
+          // @ts-ignore
           console.log(`[${this.pluginName}] callback from server`)
           for (const [k, _] of Object.entries(this.$data)) {
             this.$set(this, k, data[k])
@@ -88,6 +90,7 @@ export const compile = ({ template, events, record, addons } : Plugin): Componen
   const hooks: Record<string, (vm: any, ...args: any) => void> = {}
   Object.keys(events).map(event => {
     hooks[event] = function(...args: any[]): void {
+      // @ts-ignore
       this.$socket.emit('plugin/trigger', {})
     }
   })
@@ -104,6 +107,7 @@ export const compile = ({ template, events, record, addons } : Plugin): Componen
     sockets: {
       // from server
       'plugin/trigger' (data: Record<string, any>) {
+        // @ts-ignore
         this.callbackFromServer(data)
       },
     },
