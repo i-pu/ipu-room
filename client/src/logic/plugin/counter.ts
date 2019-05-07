@@ -2,9 +2,9 @@
 //  Example plugin counter
 // ========================
 import { BasePlugin } from '../baseplugin'
+import { Plugin } from '@/logic/plugin/component'
 
-// test in local
-class Counter extends BasePlugin {
+export class CounterServer extends BasePlugin {
   public count: number
 
   constructor () {
@@ -17,18 +17,13 @@ class Counter extends BasePlugin {
   }
 }
 
-const counterTemplate: string =
-`
-  <div>
-      <h3> {{ count }} </h3>
-      <v-btn @click="plus"> Add </v-btn>
-  </div>
-`
+const counterTemplate: string = `<div><h3> {{ count }} </h3><v-btn @click="plus"> Add </v-btn></div>`
 
 import { VBtn } from 'vuetify/lib'
 
-export default {
-  instance: new Counter(),
+export const counter: Plugin = {
   template: counterTemplate,
-  addons: { VBtn },
+  events: { plus: {} },
+  record: { count: 0 },
+  addons: { VBtn }
 }

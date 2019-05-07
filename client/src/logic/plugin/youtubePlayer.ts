@@ -2,6 +2,7 @@
 //  Example plugin counter
 // ========================
 import { BasePlugin } from '../baseplugin'
+// @ts-ignore
 import { Youtube } from 'vue-youtube'
 
 // test in local

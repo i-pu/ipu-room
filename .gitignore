@@ -6,6 +6,7 @@
 
 # client
 node_modules
+client/dist
 
 # Log files
 npm-debug.log*

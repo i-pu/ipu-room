@@ -1,9 +1,8 @@
 export class BasePlugin {
   [trigger: string]: any
-  public name: string
-  public enabled: boolean = true
+  public pluginName: string
 
   constructor (name: string) {
-    this.name = name
+    this.pluginName = name
   }
 }
