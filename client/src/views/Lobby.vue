@@ -24,7 +24,7 @@ import { ROOMS_MOCK } from '@/api/mock'
 @Component<Lobby>({
   components: { RoomList, RoomCreateForm, PluginCreateForm },
   sockets: {
-    lobby (data) {
+    lobby (data: { rooms: Room[] }) {
       this.responseLobby(data)
     }
   },
@@ -47,6 +47,7 @@ export default class Lobby extends Vue {
   }
 
   private responseLobby (data: { rooms: Room[] }) {
+    // console.log(JSON.parse(JSON.stringify(data.rooms[0])))
     this.rooms = data.rooms
   }
 

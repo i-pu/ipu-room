@@ -43,10 +43,10 @@ import { CounterServer, counter } from '@/logic/plugin/counter'
     'room/enter' (data: { room: Room }) {
       this.responseEnterRoom(data)
     },
-    'plugin/info' (data: Plugin) {
+    'plugin/info' (plugin: Plugin) {
       // << VBtn
-      data.addons = counter.addons
-      this.addPlugin({ name: 'counter', enabled: true }, data)
+      plugin.addons = counter.addons
+      this.addPlugin({ room_id: this.roomId, name: 'counter', enabled: true }, plugin)
     }
   },
 })
@@ -72,6 +72,7 @@ export default class RoomView extends Vue {
 
   private responseEnterRoom (data: { room: Room }) {
     console.log(`[Room] entered`)
+    console.log(JSON.parse(JSON.stringify(data.room.plugins)))
     this.room = data.room
     if (this.$store.getters.localOnly) {
       this.addPlugin({ name: 'counter', enabled: true }, {
@@ -81,7 +82,7 @@ export default class RoomView extends Vue {
         record: { count: 0 }
       })
     } else {
-      this.$emit('plugin/info', { room_id: this.room.id })
+      this.$socket.emit('plugin/info', { room_id: this.room.id })
     }
   }
 
@@ -110,8 +111,9 @@ export default class RoomView extends Vue {
         console.warn(`[Room] plugin ${config.name} not found`)
       }
     } else {
+      console.log(plugin)
       this.room!!.plugins.push({
-        component: compile({ ...plugin!! }),
+        component: compile({ ...plugin!! }, config),
         config
       })
     }
