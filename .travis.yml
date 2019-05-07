@@ -6,8 +6,6 @@ sudo: false
 cache: yarn
 before_script:
   - echo "test"
-install:
-  - yarn install
 script:
   - cd client
-  - yarn test:unit
+  - yarn build
