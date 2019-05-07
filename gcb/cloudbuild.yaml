@@ -78,7 +78,7 @@ steps:
   - '--docker-username=${_DOCKER_USERNAME}' 
   - '--docker-password=${_DOCKER_PASSWORD}' 
   - '--docker-email=${_DOCKER_EMAIL}'
-  waitFor: ['-']
+  waitFor: ['get-cluster-credential']
 
 - name: 'gcr.io/cloud-builders/kubectl'
   id: 'deploy'
@@ -86,6 +86,6 @@ steps:
     - 'apply'
     - '-f' 
     - 'gcb/kube'
-  waitFor: ['sed-file', 'get-cluster-credential']
+  waitFor: ['sed-file', 'docker-credential']
 
 timeout: 1800s
