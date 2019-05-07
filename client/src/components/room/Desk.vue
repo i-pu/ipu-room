@@ -16,7 +16,7 @@ import { Prop } from 'vue-property-decorator'
 import store from '@/store'
 
 import { Room } from '@/model'
-import { Plugin, PluginComponent, PPM } from '@/logic/plugin/component'
+import { Plugin, PluginComponent } from '@/logic/plugin/component'
 import { ROOMS_MOCK } from '@/api/mock'
 
 import { Counter, counterTemplate } from '@/logic/plugin/counter'
@@ -33,7 +33,7 @@ export default class Desk extends Vue {
   private plugins: Array<PluginComponent> = []
 
   mounted () {
-    const addons = {}
+    const addons: Record<string, any> = {}
     for (const [name, comp] of Object.entries(VuetifyComponents)) {
       if (name[0] === 'V') addons[name] = comp
     }
