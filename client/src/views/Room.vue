@@ -50,8 +50,7 @@ import Chat, { ChatServer } from '@/plugin_examples//chat'
     },
     'plugin/info' (plugin: Plugin) {
       // Repair data from server
-      // << VBtn
-      plugin.addons = Counter.addons
+      plugin.addons = Object.assign(plugin.addons, Counter.addons)
       const config: PluginConfig = {
         room_id: this.roomId,
         name: 'counter',

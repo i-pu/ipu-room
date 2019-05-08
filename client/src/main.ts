@@ -5,7 +5,11 @@ import VueSocketIO from 'vue-socket.io-extended'
 import io from 'socket.io-client'
 
 if (!store.getters.localOnly) {
-  Vue.use(VueSocketIO, io(process.env.VUE_APP_API_ORIGIN))
+  // not working
+  // console.log(process.env)
+  const VUE_APP_API_DEV_ORIGIN = 'http://10.160.163.229:8000'
+  const VUE_APP_API_ORIGIN = 'http://35.243.102.128:8000'
+  Vue.use(VueSocketIO, io(VUE_APP_API_ORIGIN))
 }
 Vue.config.productionTip = false
 

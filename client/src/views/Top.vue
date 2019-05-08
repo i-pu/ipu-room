@@ -8,21 +8,21 @@
               h1.display-2.font-weight-thin.mb-3 Heya {{ $store.getters.localOnly ? 'Local' : '' }}
               h4.subheading Please make room
 
-        v-flex(d-flex xs4 sm4 md4)
+        v-flex(d-flex xs12 sm4 md4)
           v-card.elevation-0(white)
             v-card-media.mt-4.text-xs-center(height="45px")
               v-icon.brown--text(x-large) people
             v-card-title(primary-title)
               .headline(text-xs-center) 交流
             v-card-text この文章はテストです。この文章はテストですこの文章はテストですこの文章はテストですこの文章はテストですこの文章はテストですこの文章はテストです
-        v-flex(d-flex xs4 sm4 md4)
+        v-flex(d-flex xs12 sm4 md4)
           v-card.elevation-0(white)
             v-card-media.mt-4.text-xs-center(height="45px")
               v-icon.brown--text(x-large) flash_on
             v-card-title(primary-title)
               .headline(text-xs-center) リアルタイム
             v-card-text この文章はテストです。この文章はテストですこの文章はテストですこの文章はテストですこの文章はテストですこの文章はテストですこの文章はテストです
-        v-flex(d-flex xs4 sm4 md4)
+        v-flex(d-flex xs12 sm4 md4)
           v-card.elevation-0(white)
             v-card-media.mt-4.text-xs-center(height="45px")
               v-icon.brown--text(x-large) widgets
