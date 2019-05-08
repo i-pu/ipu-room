@@ -18,3 +18,8 @@ all == save-update, merge, refresh-expire, expunge, delete,
 - delete-orphan
     - 親は残っているが親の方から子供への参照を外したとき，
     - 子供は消える
+    
+## uwsgi
+- master process で app を作ったあとに app を child process にわたすので
+    - database とセッションを持つ app を作成すると
+    - セッションもコピーされてなんかバグる

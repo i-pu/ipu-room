@@ -8,6 +8,7 @@ class TestHandler(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.url = 'http://localhost'
+        # cls.url = 'http://35.243.102.128'
         cls.port = ':8000'
 
     def test_room(self):
