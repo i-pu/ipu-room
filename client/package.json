@@ -7,7 +7,7 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:e2e": "vue-cli-service test:e2e",
-    "test:unit": "vue-cli-service test:unit",
+    "test:unit": "jest",
     "cypress": "cypress run --browser chrome"
   },
   "dependencies": {
@@ -28,12 +28,13 @@
     "@types/jest": "^23.1.4",
     "@types/socket.io": "^2.1.2",
     "@vue/cli-plugin-babel": "^3.7.0",
+    "@vue/cli-plugin-e2e-cypress": "^3.7.0",
     "@vue/cli-plugin-typescript": "^3.7.0",
     "@vue/cli-plugin-unit-jest": "^3.7.0",
     "@vue/cli-service": "^3.7.0",
     "@vue/test-utils": "1.0.0-beta.29",
-    "@vue/cli-plugin-e2e-cypress": "^3.7.0",
     "babel-core": "7.0.0-bridge.0",
+    "jest": "^24.8.0",
     "pug": "^2.0.3",
     "pug-loader": "^2.4.0",
     "pug-plain-loader": "^1.0.0",
@@ -44,6 +45,7 @@
     "typescript": "^3.4.5",
     "vue-cli-plugin-vuetify": "^0.5.0",
     "vue-template-compiler": "^2.5.21",
+    "vue-typescript-jest": "^0.3.1",
     "vuetify-loader": "^1.0.5"
   },
   "postcss": {
@@ -68,16 +70,12 @@
   "jest": {
     "moduleFileExtensions": [
       "js",
-      "jsx",
-      "json",
       "vue",
-      "ts",
-      "tsx"
+      "ts"
     ],
     "transform": {
-      "^.+\\.vue$": "vue-jest",
-      ".+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
-      "^.+\\.tsx?$": "ts-jest"
+      ".*\\.(ts|vue)$": "<rootDir>/node_modules/vue-typescript-jest/preprocessor.js",
+      ".+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$": "jest-transform-stub"
     },
     "transformIgnorePatterns": [
       "/node_modules/"
@@ -88,9 +86,7 @@
     "snapshotSerializers": [
       "jest-serializer-vue"
     ],
-    "testMatch": [
-      "**/tests/unit/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx)"
-    ],
+    "testRegex": "/tests/unit/.*\\.(ts|js)$",
     "testURL": "http://localhost/",
     "watchPlugins": [
       "jest-watch-typeahead/filename",
@@ -100,6 +96,11 @@
       "ts-jest": {
         "babelConfig": true
       }
-    }
+    },
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/test/.*\\.(ts|js)$",
+      "/.*\\.vue$"
+    ]
   }
 }
