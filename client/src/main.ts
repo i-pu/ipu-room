@@ -5,7 +5,7 @@ import VueSocketIO from 'vue-socket.io-extended'
 import io from 'socket.io-client'
 
 if (!store.getters.localOnly) {
-  Vue.use(VueSocketIO, io('http://10.160.163.229:8000'))
+  Vue.use(VueSocketIO, io(process.env.VUE_APP_API_ORIGIN))
 }
 Vue.config.productionTip = false
 
