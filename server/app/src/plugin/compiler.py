@@ -35,9 +35,10 @@ if __name__ == "__main__":
     </python>
   '''
 
-  template, events, records, python = plugin_compiler(plugin)
+  template, events, records, python, addons = plugin_compiler(plugin)
 
   print('events: {}'.format(events))
   print('records: {}'.format(records))
   print('template: \n {}'.format(template))
   print('python: \n {}'.format(python))
+  print('addons: \n {}'.format(addons))
