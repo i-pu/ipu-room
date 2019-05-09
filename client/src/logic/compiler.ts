@@ -37,14 +37,11 @@ export const compileLocal = ({
     return Vue.extend({
       template,
       components: addons,
-      sockets: {
-        // from server
-        'plugin/trigger' (data: Record<string, any>) {
-          // @ts-ignore
-          this.callbackFromServer(data)
-        },
+      data () {
+        return {
+          v: Object(client)
+        }
       },
-      data: () => Object(client),
       mounted () {
         console.log(`[${this.pluginName}] activate`)
       },
@@ -54,8 +51,8 @@ export const compileLocal = ({
         callbackFromServer (data: Record<string, any>) {
           // @ts-ignore
           console.log(`[${this.pluginName}] callback from server`)
-          for (const [k, _] of Object.entries(this.$data)) {
-            this.$set(this, k, data[k])
+          for (const [k, v] of Object.entries(data)) {
+            this.$set(this.v, k, v)
           }
         },
       },

@@ -1,45 +1,43 @@
-from .html_interpreter import Parser
+from html_interpreter import Parser
 
-
+"""
+From the html template, extract `events`, `records`, and `python`
+"""
 def plugin_compiler(plugin):
-    """
-    ===== plugin_compiler.py ========
-      plugin -> html, events, python
-    =================================
-    Args:
-        plugin: 
+  """
+  ===== plugin_compiler.py ======================
+    plugin -> template, events, records, python
+  ===============================================
+  Args:
+      plugin: 
 
-    Returns:
+  Returns:
 
-    """
-    return Parser.compile(plugin)
-
+  """
+  return Parser.compile(plugin)
 
 if __name__ == "__main__":
-    html, events, python = plugin_compiler(
-        '''
-        <html>
-          <button event="plus(1)"> カウント </button>
-          <p> {{count}} </p>
-        </html>
-        <python>
-        class Plugin():
-          count = 0
-        
-          @classmethod
-          def on_plus(cls, data):
-            cls.count += data
-            return { 'count': cls.count }
-        
-          @classmethod
-          def all(cls) -> dict:
-            return {
-              'plus': cls.on_plus
-            }
-        </python>
-        '''
-    )
+  plugin = '''
+    <html>
+      <div>
+        <h3> {{ count }} </h3>
+        <v-btn @click="plus"> Add </v-btn>
+      </div>
+    </html>
+    <python>
+    class Plugin():
+      def __init__(self):
+        self.count = 0
 
-    print('html:\n {}'.format(html))
-    print('events:\n {}'.format(events))
-    print('python:\n {}'.format(python))
+      def plus(self, data):
+        self.count += data
+        return ['count']
+    </python>
+  '''
+
+  template, events, records, python = plugin_compiler(plugin)
+
+  print('events: {}'.format(events))
+  print('records: {}'.format(records))
+  print('template: \n {}'.format(template))
+  print('python: \n {}'.format(python))

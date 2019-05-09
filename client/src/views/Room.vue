@@ -118,7 +118,7 @@ export default class RoomView extends Vue {
   }
 
   private addPlugin (config: PluginConfig, plugin?: Plugin) {
-    if (!plugin) {
+    if (this.$store.getters.localOnly) {
       // counter
       if (config.name === 'counter') {
         this.room!!.plugins.push({
