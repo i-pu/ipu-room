@@ -21,4 +21,4 @@ ENTRYPOINT [ "./entry.sh" ]
 
 CMD [ "uwsgi" , "--ini" , "uwsgi.ini" ]
 
-USER nobody
+# USER nobody
