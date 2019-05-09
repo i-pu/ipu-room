@@ -1,0 +1,15 @@
+language: node_js
+node_js:
+  - "stable"
+cache:
+  directories:
+  - $HOME/client/node_modules
+
+before_script:
+  - cd client
+  - yarn install
+
+jobs:
+  include:
+    - stage: test
+      script: yarn test:unit
