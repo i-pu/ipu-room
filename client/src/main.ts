@@ -8,7 +8,7 @@ if (!store.getters.localOnly) {
   // not working
   // console.log(process.env)
   const VUE_APP_API_DEV_ORIGIN = 'http://10.160.163.229:8000'
-  const VUE_APP_API_ORIGIN = 'http://35.243.102.128:8000'
+  const VUE_APP_API_ORIGIN = 'http://35.187.206.173:31420'
   Vue.use(VueSocketIO, io(VUE_APP_API_ORIGIN))
 }
 Vue.config.productionTip = false
