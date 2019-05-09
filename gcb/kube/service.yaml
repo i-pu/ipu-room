@@ -6,7 +6,7 @@ spec:
   selector:
     app: server
   type: LoadBalancer
-  loadBalancerIP: 35.243.102.128
+  # loadBalancerIP: 35.243.102.128
   ports:
   - port: 8000
     targetPort: 8000
