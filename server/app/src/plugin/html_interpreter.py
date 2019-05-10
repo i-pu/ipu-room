@@ -43,16 +43,20 @@ class Parser(HTMLParser):
         if self.tag not in Parser.HTML_TAGS:
           custom_tag = self.tag.capitalize()
           custom_tag = re.sub('-(.)', lambda x:x.group(1).upper(), custom_tag)
+          print('[Plugin Compiler] detect custom tags {}'.format(custom_tag))
           self.addons.append(custom_tag)
         # records
           matched = re.match(r'.*\{\{(.*)\}\}.*', content)
           if matched:
             record, = matched.groups()
-            self.records[record.strip()] = None
+            record = record.strip()
+            print('[Plugin Compiler] detect variable {}'.format(record.strip()))
+            self.records[record] = None
           # events
           if '@click' in self.attrs:
             expr = self.attrs.get('@click')
-            event, args = re.match('^(.*)\(?(.*)\)?$', expr).groups()
+            event, args = re.match('^(.*)(?:\((.*)\)).*$', expr).groups()
+            print('[Plugin Compiler] detect event {}'.format(event))
             self.events.append(event)
 
     if self.in_python:
@@ -65,8 +69,9 @@ class Parser(HTMLParser):
   @staticmethod
   def compile(plugin):
     parser = Parser()
-    print(plugin)
+    print('[Plugin Compiler] start interpret')
     parser.feed(plugin)
+    
     parser.template = re.sub(r'.*\{\{\s*(.*)\}\}.*', r'{{v.\1}}' , plugin)
 
     g = {}
@@ -76,11 +81,21 @@ class Parser(HTMLParser):
     variables = dict.keys(vars(instance))
 
     # check variables
+    print(parser.records)
+
     for record in parser.records:
-      if record in variables:
-        parser.records[record] = vars(instance)[record]
+      print('record: {}'.format(record))
+      # extract root variable name
+      if '.' in record:
+        root, = re.match(r'^(.*)\..*$', record).groups()
       else:
-        print('Compile error record: {} is undefined'.format(record))
+        root = record
+      print('root: {}'.format(root))
+
+      if root in variables and parser.records[root] is None:
+        parser.records[root] = vars(instance)[root]
+      else:
+        print('Compile error record: {} is undefined'.format(root))
 
     # check methods
     for event in parser.events:
@@ -91,12 +106,12 @@ class Parser(HTMLParser):
 
     # event test
     ## same as `instance.plus(1)`
-    changed = eval('instance.{}(*args)'.format('plus'), { 'instance': instance }, { 'args': [1] })
+    # changed = eval('instance.{}(*args)'.format('plus'), { 'instance': instance }, { 'args': [1] })
 
     ## sync instance's variables to records
-    for change in changed:
-      if change in dict.keys(parser.records):
-        parser.records[change] = instance.__dict__[change]
+    # for change in changed:
+    #   if change in dict.keys(parser.records):
+    #     parser.records[change] = instance.__dict__[change]
 
     # count == 1
     print(parser.records)
