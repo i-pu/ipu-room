@@ -8,7 +8,7 @@ spec:
   type: NodePort
   ports:
   - port: 8000
-    nodePort: 33333
+    nodePort: 31420
     targetPort: 8000
 
 ---

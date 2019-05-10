@@ -23,3 +23,8 @@ all == save-update, merge, refresh-expire, expunge, delete,
 - master process で app を作ったあとに app を child process にわたすので
     - database とセッションを持つ app を作成すると
     - セッションもコピーされてなんかバグる
+    
+## gke と firewall
+- service の type に nodeport を指定して，
+    - firewall を gcloud cli を使って作ったらできた
+    - https://cloud.google.com/kubernetes-engine/docs/how-to/exposing-apps?hl=ja#creating_a_service_of_type_nodeport
