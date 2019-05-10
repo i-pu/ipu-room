@@ -4,8 +4,9 @@ steps:
   entrypoint: '/bin/bash'
   args:
   - '-c'
-  - 'docker pull docker.io/${_DOCKER_USERNAME}/${PROJECT_ID}-server:latest'
-  - '|| true'
+  - |
+    docker pull docker.io/${_DOCKER_USERNAME}/${PROJECT_ID}-server:latest \
+    || true
   waitFor: ['-']
 
 - name: 'gcr.io/cloud-builders/docker'
