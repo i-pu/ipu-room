@@ -11,8 +11,9 @@ class TestSocketIOHandler(unittest.TestCase):
 
     def setUp(self):
         self.sio = socketio.Client()
-        self.sio.connect('http://localhost:8000')
-        # self.sio.connect('http://35.243.102.128:8000')
+        # self.sio.connect('http://localhost:8000')
+        self.sio.connect('http://35.187.206.173:31420')
+
         self.expected = None
         self.actual = None
 
