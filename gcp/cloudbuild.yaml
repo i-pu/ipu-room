@@ -54,7 +54,7 @@ steps:
   - 'container'
   - 'clusters'
   - 'get-credentials'
-  - 'cluster'
+  - 'ipu-cluster'
   - '--zone=${_ZONE}'
   - '--project=${PROJECT_ID}'
   waitFor: ['-']
@@ -65,7 +65,7 @@ steps:
   entrypoint: '/bin/bash'
   args:
   - '-c'
-  - 'gcb/sed.sh ${PROJECT_ID} ${_DOCKER_USERNAME} ${REVISION_ID}'
+  - 'gcp/sed.sh ${PROJECT_ID} ${_DOCKER_USERNAME} ${REVISION_ID}'
   waitFor: ['push-image-revision-id']
 
 - name: 'gcr.io/cloud-builders/kubectl'
@@ -73,7 +73,7 @@ steps:
   args:
   - 'apply'
   - '-f'
-  - 'gcb/kube'
+  - 'gcp/kube'
   waitFor: ['sed-file', 'get-cluster-credential']
 
 timeout: 1800s
