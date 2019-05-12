@@ -7,9 +7,9 @@ class TestHandler(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.url = 'http://localhost'
-        # cls.url = 'http://35.243.102.128'
-        cls.port = ':8000'
+        # cls.url = 'http://localhost'
+        cls.url = 'http://35.187.206.173'
+        cls.port = ':31420'
 
     def test_room(self):
         res = requests.get(self.url + self.port + '/room')

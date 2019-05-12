@@ -74,6 +74,7 @@ def plugin_register(data):
     plugin_name: str = data['plugin_name']
     plugin_file = data['plugin_file']
 
+    # todo: compiler を使ったやつを実装する
     # html, _, python = plugin_compiler(plugin_file)
 
     plugin = Plugin(name=plugin_name, python_code=plugin_file)

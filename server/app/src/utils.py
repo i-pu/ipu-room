@@ -65,30 +65,3 @@ def byte_data_to_dict(handler: FunctionType):
         return handler(data, *args[1:], **kwargs)
 
     return data_is_dict
-
-
-# todo: will be deprecated
-def wrapping_emit(handler: FunctionType, plugin, socketio: SocketIO, plugin_name: str, room_id: str, event: str):
-    @wraps(handler)
-    def wrapped_event(*args, **kwargs):
-        mylogger.info('wrapped event')
-
-        handle_return = handler(plugin, *args[1:], **kwargs)
-        if (handle_return is not None) and (type(handle_return) is not dict):
-            mylogger.error('error:', 'type of return:', type(handle_return), flush=True)
-            raise RuntimeError()
-
-        socketio.emit(plugin_name + room_id + event, handle_return, room=room_id)
-
-    return wrapped_event
-
-
-def activate_plugin(plugin_name: str, socketio: SocketIO, room_id: str):
-    # todo: Plugin オブジェクトをグローバルに保存し消せるようにしたい
-    plugin = importlib.import_module(plugin_name).Plugin
-
-    print('plugin', type(plugin()))
-
-    for event_name, func in plugin.all().items():
-        socketio.on(room_id + plugin_name + event_name) \
-            (wrapping_emit(func, plugin, socketio, room_id, plugin_name, event_name))

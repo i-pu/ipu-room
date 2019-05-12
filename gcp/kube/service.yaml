@@ -5,10 +5,10 @@ metadata:
 spec:
   selector:
     app: server
-  type: LoadBalancer
-  loadBalancerIP: 35.243.102.128
+  type: NodePort
   ports:
   - port: 8000
+    nodePort: 31420
     targetPort: 8000
 
 ---
