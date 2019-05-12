@@ -1,0 +1,48 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'pull-latest-image'
+    entrypoint: '/bin/bash'
+    args:
+      - '-c'
+      - |
+        docker pull us.gcr.io/${PROJECT_ID}/ipu-client:latest \
+        || \
+        docker pull us.gcr.io/${PROJECT_ID}/ipu-client-buidler:latest \
+        || \
+        true
+    waitFor: ['-']
+
+  - name: 'gcr.io/gcloud-builders/docker'
+    id: 'build-image'
+    entrypoint: '/bin/bash'
+    args:
+      - '-c'
+      - |
+        cd client && \
+        docker build \
+        -t us.gcr.io/${PROJECT_ID}/ipu-client-builder:latest \
+        -t us.gcr.io/${PROJECT_ID}/ipu-client-builder:${REVISION_ID} \
+        --cache-from us.gcr.io/${PROJECT_ID}/ipu-client-builder:latest \
+        -f Dockerfile-build \
+        --target builder \
+        . && \
+        docker build \
+        -t us.gcr.io/${PROJECT_ID}/ipu-client:latest \
+        -t us.gcr.io/${PROJECT_ID}/ipu-client:${REVISION_ID} \
+        --cache-from us.gcr.io/${PROJECT_ID}/ipu-client-builder:latest \
+        -f Dockerfile-build \
+        .
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'deploy'
+    entrypoint: '/bin/bash'
+    args:
+      - '-c'
+      - |
+        gcloud beta run deploy \
+        --allow-unauthenticated \
+        --quiet \
+        --image=us.gcr.io/cka-practice-kafu/ipu-client \
+        --region=us-central1 \
+        ipu
+
