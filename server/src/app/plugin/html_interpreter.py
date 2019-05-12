@@ -1,10 +1,6 @@
 from html.parser import HTMLParser
 import re
-import random
-import string
-from uuid import uuid4
 from textwrap import dedent
-import importlib.machinery as imm
 
 
 class Parser(HTMLParser):
@@ -75,7 +71,7 @@ class Parser(HTMLParser):
     @staticmethod
     def compile(plugin):
         parser = Parser()
-        print(plugin)
+        # print(plugin)
         parser.feed(plugin)
         parser.template = re.sub(r'.*\{\{\s*(.*)\}\}.*', r'{{v.\1}}', plugin)
 
@@ -109,6 +105,6 @@ class Parser(HTMLParser):
                 parser.records[change] = instance.__dict__[change]
 
         # count == 1
-        print(parser.records)
+        # print(parser.records)
 
         return parser.template, parser.events, parser.records, parser.python, parser.addons
