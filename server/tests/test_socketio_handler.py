@@ -3,6 +3,8 @@ import unittest
 
 import socketio
 
+from config import url
+
 
 class TestSocketIOHandler(unittest.TestCase):
     sio = None
@@ -11,8 +13,7 @@ class TestSocketIOHandler(unittest.TestCase):
 
     def setUp(self):
         self.sio = socketio.Client()
-        # self.sio.connect('http://localhost:8000')
-        self.sio.connect('http://35.187.206.173:31420')
+        self.sio.connect(url)
 
         self.expected = None
         self.actual = None
