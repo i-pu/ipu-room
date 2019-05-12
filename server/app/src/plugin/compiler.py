@@ -1,4 +1,4 @@
-from .html_interpreter import Parser
+from html_interpreter import Parser
 
 """
 From the html template, extract `events`, `records`, and `python`
@@ -72,8 +72,9 @@ class Plugin():
 </python>
 """
 
-plugin_compiler(plugin_content):
+def plugin_compiler(plugin_content):
   return Parser.compile(plugin_content)
 
-if __name__ == "__main__":
-  template, events, records, python, addons = plugin_compiler(chat_plugin)
+# test
+template, events, records, python, addons = plugin_compiler(chat_plugin)
+print('{} {} {}'.format(events, records, addons))
