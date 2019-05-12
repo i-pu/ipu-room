@@ -1,5 +1,5 @@
 FROM python:3.7.3-alpine3.9
-WORKDIR /app
+WORKDIR /src
 RUN apk update
 
 RUN apk --no-cache add build-base
