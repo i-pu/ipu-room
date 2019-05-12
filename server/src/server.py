@@ -1,4 +1,4 @@
-from src import create_app
+from app import create_app
 import os
 
 env = os.getenv('ENV')

@@ -5,10 +5,10 @@ from typing import List, Any
 from flask_socketio import join_room, leave_room, rooms
 from flask import request, g
 
-from src import config
-from src.config import socketio
-from src.models import db, Room, Comment, User, Plugin, ActivePlugin
-from src import utils
+from . import config
+from .config import socketio
+from .models import db, Room, Comment, User, Plugin, ActivePlugin
+from . import utils
 from .plugin.compiler import plugin_compiler
 
 # todo: skip id を 使ってみる
