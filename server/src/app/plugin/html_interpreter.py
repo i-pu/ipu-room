@@ -1,10 +1,6 @@
 from html.parser import HTMLParser
 import re
-import random
-import string
-from uuid import uuid4
 from textwrap import dedent
-import importlib.machinery as imm
 
 class Parser(HTMLParser):
   HTML_TAGS = ['html', 'head', 'title', 'base', 'link', 'style', 'meta', 'body', 'article', 'section', 'nav', 'aside','h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'footer', 'address', 'p', 'hr', 'pre', 'blockquote','ol', 'ul', 'li', 'dl', 'dt', 'dd', 'figure', 'figcaption', 'main', 'div', 'a', 'em', 'strong','small', 's', 'cite', 'g', 'dfn', 'abbr', 'code', 'var', 'samp', 'kbd', 'data', 'sub', 'sup', 'time','i', 'b', 'u', 'mark', 'ruby', 'rb', 'rt', 'rtc', 'rp', 'bdi', 'bdo', 'span', 'br', 'wbr', 'ins','del', 'img', 'picture', 'iframe', 'embed', 'object', 'param', 'video', 'audio', 'track', 'source','map', 'area', 'table', 'caption', 'calgroup', 'col', 'tbody', 'thead', 'thoot', 'tr', 'td', 'th','form', 'fieldset', 'legend', 'label', 'input', 'select', 'option', 'optgroup', 'textarea', 'button','datalist', 'output', 'progress', 'meter', 'script', 'noscript', 'canvas', 'details', 'summary','menu', 'menuitem']
