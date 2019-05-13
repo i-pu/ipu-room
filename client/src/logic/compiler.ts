@@ -43,6 +43,7 @@ export const compileLocal = ({
         }
       },
       mounted () {
+        // @ts-ignore
         console.log(`[${this.pluginName}] activate`)
       },
       methods: {
