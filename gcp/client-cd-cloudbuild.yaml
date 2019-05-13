@@ -79,4 +79,4 @@ steps:
       - '-c'
       - |
         kubectl apply -f gcp/kubernetes/client
-    waitFor: ['sed-file', 'get-credentials', 'push-image']
+    waitFor: ['sed-file', 'get-cluster-credentials', 'push-image']
