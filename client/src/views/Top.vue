@@ -6,7 +6,7 @@
           v-parallax(src="https://www.pakutaso.com/shared/img/thumb/YM_DSC8677_TP_V.jpg" height="200")
             v-layout(align-center column justify-center)
               h1.display-2.font-weight-thin.mb-3 Heya {{ $store.getters.localOnly ? 'Local' : '' }}
-              h4.subheading Please make room
+              h4.subheading aaa
 
         v-flex(d-flex xs12 sm4 md4)
           v-card.elevation-0(white)
@@ -54,6 +54,10 @@ import Component from 'vue-class-component'
 })
 export default class Top extends Vue {
   private userName: string = ''
+
+  private mounted () {
+    console.log(process.env)
+  }
 
   private requestToLobby () {
     if (this.$store.getters.localOnly) {

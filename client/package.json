@@ -4,12 +4,14 @@
   "private": true,
   "scripts": {
     "serve": "npx vue-cli-service serve",
+    "docker:serve": "docker-compose up --build",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:e2e": "vue-cli-service test:e2e",
     "test:unit": "jest",
     "cypress": "cypress run --browser chrome",
-    "doc": "typedoc --out docs src --name Ipu-space"
+    "doc": "typedoc --out docs src --name Ipu-space",
+    "deploy": "scp -r dist/ ubuntu@ec2-18-224-235-29.us-east-2.compute.amazonaws.com:~"
   },
   "dependencies": {
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",

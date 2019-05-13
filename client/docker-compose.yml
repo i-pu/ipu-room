@@ -1,10 +1,13 @@
-version: '3'
+version: '3.4'
 services:
   web:
-    build: .
+    build:
+      context: .
+      target: dev
     ports:
       - 8080:8080
     volumes:
       - ./src:/app/src
+      - ./yarn-cache:/usr/local/share/.cache/yarn/v1
     stdin_open: true
     tty: true
