@@ -18,7 +18,7 @@ steps:
         docker pull docker.io/${_DOCKER_USERNAME}/ipu-client-builder:latest
     waitFor: ['-']
 
-  - name: 'gcr.io/gcloud-builders/docker'
+  - name: 'gcr.io/cloud-builders/docker'
     id: 'build-image'
     entrypoint: '/bin/bash'
     args:
@@ -41,7 +41,7 @@ steps:
         .
     waitFor: ['pull-image']
 
-  - name: 'gcr.io/gcloud-builders/docker'
+  - name: 'gcr.io/cloud-builders/docker'
     id: 'push-image'
     entrypoint: '/bin/bash'
     args:
