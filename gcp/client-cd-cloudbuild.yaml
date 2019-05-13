@@ -14,7 +14,7 @@ steps:
     args:
       - '-c'
       - |
-        docker pull us.gcr.io/${PROJECT_ID}/ipu-client:latest &&\
+        docker pull docker.io/${_DOCKER_USERNAME}/ipu-client:latest &&\
         docker pull docker.io/${_DOCKER_USERNAME}/ipu-client-builder:latest
     waitFor: ['-']
 
@@ -33,10 +33,10 @@ steps:
         --target builder \
         . && \
         docker build \
-        -t us.gcr.io/${PROJECT_ID}/ipu-client:latest \
-        -t us.gcr.io/${PROJECT_ID}/ipu-client:${REVISION_ID} \
+        -t docker.io/${_DOCKER_USERNAME}/ipu-client:latest \
+        -t docker.io/${_DOCKER_USERNAME}/ipu-client:${REVISION_ID} \
         --cache-from docker.io/${_DOCKER_USERNAME}/ipu-client-builder:latest \
-        --cache-from us.gcr.io/${PROJECT_ID}/ipu-client:latest \
+        --cache-from docker.io/${_DOCKER_USERNAME}/ipu-client:latest \
         -f Dockerfile-cd \
         .
     waitFor: ['pull-image']
@@ -49,20 +49,34 @@ steps:
       - |
         docker push docker.io/${_DOCKER_USERNAME}/ipu-client-builder:latest &&\
         docker push docker.io/${_DOCKER_USERNAME}/ipu-client-builder:${REVISION_ID} &&\
-        docker push us.gcr.io/${PROJECT_ID}/ipu-client:latest &&\
-        docker push us.gcr.io/${PROJECT_ID}/ipu-client:${REVISION_ID}
+        docker push docker.io/${_DOCKER_USERNAME}/ipu-client:latest &&\
+        docker push docker.io/${_DOCKER_USERNAME}/ipu-client:${REVISION_ID}
     waitFor: ['docker-auth', 'build-image']
 
+  # deploy
   - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'sed-file'
+    entrypoint: '/bin/bash'
+    args:
+      - '-c'
+      - |
+        ./gcp/kubernetes/client/sed.sh ${_DOCKER_USERNAME} ${REVISION_ID}
+    waitFor: ['-']
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'get-cluster-credentials'
+    entrypoint: '/bin/bash'
+    args:
+      - '-c'
+      - |
+        gcloud container cluster get-credentials ipu-cluster --zone=${_ZONE} --project=${PROJECT_ID}
+    waitFor: ['-']
+
+  - name: 'gcr.io/cloud-builders/kubectl'
     id: 'deploy'
     entrypoint: '/bin/bash'
     args:
       - '-c'
       - |
-        gcloud beta run deploy \
-        --allow-unauthenticated \
-        --quiet \
-        --image=us.gcr.io/cka-practice-kafu/ipu-client \
-        --region=us-central1 \
-        ipu
-    waitFor: ['push-image']
+        kubectl apply -f gcp/kubernetes/client
+    waitFor: ['sed-file', 'get-credentials', 'push-image']
