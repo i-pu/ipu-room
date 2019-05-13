@@ -1,15 +1,21 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
+    id: 'docker-auth'
+    entrypoint: '/bin/bash'
+    args:
+      - '-c'
+      - |
+        login -u ${_DOCKER_USERNAME} -p ${_DOCKER_PASSWORD}
+    waitFor: ['-']
+
+  - name: 'gcr.io/cloud-builders/docker'
     id: 'pull-image'
     entrypoint: '/bin/bash'
     args:
       - '-c'
       - |
-        docker pull us.gcr.io/${PROJECT_ID}/ipu-client:latest \
-        || \
-        docker pull us.gcr.io/${PROJECT_ID}/ipu-client-builder:latest \
-        || \
-        true
+        docker pull us.gcr.io/${PROJECT_ID}/ipu-client:latest &&\
+        docker pull docker.io/${PROJECT_ID}/ipu-client-builder:latest
     waitFor: ['-']
 
   - name: 'gcr.io/gcloud-builders/docker'
@@ -20,16 +26,17 @@ steps:
       - |
         cd client && \
         docker build \
-        -t us.gcr.io/${PROJECT_ID}/ipu-client-builder:latest \
-        -t us.gcr.io/${PROJECT_ID}/ipu-client-builder:${REVISION_ID} \
-        --cache-from us.gcr.io/${PROJECT_ID}/ipu-client-builder:latest \
+        -t docker.io/${PROJECT_ID}/ipu-client-builder:latest \
+        -t docker.io/${PROJECT_ID}/ipu-client-builder:${REVISION_ID} \
+        --cache-from docker.io/${PROJECT_ID}/ipu-client-builder:latest \
         -f Dockerfile-cd \
         --target builder \
         . && \
         docker build \
         -t us.gcr.io/${PROJECT_ID}/ipu-client:latest \
         -t us.gcr.io/${PROJECT_ID}/ipu-client:${REVISION_ID} \
-        --cache-from us.gcr.io/${PROJECT_ID}/ipu-client-builder:latest \
+        --cache-from docker.io/${PROJECT_ID}/ipu-client-builder:latest \
+        --cache-from us.gcr.io/${PROJECT_ID}/ipu-client:latest\
         -f Dockerfile-cd \
         .
     waitFor: ['pull-image']
@@ -40,11 +47,11 @@ steps:
     args:
       - '-c'
       - |
-        docker push us.gcr.io/${PROJECT_ID}/ipu-client-builder:latest &&\
-        docker push us.gcr.io/${PROJECT_ID}/ipu-client-builder:${REVISION_ID} &&\
+        docker push docker.io/${PROJECT_ID}/ipu-client-builder:latest &&\
+        docker push docker.io/${PROJECT_ID}/ipu-client-builder:${REVISION_ID} &&\
         docker push us.gcr.io/${PROJECT_ID}/ipu-client:latest &&\
         docker push us.gcr.io/${PROJECT_ID}/ipu-client:${REVISION_ID}
-    waitFor: ['build-image']
+    waitFor: ['docker-auth', 'build-image']
 
   - name: 'gcr.io/cloud-builders/gcloud'
     id: 'deploy'
