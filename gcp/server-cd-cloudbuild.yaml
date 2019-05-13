@@ -44,7 +44,7 @@ steps:
 
 # --- deploy ---
 - name: 'gcr.io/cloud-builders/gcloud'
-  id: 'get-cluster-credential'
+  id: 'get-cluster-credentials'
   args:
   - 'container'
   - 'clusters'
@@ -60,7 +60,8 @@ steps:
   entrypoint: '/bin/bash'
   args:
   - '-c'
-  - 'gcp/sed.sh ${PROJECT_ID} ${_DOCKER_USERNAME} ${REVISION_ID}'
+  - |
+    gcp/kubernetes/server/sed.sh ${PROJECT_ID} ${_DOCKER_USERNAME} ${REVISION_ID}
   waitFor: ['push-image']
 
 - name: 'gcr.io/cloud-builders/kubectl'
@@ -68,7 +69,7 @@ steps:
   args:
   - 'apply'
   - '-f'
-  - 'gcp/kube'
-  waitFor: ['sed-file', 'get-cluster-credential']
+  - 'gcp/kubernetes/server'
+  waitFor: ['sed-file', 'get-cluster-credentials']
 
 timeout: 1800s
