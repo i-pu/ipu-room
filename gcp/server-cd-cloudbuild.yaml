@@ -61,7 +61,7 @@ steps:
   args:
   - '-c'
   - |
-    gcp/sed.sh ${PROJECT_ID} ${_DOCKER_USERNAME} ${REVISION_ID}
+    gcp/kubernetes/server/sed.sh ${PROJECT_ID} ${_DOCKER_USERNAME} ${REVISION_ID}
   waitFor: ['push-image']
 
 - name: 'gcr.io/cloud-builders/kubectl'
