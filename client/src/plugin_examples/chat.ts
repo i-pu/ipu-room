@@ -115,7 +115,7 @@ class Plugin():
 
 const chat: Plugin = {
   template: chatTemplate,
-  events: [],
+  events: ['comment'],
   record: {
     comments: [],
     chatInput: '',

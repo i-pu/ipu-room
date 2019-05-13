@@ -15,7 +15,7 @@
                 v-layout(wrap)
                   v-flex(xs12)
                     v-text-field(
-                      v-model="name"
+                      v-model="plugin.name"
                       :counter="12"
                       :rules="[v => !!v || '必須項目です']",
                       label="プラグイン名"
@@ -24,7 +24,7 @@
 
                   v-flex(xs12)
                     v-textarea(
-                      v-model="description"
+                      v-model="plugin.description"
                       label="説明"
                       :counter="200"
                     )
@@ -63,6 +63,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component'
+import { PluginConfig } from '@/model'
 
 @Component<PluginCreateForm>({
   sockets: {
@@ -74,14 +75,13 @@ import Component from 'vue-class-component'
 export default class PluginCreateForm extends Vue {
   private dialog: boolean = false
   private valid: boolean = false
-  private name: string = ''
-  private description: string = ''
   private loader: any = null
   private fileName: string = ''
   private fileUploaded: boolean = false
   private fileContent: string = ''
   private loading: boolean = false
   private agreed: boolean = false
+  private plugin: PluginConfig = {}
 
   public onFileSelected (event: Event) {
     this.loader = 'loading'
@@ -97,8 +97,8 @@ export default class PluginCreateForm extends Vue {
         this.fileUploaded = true
         this.fileName = file.name
 
-        if (this.name === '') {
-          this.name = this.fileName.match(/(.*)(?:\.([^.]+$))/)!![1]
+        if (this.plugin.name === '') {
+          this.plugin.name = this.fileName.match(/(.*)(?:\.([^.]+$))/)!![1]
         }
       }
       reader.readAsText(file)
@@ -109,10 +109,7 @@ export default class PluginCreateForm extends Vue {
     if (this.$store.getters.localOnly) {
       this.responseCreatePlugin({})
     } else {
-      this.$socket.emit('register_plugin', {
-        plugin_name: this.name,
-        python_file: this.fileContent,
-      })
+      this.$socket.emit('register_plugin', this.plugin)
     }
   }
 

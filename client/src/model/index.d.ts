@@ -20,6 +20,10 @@ export interface PluginConfig {
   plugin_id: string,
   // plugin name
   name: string,
+  description: string,
+  author: string,
+  tags: string,
+  content: string,
   // plugin enabled
   enabled: boolean
 }

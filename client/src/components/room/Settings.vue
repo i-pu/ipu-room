@@ -43,7 +43,7 @@
                       label="プラグイン"
                     )
                   v-flex(xs6 sm6)
-                    v-btn(color="success" block @click="$emit('add-plugin', selectedPlugin)") を追加
+                    v-btn(color="success" block @click="addPlugin") を追加
           v-card-actions
 </template>
 
@@ -52,6 +52,9 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Prop } from 'vue-property-decorator'
 import { Room } from '@/model'
+import { Plugin, PluginConfig } from '@/model'
+
+import Counter, { CounterServer } from '@/plugin_examples/counter'
 
 @Component
 export default class Settings extends Vue {
@@ -65,6 +68,16 @@ export default class Settings extends Vue {
 
   public mounted () {
     console.log(this.room.plugins)
+  }
+
+  private addPlugin () {
+    const config: PluginConfig = {
+      room_id: this.room.roomId,
+      plugin_id: 'counter',
+      name: 'counter',
+      enabled: true,
+    }
+    this.$emit('add-plugin', config, Counter)
   }
 
 

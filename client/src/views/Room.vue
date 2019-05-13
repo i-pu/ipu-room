@@ -36,8 +36,8 @@ import { compile, compileLocal } from '@/logic/compiler'
 //  Example Plugins
 // =================
 import Counter, { CounterServer } from '@/plugin_examples/counter'
-import YoutubePlayer, { YoutubePlayerServer } from '@/plugin_examples//youtubePlayer'
-import Chat, { ChatServer } from '@/plugin_examples//chat'
+import YoutubePlayer, { YoutubePlayerServer } from '@/plugin_examples/youtubePlayer'
+import Chat, { ChatServer } from '@/plugin_examples/chat'
 
 @Component<RoomView>({
   components: { Desk, Status, Settings },
@@ -86,6 +86,7 @@ export default class RoomView extends Vue {
     console.log(`[Room] entered`)
     console.log(JSON.parse(JSON.stringify(data.room.plugins)))
     this.room = data.room
+    this.room.plugins = []
     if (this.$store.getters.localOnly) {
       const config: PluginConfig = {
         room_id: this.roomId,
@@ -93,13 +94,7 @@ export default class RoomView extends Vue {
         name: 'counter',
         enabled: true,
       }
-      const plugin = {
-        template: Counter.template,
-        events: ['plus'],
-        addons: Counter.addons,
-        record: { count: 0 },
-      }
-      this.addPlugin(config, plugin)
+      this.addPlugin(config, Counter)
     } else {
       this.$socket.emit('plugin/info', { room_id: this.room.id })
     }
@@ -122,11 +117,7 @@ export default class RoomView extends Vue {
       // counter
       if (config.name === 'counter') {
         this.room!!.plugins.push({
-          component: compileLocal({
-            template: Counter.template,
-            addons: Counter.addons,
-            server: new CounterServer(),
-          }),
+          component: compileLocal(new CounterServer(), plugin),
           config,
         })
       } else if (config.name === 'chat') {

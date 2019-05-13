@@ -1,13 +1,11 @@
 import Vue, { Component } from 'vue'
 import { Plugin, PluginConfig } from '@/model'
 
-export const compileLocal = ({
-  template, addons, server,
-}: {
-  template: string,
-  addons: Record<string, Component>,
+export const compileLocal = (
   server: any,
-}): Component => {
+  plugin: Plugin,
+  config: PluginConfig
+): Component => {
     // 1. generate client class
     // tslint:disable-next-line
     const client = (new (class Client {
@@ -35,11 +33,11 @@ export const compileLocal = ({
 
     // 4. create dynamic component
     return Vue.extend({
-      template,
-      components: addons,
+      template: plugin.template,
+      components: plugin.addons,
       data () {
         return {
-          v: Object(client)
+          v: Object(plugin.record)
         }
       },
       mounted () {
