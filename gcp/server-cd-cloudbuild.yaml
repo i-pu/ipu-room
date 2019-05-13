@@ -19,7 +19,7 @@ steps:
   - 'docker.io/${_DOCKER_USERNAME}/${PROJECT_ID}-server:latest'
   - '--cache-from'
   - 'docker.io/${_DOCKER_USERNAME}/${PROJECT_ID}-server:latest'
-  - 'server/app'
+  - 'server/src'
   waitFor: ['pull-latest-image']
 
 - name: 'gcr.io/cloud-builders/docker'
