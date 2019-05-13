@@ -33,21 +33,16 @@ steps:
   waitFor: ['-']
 
 - name: 'gcr.io/cloud-builders/docker'
-  id: 'push-image-latest'
+  id: 'push-image'
+  entrypoint: '/bin/bash'
   args:
-  - 'push'
-  - 'docker.io/${_DOCKER_USERNAME}/${PROJECT_ID}-server:latest'
+  - '-c'
+  - |
+    docker push docker.io/${_DOCKER_USERNAME}/${PROJECT_ID}-server:latest &&\
+    docker push docker.io/${_DOCKER_USERNAME}/${PROJECT_ID}-server:${REVISION_ID}
   waitFor: ['docker-login', 'build-image']
 
-- name: 'gcr.io/cloud-builders/docker'
-  id: 'push-image-revision-id'
-  args:
-  - 'push'
-  - 'docker.io/${_DOCKER_USERNAME}/${PROJECT_ID}-server:${REVISION_ID}'
-  waitFor: ['docker-login', 'build-image']
-
-# deploy
-
+# --- deploy ---
 - name: 'gcr.io/cloud-builders/gcloud'
   id: 'get-cluster-credential'
   args:
@@ -66,7 +61,7 @@ steps:
   args:
   - '-c'
   - 'gcp/sed.sh ${PROJECT_ID} ${_DOCKER_USERNAME} ${REVISION_ID}'
-  waitFor: ['push-image-revision-id']
+  waitFor: ['push-image']
 
 - name: 'gcr.io/cloud-builders/kubectl'
   id: 'deploy'
