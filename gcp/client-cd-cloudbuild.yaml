@@ -36,7 +36,7 @@ steps:
         -t us.gcr.io/${PROJECT_ID}/ipu-client:latest \
         -t us.gcr.io/${PROJECT_ID}/ipu-client:${REVISION_ID} \
         --cache-from docker.io/${_DOCKER_USERNAME}/ipu-client-builder:latest \
-        --cache-from us.gcr.io/${PROJECT_ID}/ipu-client:latest\
+        --cache-from us.gcr.io/${PROJECT_ID}/ipu-client:latest \
         -f Dockerfile-cd \
         .
     waitFor: ['pull-image']
