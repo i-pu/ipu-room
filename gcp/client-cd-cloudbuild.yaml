@@ -5,7 +5,7 @@ steps:
     args:
       - '-c'
       - |
-        login -u ${_DOCKER_USERNAME} -p ${_DOCKER_PASSWORD}
+        docker login -u ${_DOCKER_USERNAME} -p ${_DOCKER_PASSWORD}
     waitFor: ['-']
 
   - name: 'gcr.io/cloud-builders/docker'
