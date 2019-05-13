@@ -3,6 +3,7 @@ services:
   server:
     build: src
     container_name: server
+    image: ipu-server
     ports: 
       - "8000:8000"
     env_file: src/.env
