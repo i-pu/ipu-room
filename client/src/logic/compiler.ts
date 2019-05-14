@@ -54,6 +54,7 @@ export const compileLocal = async (
         // all plugin vars is under v.[...]
         v: Object(instance.record),
         meta: meta,
+        instance: instance,
       }
     },
     mounted () {
@@ -74,6 +75,9 @@ export const compileLocal = async (
 }
 
 export const compile = async (instance: Plugin, meta: PluginConfig): Promise<Component> => {
+  console.log(`[Compiler] ${instance.id} try to compile`)
+
+  // TODO : addon by dynamic imports
   // addons
   const addonComponents: Record<string, Component> = {}
   // module import
@@ -84,39 +88,27 @@ export const compile = async (instance: Plugin, meta: PluginConfig): Promise<Com
         addonComponents[key] = component
       })
   })
-  for (const [key, path] of Object.entries(instance.addons)) {
-    import(path).then(addon => {
-      addonComponents[key] = addon
-    })
-  }
+  // for (const [key, path] of Object.entries(instance.addons)) {
+  //   import(path).then(addon => {
+  //     addonComponents[key] = addon
+  //   })
+  // }
 
-  // 1. generate client class
-  // tslint:disable-next-line
-  const client = new (class Client {
-    [trigger: string]: (...args: any[]) => void
-  })
-
-  // 2. define methods
   const hooks: Record<string, (vm: any, ...args: any) => void> = {}
   instance.events.map((event) => {
-    hooks[event] = function (eventObject: any, ...args: any[]): void {
-      console.log(`[${instance.id}] Trigger ${event} with args ${args.toString()}`)
+    hooks[event] = function (_: Event): void {
+      const args = [].slice.call(arguments)
+      console.log(`[${instance.id}] Trigger ${event} with args [${args.join(',')}]`)
       // @ts-ignore
       this.$socket.emit('plugin/trigger', {
-        room_id: meta.room_id,
-        plugin_id: meta.name,
+        room_id: instance.room_id,
+        instance_id: instance.id,
         event_name: event,
-        args: args
+        args: args,
       })
     }
   })
 
-  // 3. define members
-  for (const [k, v] of Object.entries(instance.record)) {
-    client[k] = v
-  }
-
-  // 4. create dynamic component
   return Vue.extend({
     template: instance.template,
     components: addonComponents,
@@ -130,10 +122,12 @@ export const compile = async (instance: Plugin, meta: PluginConfig): Promise<Com
     data (): {
       v: Record<string, any>,
       meta: PluginConfig,
+      instance: Plugin
     } {
       return {
-        v: Object(client),
+        v: Object(instance.record),
         meta: meta,
+        instance: instance,
       }
     },
     mounted () {

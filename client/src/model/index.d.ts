@@ -10,20 +10,19 @@ export interface Plugin {
   record: Record<string, any>,
   // custom component that be used in
   addons: Record<string, string>,
+  // === instanve infos ===
   // unique instance
   id: string,
+  // room id
+  room_id: string,
   // instance's state
   enabled: boolean
 }
 
 // typeof plugin config
 export interface PluginConfig {
-  //
-  room_id: string,
   // plugin id
   plugin_id: string,
-  // unique id
-  id: string, 
   // plugin name
   name: string,
   description: string,

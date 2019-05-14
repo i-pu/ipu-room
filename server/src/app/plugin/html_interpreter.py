@@ -76,6 +76,9 @@ class Parser(HTMLParser):
         parser = Parser()
         parser.feed(plugin)
         parser.template = re.sub(r'.*\{\{\s*(.*)\}\}.*', r'{{v.\1}}', plugin)
+        # TODO <html> ... </html><python> => ...
+        parser.template = re.sub(r'$<html>(.*)</html>', r'\1', parser.template, flags = re.MULTILINE | re.DOTALL)
+        print(parser.template)
         g = {}
         print(parser.python)
         exec(parser.python, g)

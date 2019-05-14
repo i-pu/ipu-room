@@ -116,10 +116,8 @@ export default class RoomView extends Vue {
   }
 
   private async addPlugin (instance: Plugin, meta: PluginConfig) {
-    this.room!!.plugins.push({
-      component: await compile(instance, meta),
-      config: meta,
-    })
+    const component = await compile(instance, meta)
+    this.room!!.plugins.push({ component })
   }
 
   private requestExitRoom () {
