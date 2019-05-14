@@ -12,11 +12,20 @@ resource "google_container_cluster" "node" {
   }
 }
 
-resource "google_compute_firewall" "nodeport" {
-  name = "ipu-nodeport"
+resource "google_compute_firewall" "server-nodeport" {
+  name = "ipu-server-nodeport"
   network = "default"
   allow {
     protocol = "tcp"
     ports = ["31420"]
+  }
+}
+
+resource "google_compute_firewall" "client-nodeport" {
+  name = "ipu-client-nodeport"
+  network = "default"
+  allow {
+    protocol = "tcp"
+    ports = ["31421"]
   }
 }

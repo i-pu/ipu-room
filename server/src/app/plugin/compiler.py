@@ -92,8 +92,7 @@ class Plugin():
 """
 
 def plugin_compiler(plugin_content):
-  return compile(plugin_content)
-
+    return compile(plugin_content)
 # test
 template, events, records, python, addons = plugin_compiler(counter_plugin)
 # print('template: \n{}'.format(template))
