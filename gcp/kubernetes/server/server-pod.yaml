@@ -31,6 +31,11 @@ spec:
             name: postgres-configmap
         ports:
         - containerPort: 8000
+        resources:
+          requests:
+            memory: 50Mi
+            cpu: 10m
+
 
 ---
 apiVersion: v1

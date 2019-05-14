@@ -2,14 +2,15 @@
 [![Build Status](https://travis-ci.org/i-pu/ipu.svg?branch=master)](https://travis-ci.org/i-pu/ipu)
 
 ## CD
-
+http://35.247.48.47:31421  
+[google kubernetes engine](https://cloud.google.com/kubernetes-engine/)
 ### client
-tag に client-cd をつけて，push  
-[google cloud run](https://cloud.google.com/run/) で deploy
+#### push
+tag: client-cd
 
 ### server
-tag に server-cd をつけて，push  
-[google kubernetes engine](https://cloud.google.com/kubernetes-engine/) で deploy
+#### push
+tag: server-cd
 
 ## local
 ### Run client
