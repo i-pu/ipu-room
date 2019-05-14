@@ -46,8 +46,16 @@ export default class RoomCreateForm extends Vue {
 
   private dialog: boolean = false
   private roomNameInput: string = ''
-  private plugins: string[] = ['counter']
+  private plugins: string[] = []
   private selectedPlugins: string[] = []
+
+  private mounted () {
+    fetch(`${process.env.VUE_APP_API_ORIGIN}/plugin`)
+      .then(res => res.json())
+      .then(({ plugins }: { plugins: { id }[]}) => {
+        this.plugins = plugins.map(plugin => plugin.id)
+      })
+  }
 
   private requestCreateRoom () {
     if (this.$store.getters.localOnly) {

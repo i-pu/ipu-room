@@ -16,8 +16,10 @@ export interface Plugin {
 export interface PluginConfig {
   //
   room_id: string,
-  //
+  // plugin id
   plugin_id: string,
+  // unique id
+  id: string, 
   // plugin name
   name: string,
   description: string,

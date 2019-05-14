@@ -68,7 +68,7 @@ import { PluginConfig } from '@/model'
 
 @Component<PluginCreateForm>({
   sockets: {
-    register (data) {
+    'plugin/register' (data) {
       this.responseCreatePlugin(data)
     },
   },
