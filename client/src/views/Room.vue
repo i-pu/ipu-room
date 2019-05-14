@@ -22,8 +22,7 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 
-import { Room } from '@/model'
-import { Plugin, PluginConfig } from '@/model'
+import { Room, User, Plugin, PluginConfig } from '@/model'
 
 import Desk from '@/components/room/Desk.vue'
 import Status from '@/components/room/Status.vue'
@@ -45,7 +44,11 @@ import Chat, { ChatServer } from '@/plugin_examples/chat'
     'room/exit' (data: {}) {
       this.responseExitRoom()
     },
+    'room/exit-event' ({ members }: { members: User[] }) {
+      this.room.members = members
+    },
     'plugin/info' (packages: Array<{ instance: Plugin, meta: PluginConfig }>) {
+      this.room.plugins = []
       for (const { instance, meta } of packages) {
         this.addPlugin(instance, meta)
       }
@@ -76,7 +79,6 @@ export default class RoomView extends Vue {
     console.log(`[Room] entered`)
     console.log(JSON.parse(JSON.stringify(data.room.plugins)))
     this.room = data.room
-    this.room.plugins = []
     if (this.$store.getters.localOnly) {
       this.addPluginLocal('chat')
     } else {

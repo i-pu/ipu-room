@@ -114,9 +114,9 @@ export const compile = async (instance: Plugin, meta: PluginConfig): Promise<Com
     components: addonComponents,
     sockets: {
       // from server
-      'plugin/trigger' ({ vs }: { vs: Record<string, any> }) {
+      'plugin/trigger' ({ record }: { record: Record<string, any> }) {
         // @ts-ignore
-        this.callbackFromServer(vs)
+        this.callbackFromServer(record)
       },
     },
     data (): {
