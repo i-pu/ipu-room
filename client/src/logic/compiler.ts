@@ -8,7 +8,6 @@ export const compileLocal = async (
 ): Promise<Component> => {
   // addons
   const addonComponents: Record<string, Component> = {}
-
   // module import
   await import('vuetify/lib').then((addons: Object) => {
     Object.entries(addons)
@@ -18,6 +17,12 @@ export const compileLocal = async (
       })
   })
 
+  for (const [key, path] of Object.entries(plugin.addons)) {
+    import(path).then(addon => {
+      console.log({ key, addon })
+      addonComponents[key] = addon.Youtube
+    })
+  }
   // single import
   // for (const [key, path] of Object.entries(plugin.addons)) {
   //   import(path).then((addon: Component) => {
@@ -67,7 +72,23 @@ export const compileLocal = async (
   })
 }
 
-export const compile = ({ template, events, record, addons }: Plugin, config: PluginConfig): Component => {
+export const compile = async ({ template, events, record, addons }: Plugin, config: PluginConfig): Promise<Component> => {
+  // addons
+  const addonComponents: Record<string, Component> = {}
+  // module import
+  await import('vuetify/lib').then((addons: Object) => {
+    Object.entries(addons)
+      .filter(([key, _]) => key[0] == 'V')
+      .forEach(([key, component]) => {
+        addonComponents[key] = component
+      })
+  })
+  for (const [key, path] of Object.entries(addons)) {
+    import(path).then(addon => {
+      addonComponents[key] = addon
+    })
+  }
+
   // 1. generate client class
   // tslint:disable-next-line
   const client = new (class Client {
@@ -97,7 +118,7 @@ export const compile = ({ template, events, record, addons }: Plugin, config: Pl
   // 4. create dynamic component
   return Vue.extend({
     template,
-    components: addons,
+    components: addonComponents,
     sockets: {
       // from server
       'plugin/trigger' ({ vs }: { vs: Record<string, any> }) {

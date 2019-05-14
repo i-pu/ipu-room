@@ -45,16 +45,17 @@ import Chat, { ChatServer } from '@/plugin_examples/chat'
     'room/exit' (data: {}) {
       this.responseExitRoom()
     },
-    'plugin/info' (plugin: Plugin) {
+    'plugin/info' (plugins: Plugin[]) {
       // Repair data from server
       // plugin.addons = Object.assign(plugin.addons, Counter.addons)
+
       const config: PluginConfig = {
         room_id: this.roomId,
         name: 'counter',
         plugin_id: 'counter',
         enabled: true,
       }
-      this.addPlugin(config, plugin)
+      this.addPlugin(config, plugins[0])
     },
   },
 })
@@ -140,7 +141,7 @@ export default class RoomView extends Vue {
     } else {
       console.log(plugin)
       this.room!!.plugins.push({
-        component: compile({ ...plugin!! }, config),
+        component: await compile({ ...plugin!! }, config),
         config,
       })
     }

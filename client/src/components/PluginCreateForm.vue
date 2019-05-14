@@ -14,8 +14,25 @@
               v-container(grid-list-md)
                 v-layout(wrap)
                   v-flex(xs12)
+                    v-btn(
+                      :loading="loading"
+                      :disabled="loading || fileUploaded"
+                      color="blue-grey"
+                      class="white--text"
+                      @click="$refs.uploader.click()"
+                    ) {{ fileUploaded ? fileName : 'プラグインをアップロード' }}
+                      input(
+                        type="file"
+                        accept=".ipl"
+                        ref="uploader"
+                        @change="onFileSelected"
+                        hidden
+                      )
+                      v-icon(right dark) cloud_upload
+
+                  v-flex(xs12)
                     v-text-field(
-                      v-model="plugin.name"
+                      v-model="pluginInfo.name"
                       :counter="12"
                       :rules="[v => !!v || '必須項目です']",
                       label="プラグイン名"
@@ -24,28 +41,12 @@
 
                   v-flex(xs12)
                     v-textarea(
-                      v-model="plugin.description"
+                      v-model="pluginInfo.description"
                       label="説明"
                       :counter="200"
                     )
 
                   v-flex(xs12)
-                    v-btn(
-                      :loading="loading"
-                      :disabled="loading || fileUploaded"
-                      color="blue-grey"
-                      class="white--text"
-                      @click="$refs.uploader.click()"
-                    ) {{ fileUploaded ? fileName : 'pythonファイルをアップロード' }}
-                      input(
-                        type="file"
-                        accept=".py"
-                        ref="uploader"
-                        @change="onFileSelected"
-                        hidden
-                      )
-                      v-icon(right dark) cloud_upload
-
                     v-checkbox(
                       v-model="agreed"
                       label="同意します"
@@ -78,10 +79,21 @@ export default class PluginCreateForm extends Vue {
   private loader: any = null
   private fileName: string = ''
   private fileUploaded: boolean = false
-  private fileContent: string = ''
   private loading: boolean = false
   private agreed: boolean = false
-  private plugin: PluginConfig = {}
+  private pluginInfo: {
+    name: string,
+    description: string,
+    author: string,
+    tags: string,
+    content: string
+  } = {
+    name: '',
+    description: '',
+    author: '',
+    tags: '',
+    content: ''
+  }
 
   public onFileSelected (event: Event) {
     this.loader = 'loading'
@@ -91,14 +103,14 @@ export default class PluginCreateForm extends Vue {
       const file = event.target.files[0]
       const reader = new FileReader()
       reader.onload = (e: Event) => {
-        this.fileContent = reader.result as string
+        this.pluginInfo.content = reader.result as string
         this.loader = null
         this.loading = false
         this.fileUploaded = true
         this.fileName = file.name
 
-        if (this.plugin.name === '') {
-          this.plugin.name = this.fileName.match(/(.*)(?:\.([^.]+$))/)!![1]
+        if (this.pluginInfo.name === '') {
+          this.pluginInfo.name = this.fileName.match(/(.*)(?:\.([^.]+$))/)!![1]
         }
       }
       reader.readAsText(file)
@@ -107,14 +119,16 @@ export default class PluginCreateForm extends Vue {
 
   public requestCreatePlugin () {
     if (this.$store.getters.localOnly) {
-      this.responseCreatePlugin({})
+      this.responseCreatePlugin({ state: true })
     } else {
-      this.$socket.emit('register_plugin', this.plugin)
+      this.pluginInfo.author = this.$store.getters.userName
+      console.log(Object.assign({}, this.pluginInfo))
+      this.$socket.emit('plugin/register', this.pluginInfo)
     }
   }
 
-  public responseCreatePlugin (data: {}) {
-    console.log(data)
+  public responseCreatePlugin (payload: { state: boolean }) {
+    console.log(payload)
     this.dialog = false
   }
 }
