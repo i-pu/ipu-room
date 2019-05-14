@@ -1,6 +1,6 @@
-// ========================
+// ==========================
 //  Example plugin counter
-// ========================
+// ==========================
 import { Plugin } from '@/model'
 
 export const rawPlugin = `
@@ -30,13 +30,11 @@ export class CounterServer {
 
 import { VBtn } from 'vuetify/lib'
 
-const counter: Plugin = (() => {
-  return {
-    template: `<div><h3> {{ v.count }} </h3><v-btn @click="plus"> Add </v-btn></div>`,
-    events: ['plus'],
-    record: { count: 0 },
-    addons: { VBtn },
-  }
-})()
+const counter: Plugin =  {
+  template: `<div><h3> {{ v.count }} </h3><v-btn @click="plus"> Add </v-btn></div>`,
+  events: ['plus'],
+  record: { count: 0 },
+  addons: { VBtn },
+}
 
 export default counter

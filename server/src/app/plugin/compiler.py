@@ -1,25 +1,29 @@
-from .html_interpreter import Parser
+from html_interpreter import compile
 
 """
 From the html template, extract `events`, `records`, and `python`
 """
 # sample counter plugin
 counter_plugin = '''
-    <html>
-      <div>
-        <h3> {{ count }} </h3>
-        <v-btn @click="plus"> Add </v-btn>
-      </div>
-    </html>
-    <python>
-    class Plugin():
-      def __init__(self):
-        self.count = 0
+<html>
+  <div>
+    <h3> {{ count }} </h3>
+    <v-btn @click="plus"> Add </v-btn>
+  </div>
+</html>
+<python>
+  class Plugin():
+    def __init__(self):
+      self.events = ['plus']
+      self.count = 0
 
-      def plus(self, data):
-        self.count += data
-        return ['count']
-    </python>
+    def constructor(self):
+      return { count: self.count }
+
+    def plus(data):
+      self.count += data
+      return { count: self.count }
+</python>
   '''
 
 # sample chat plugin
@@ -72,11 +76,24 @@ class Plugin():
 </python>
 """
 
+# youtube plugin
+youtube_plugin = """
+<html>
+  <div>
+    <v-btn> Test </v-btn>
+    <player :video-id="videoid" player-width="1280" player-height="750" :player-vars="{autoplay: 1}" />
+  </div>
+</html>
+<python>
+class Plugin():
+  def __init__(self):
+    self.videoid = 'SX_ViT4Ra7k'
+</python>
+"""
 
 def plugin_compiler(plugin_content):
-    return Parser.compile(plugin_content)
-
-
+    return compile(plugin_content)
 # test
-template, events, records, python, addons = plugin_compiler(chat_plugin)
-print('{} {} {}'.format(events, records, addons))
+template, events, records, python, addons = plugin_compiler(counter_plugin)
+# print('template: \n{}'.format(template))
+# print('{} {} {}'.format(events, records, addons))
