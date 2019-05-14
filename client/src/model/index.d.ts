@@ -9,7 +9,11 @@ export interface Plugin {
   // variables in plugin
   record: Record<string, any>,
   // custom component that be used in
-  addons: Record<string, string>
+  addons: Record<string, string>,
+  // unique instance
+  id: string,
+  // instance's state
+  enabled: boolean
 }
 
 // typeof plugin config
@@ -45,7 +49,7 @@ export interface Room {
   id: string,
   thumbnail_url: string,
   members: User[],
-  plugins: Array<{ component: Component, config: PluginConfig }>
+  plugins: Array<{ component: Component }>
 }
 
 export interface User {

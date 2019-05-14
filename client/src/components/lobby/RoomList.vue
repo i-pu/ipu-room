@@ -7,7 +7,7 @@
           d-flex xs12 sm6 md3
         )
           v-card
-            v-img(:src="room.thumbnail_url" height="200px")
+            // v-img(:src="room.thumbnail_url" height="200px")
             v-card-title
               h3.headline {{ room.name }}
             v-card-text

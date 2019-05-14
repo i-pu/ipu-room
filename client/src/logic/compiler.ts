@@ -2,9 +2,9 @@ import Vue, { Component } from 'vue'
 import { Plugin, PluginConfig } from '@/model'
 
 export const compileLocal = async (
-  server: any,
-  plugin: Plugin,
-  config: PluginConfig
+  instance: Plugin,
+  meta: PluginConfig,
+  server: any
 ): Promise<Component> => {
   // addons
   const addonComponents: Record<string, Component> = {}
@@ -17,7 +17,7 @@ export const compileLocal = async (
       })
   })
 
-  for (const [key, path] of Object.entries(plugin.addons)) {
+  for (const [key, path] of Object.entries(instance.addons)) {
     import(path).then(addon => {
       console.log({ key, addon })
       addonComponents[key] = addon.Youtube
@@ -47,22 +47,23 @@ export const compileLocal = async (
 
   // create dynamic component
   return Vue.extend({
-    template: plugin.template,
+    template: instance.template,
     components: addonComponents,
     data () {
       return {
         // all plugin vars is under v.[...]
-        v: Object(plugin.record)
+        v: Object(instance.record),
+        meta: meta,
       }
     },
     mounted () {
-      console.log(`[${config.name}] activate`)
+      console.log(`[${instance.id}] activate`)
     },
     methods: {
       ...hooks,
       // callback from server
       callbackFromServer (data: Record<string, any>) {
-        console.log(`[${config.name}] callback from server`)
+        console.log(`[${instance.id}] callback from server`)
         for (const [k, v] of Object.entries(data)) {
           // @ts-ignore
           this.$set(this.v, k, v)
@@ -72,7 +73,7 @@ export const compileLocal = async (
   })
 }
 
-export const compile = async ({ template, events, record, addons }: Plugin, config: PluginConfig): Promise<Component> => {
+export const compile = async (instance: Plugin, meta: PluginConfig): Promise<Component> => {
   // addons
   const addonComponents: Record<string, Component> = {}
   // module import
@@ -83,7 +84,7 @@ export const compile = async ({ template, events, record, addons }: Plugin, conf
         addonComponents[key] = component
       })
   })
-  for (const [key, path] of Object.entries(addons)) {
+  for (const [key, path] of Object.entries(instance.addons)) {
     import(path).then(addon => {
       addonComponents[key] = addon
     })
@@ -97,27 +98,27 @@ export const compile = async ({ template, events, record, addons }: Plugin, conf
 
   // 2. define methods
   const hooks: Record<string, (vm: any, ...args: any) => void> = {}
-  events.map((event) => {
+  instance.events.map((event) => {
     hooks[event] = function (eventObject: any, ...args: any[]): void {
-      console.log(`[${config.name}] Trigger ${event} with args ${args.toString()}`)
+      console.log(`[${instance.id}] Trigger ${event} with args ${args.toString()}`)
       // @ts-ignore
       this.$socket.emit('plugin/trigger', {
-        room_id: config.room_id,
-        plugin_id: config.name,
+        room_id: meta.room_id,
+        plugin_id: meta.name,
         event_name: event,
-        args,
+        args: args
       })
     }
   })
 
   // 3. define members
-  for (const [k, v] of Object.entries(record)) {
+  for (const [k, v] of Object.entries(instance.record)) {
     client[k] = v
   }
 
   // 4. create dynamic component
   return Vue.extend({
-    template,
+    template: instance.template,
     components: addonComponents,
     sockets: {
       // from server
@@ -128,19 +129,21 @@ export const compile = async ({ template, events, record, addons }: Plugin, conf
     },
     data (): {
       v: Record<string, any>,
+      meta: PluginConfig,
     } {
       return {
         v: Object(client),
+        meta: meta,
       }
     },
     mounted () {
-      console.log(`[${config.name}] active`)
+      console.log(`[${instance.id}] active`)
     },
     methods: {
       ...hooks,
       // callback from server
       callbackFromServer (vs: Record<string, any>) {
-        console.log(`[${config.name}] callback from server ${Object.keys(vs)}`)
+        console.log(`[${instance.id}] callback from server ${Object.keys(vs)}`)
         for (const [k, v] of Object.entries(vs)) {
           // @ts-ignore
           this.$set(this.v, k, v)

@@ -4,7 +4,7 @@
       v-layout(row wrap)
         v-flex(d-flex xs12 sm12 md12)
           v-toolbar(dense)
-            v-toolbar-title {{ room.room_name }}
+            v-toolbar-title {{ room.name }}
             v-spacer
             settings(:room="room" @add-plugin="addPlugin")
             v-btn(color="error" @click="requestExitRoom") 退出
@@ -45,17 +45,10 @@ import Chat, { ChatServer } from '@/plugin_examples/chat'
     'room/exit' (data: {}) {
       this.responseExitRoom()
     },
-    'plugin/info' (plugins: Plugin[]) {
-      // Repair data from server
-      // plugin.addons = Object.assign(plugin.addons, Counter.addons)
-
-      const config: PluginConfig = {
-        room_id: this.roomId,
-        name: 'counter',
-        plugin_id: 'counter',
-        enabled: true,
+    'plugin/info' (packages: Array<{ instance: Plugin, meta: PluginConfig }>) {
+      for (const { instance, meta } of packages) {
+        this.addPlugin(instance, meta)
       }
-      this.addPlugin(config, plugins[0])
     },
   },
 })
@@ -85,24 +78,48 @@ export default class RoomView extends Vue {
     this.room = data.room
     this.room.plugins = []
     if (this.$store.getters.localOnly) {
-      // first plugin
-      // const config: PluginConfig = {
-      //   room_id: this.roomId,
-      //   plugin_id: 'counter',
-      //   name: 'counter',
-      //   enabled: true,
-      // }
-      // this.addPlugin(config, Counter)
-      const config: PluginConfig = {
-        room_id: this.roomId,
-        plugin_id: 'chat001',
-        name: 'chat',
-        enabled: true,
-      }
-      this.addPlugin(config, Chat)
+      this.addPluginLocal('chat')
     } else {
       this.$socket.emit('plugin/info', { room_id: this.room.id })
     }
+  }
+
+  private async addPluginLocal (name: string) {
+    if (!this.room) {
+      return
+    }
+    const meta: PluginConfig = {
+      room_id: this.roomId,
+      plugin_id: '${name}001',
+      name: name,
+      enabled: true,
+    }
+    // counter
+    if (meta.name === 'counter') {
+      this.room.plugins.push({
+        component: await compileLocal(Counter, meta, new CounterServer()),
+        config: meta,
+      })
+    } else if (meta.name === 'chat') {
+      this.room.plugins.push({
+        component: await compileLocal(Chat, meta, new ChatServer()),
+        config: meta,
+      })
+    } else if (meta.name === 'player') {
+      this.room.plugins.push({
+        component: await compileLocal(YoutubePlayer, meta, new YoutubePlayerServer()),
+        config: meta,
+      })
+    } else {
+      console.warn(`[Room] plugin ${meta.name} not found`)
+    }
+  }
+
+  private async addPlugin (instance: Plugin, meta: PluginConfig) {
+    this.room!!.plugins.push({
+      component: await compile(instance, meta),
+      config: meta,
+    })
   }
 
   private requestExitRoom () {
@@ -115,36 +132,6 @@ export default class RoomView extends Vue {
 
   private responseExitRoom () {
     this.$router.push('/lobby')
-  }
-
-  private async addPlugin (config: PluginConfig, plugin?: Plugin) {
-    if (this.$store.getters.localOnly) {
-      // counter
-      if (config.name === 'counter') {
-        this.room!!.plugins.push({
-          component: await compileLocal(new CounterServer(), plugin, config),
-          config,
-        })
-      } else if (config.name === 'chat') {
-        this.room!!.plugins.push({
-          component: await compileLocal(new ChatServer(), plugin, config),
-          config,
-        })
-      } else if (config.name === 'player') {
-        this.room!!.plugins.push({
-          component: await compileLocal(new YoutubePlayerServer(), plugin, config),
-          config,
-        })
-      } else {
-        console.warn(`[Room] plugin ${config.name} not found`)
-      }
-    } else {
-      console.log(plugin)
-      this.room!!.plugins.push({
-        component: await compile({ ...plugin!! }, config),
-        config,
-      })
-    }
   }
 }
 </script>
