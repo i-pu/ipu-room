@@ -9,7 +9,7 @@ export interface Plugin {
   // variables in plugin
   record: Record<string, any>,
   // custom component that be used in
-  addons: Record<string, Component>
+  addons: Record<string, string>
 }
 
 // typeof plugin config

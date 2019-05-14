@@ -2,15 +2,7 @@
 //  Example plugin chat
 // =====================
 import { Comment } from '@/model'
-import * as VuetifyComponents from 'vuetify/lib'
 import { Plugin } from '../model'
-
-const vuetifyComponents: Record<string, any> = {}
-for (const [k, v] of Object.entries(VuetifyComponents)) {
-  if (k[0] === 'V') {
-    vuetifyComponents[k] = v
-  }
-}
 
 // test in local
 export class ChatServer {
@@ -118,7 +110,7 @@ const chat: Plugin = {
     comments: [],
     chatInput: '',
   },
-  addons: vuetifyComponents,
+  addons: {},
 }
 
 export default chat

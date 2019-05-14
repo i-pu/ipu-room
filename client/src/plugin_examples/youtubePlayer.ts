@@ -24,7 +24,7 @@ const youtubePlayer: Plugin = {
   record: {
     videoId: 'SX_ViT4Ra7k',
   },
-  addons: { player: Youtube, VBtn },
+  addons: { player: Youtube, VBtn: 'vuetify/lib/components/VBtn' },
 }
 
 export default youtubePlayer

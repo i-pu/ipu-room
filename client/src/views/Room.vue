@@ -116,22 +116,22 @@ export default class RoomView extends Vue {
     this.$router.push('/lobby')
   }
 
-  private addPlugin (config: PluginConfig, plugin?: Plugin) {
+  private async addPlugin (config: PluginConfig, plugin?: Plugin) {
     if (this.$store.getters.localOnly) {
       // counter
       if (config.name === 'counter') {
         this.room!!.plugins.push({
-          component: compileLocal(new CounterServer(), plugin, config),
+          component: await compileLocal(new CounterServer(), plugin, config),
           config,
         })
       } else if (config.name === 'chat') {
         this.room!!.plugins.push({
-          component: compileLocal(new ChatServer(), plugin, config),
+          component: await compileLocal(new ChatServer(), plugin, config),
           config,
         })
       } else if (config.name === 'player') {
         this.room!!.plugins.push({
-          component: compileLocal(new YoutubePlayerServer(), plugin, config),
+          component: await compileLocal(new YoutubePlayerServer(), plugin, config),
           config,
         })
       } else {

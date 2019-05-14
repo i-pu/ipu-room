@@ -1,14 +1,30 @@
 import Vue, { Component } from 'vue'
 import { Plugin, PluginConfig } from '@/model'
 
-export const compileLocal = (
+export const compileLocal = async (
   server: any,
   plugin: Plugin,
   config: PluginConfig
-): Component => {
-  import('vuetify/lib').then(({ VBtn }) => {
-    console.log(VBtn)
+): Promise<Component> => {
+  // addons
+  const addonComponents: Record<string, Component> = {}
+
+  // module import
+  await import('vuetify/lib').then((addons: Object) => {
+    Object.entries(addons)
+      .filter(([key, _]) => key[0] == 'V')
+      .forEach(([key, component]) => {
+        addonComponents[key] = component
+      })
   })
+
+  // single import
+  // for (const [key, path] of Object.entries(plugin.addons)) {
+  //   import(path).then((addon: Component) => {
+  //     console.log(addon)
+  //     addonComponents[key] = addon
+  //   })
+  // }
 
   // create hooks
   const methodNames = Object
@@ -27,7 +43,7 @@ export const compileLocal = (
   // create dynamic component
   return Vue.extend({
     template: plugin.template,
-    components: plugin.addons,
+    components: addonComponents,
     data () {
       return {
         // all plugin vars is under v.[...]
