@@ -32,9 +32,6 @@ import Settings from '@/components/room/Settings.vue'
 import { ROOMS_MOCK } from '@/api/mock'
 import { compile, compileLocal } from '@/logic/compiler'
 
-// =================
-//  Example Plugins
-// =================
 import Counter, { CounterServer } from '@/plugin_examples/counter'
 import YoutubePlayer, { YoutubePlayerServer } from '@/plugin_examples/youtubePlayer'
 import Chat, { ChatServer } from '@/plugin_examples/chat'
@@ -50,14 +47,13 @@ import Chat, { ChatServer } from '@/plugin_examples/chat'
     },
     'plugin/info' (plugin: Plugin) {
       // Repair data from server
-      plugin.addons = Object.assign(plugin.addons, Counter.addons)
+      // plugin.addons = Object.assign(plugin.addons, Counter.addons)
       const config: PluginConfig = {
         room_id: this.roomId,
         name: 'counter',
         plugin_id: 'counter',
         enabled: true,
       }
-
       this.addPlugin(config, plugin)
     },
   },
@@ -88,13 +84,21 @@ export default class RoomView extends Vue {
     this.room = data.room
     this.room.plugins = []
     if (this.$store.getters.localOnly) {
+      // first plugin
+      // const config: PluginConfig = {
+      //   room_id: this.roomId,
+      //   plugin_id: 'counter',
+      //   name: 'counter',
+      //   enabled: true,
+      // }
+      // this.addPlugin(config, Counter)
       const config: PluginConfig = {
         room_id: this.roomId,
-        plugin_id: 'counter',
-        name: 'counter',
+        plugin_id: 'chat001',
+        name: 'chat',
         enabled: true,
       }
-      this.addPlugin(config, Counter)
+      this.addPlugin(config, Chat)
     } else {
       this.$socket.emit('plugin/info', { room_id: this.room.id })
     }
@@ -117,14 +121,19 @@ export default class RoomView extends Vue {
       // counter
       if (config.name === 'counter') {
         this.room!!.plugins.push({
-          component: compileLocal(new CounterServer(), plugin),
+          component: compileLocal(new CounterServer(), plugin, config),
           config,
         })
       } else if (config.name === 'chat') {
-        // this.room!!.plugins.push({
-        //   component: compileLocal({ ...Chat, server: new ChatServer() }),
-        //   config
-        // })
+        this.room!!.plugins.push({
+          component: compileLocal(new ChatServer(), plugin, config),
+          config,
+        })
+      } else if (config.name === 'player') {
+        this.room!!.plugins.push({
+          component: compileLocal(new YoutubePlayerServer(), plugin, config),
+          config,
+        })
       } else {
         console.warn(`[Room] plugin ${config.name} not found`)
       }

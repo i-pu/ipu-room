@@ -1,9 +1,10 @@
-// ========================
-//  Example plugin counter
-// ========================
+// ===============================
+//  Example plugin youtube player
+// ===============================
 import { Plugin } from '../model'
 // @ts-ignore
 import { Youtube } from 'vue-youtube'
+import { VBtn } from 'vuetify/lib'
 
 // test in local
 export class YoutubePlayerServer {
@@ -13,7 +14,7 @@ export class YoutubePlayerServer {
 const youtubeTemplate = `
 <div>
   <v-btn> Test </v-btn>
-  <player :video-id="videoId" player-width="1280" player-height="750" :player-vars="{autoplay: 1}" />
+  <player :video-id="v.videoId" player-width="1280" player-height="750" :player-vars="{autoplay: 1}" />
 </div>
 `
 
@@ -23,7 +24,7 @@ const youtubePlayer: Plugin = {
   record: {
     videoId: 'SX_ViT4Ra7k',
   },
-  addons: { player: Youtube },
+  addons: { player: Youtube, VBtn },
 }
 
 export default youtubePlayer

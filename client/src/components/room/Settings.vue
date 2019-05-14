@@ -39,7 +39,7 @@
                   v-flex(xs6 sm6)
                     v-select(
                       v-model="selectedPlugin"
-                      :items="['counter', 'chat']"
+                      :items="['counter', 'chat', 'player']"
                       label="プラグイン"
                     )
                   v-flex(xs6 sm6)
@@ -55,6 +55,8 @@ import { Room } from '@/model'
 import { Plugin, PluginConfig } from '@/model'
 
 import Counter, { CounterServer } from '@/plugin_examples/counter'
+import YoutubePlayer, { YoutubePlayerServer } from '@/plugin_examples/youtubePlayer'
+import Chat, { ChatServer } from '@/plugin_examples/chat'
 
 @Component
 export default class Settings extends Vue {
@@ -71,15 +73,32 @@ export default class Settings extends Vue {
   }
 
   private addPlugin () {
-    const config: PluginConfig = {
-      room_id: this.room.roomId,
-      plugin_id: 'counter',
-      name: 'counter',
-      enabled: true,
+    if (this.selectedPlugin === 'counter') {
+      const config: PluginConfig = {
+        room_id: this.room.roomId,
+        plugin_id: 'counter--1',
+        name: 'counter',
+        enabled: true,
+      }
+      this.$emit('add-plugin', config, Counter)
+    } else if (this.selectedPlugin === 'chat') {
+      const config: PluginConfig = {
+        room_id: this.room.roomId,
+        plugin_id: 'chat001',
+        name: 'chat',
+        enabled: true,
+      }
+      this.$emit('add-plugin', config, Chat)
+    } else {
+      const config: PluginConfig = {
+        room_id: this.room.roomId,
+        plugin_id: 'player001',
+        name: 'player',
+        enabled: true,
+      }
+      this.$emit('add-plugin', config, YoutubePlayer)
     }
-    this.$emit('add-plugin', config, Counter)
   }
-
 
   private onChangePluginSettings (pluginName: string) {
     return {}

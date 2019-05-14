@@ -15,9 +15,8 @@ for (const [k, v] of Object.entries(VuetifyComponents)) {
 // test in local
 export class ChatServer {
   private comments: Comment[] = []
-  private chatInput: string = ''
 
-  public comment (): any[] {
+  public comment (text: string): void {
     // mock
     const comment: Comment = {
       type: 'comment',
@@ -25,11 +24,10 @@ export class ChatServer {
       comment_id: Math.random().toString(36),
       user_name: 'John',
       user_id: 'xxxx',
-      text: this.chatInput,
+      text: text,
       commented_at: new Date(),
     }
-    this.chatInput = ''
-    return [this.comments]
+    this.comments.push(comment)
   }
 }
 
@@ -37,7 +35,7 @@ const chatTemplate = `
 <div>
   <v-list id="chat" two-line="two-line" height="50%">
     <v-subheader>チャット</v-subheader>
-    <template v-for="comment, i in comments">
+    <template v-for="comment, i in v.comments">
       <v-list-tile v-if="comment.type === 'comment'" :key="comment.comment_id" avatar="avatar">
         <v-list-tile-avatar>
           <img :src="comment.avatar"/>
@@ -53,10 +51,10 @@ const chatTemplate = `
   <v-container fluid="fluid" grid-list-md="grid-list-md" text-xs-center="text-xs-center">
     <v-layout row="row" wrap="wrap">
       <v-flex d-flex="d-flex" xs8="xs8" sm8="sm8" md8="md8">
-        <v-text-field v-model="chatInput" label="コメント"></v-text-field>
+        <v-text-field v-model="v.chatInput" label="コメント"></v-text-field>
       </v-flex>
       <v-flex d-flex="d-flex" xs4="xs4" sm4="sm4" md4="md4">
-        <v-btn color="info" @click="comment(chatInput); chatInput = ''">送信</v-btn>
+        <v-btn color="info" @click="comment(v.chatInput); v.chatInput = ''">送信</v-btn>
       </v-flex>
     </v-layout>
   </v-container>

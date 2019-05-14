@@ -6,56 +6,49 @@ export const compileLocal = (
   plugin: Plugin,
   config: PluginConfig
 ): Component => {
-    // 1. generate client class
-    // tslint:disable-next-line
-    const client = (new (class Client {
-      [trigger: string]: (...args: any[]) => void
-    }))
+  import('vuetify/lib').then(({ VBtn }) => {
+    console.log(VBtn)
+  })
 
-    // 2. define methods
-    const methodNames = Object
-      .getOwnPropertyNames(Object.getPrototypeOf(server))
-      .filter ((name) => typeof server[name] === 'function' && name !== 'constructor')
-
-    const hooks: Record<string, (...args: any[]) => void> = {}
-    methodNames.map((method) => {
-      hooks[method] = function (...args: any[]): void {
-        server[method](...args)
-        const record = Object(server)
-        this.callbackFromServer(record)
-      }
-    })
-
-    // 3. define members
-    for (const key of Object.keys(Object(server))) {
-      client[key] = server[key]
+  // create hooks
+  const methodNames = Object
+    .getOwnPropertyNames(Object.getPrototypeOf(server))
+    .filter ((name) => typeof server[name] === 'function' && name !== 'constructor')
+  const hooks: Record<string, (...args: any[]) => void> = {}
+  methodNames.map((method) => {
+    hooks[method] = function (...args: any[]): void {
+      // invoke function
+      server[method](...args)
+      const record = Object(server)
+      this.callbackFromServer(record)
     }
+  })
 
-    // 4. create dynamic component
-    return Vue.extend({
-      template: plugin.template,
-      components: plugin.addons,
-      data () {
-        return {
-          v: Object(plugin.record)
+  // create dynamic component
+  return Vue.extend({
+    template: plugin.template,
+    components: plugin.addons,
+    data () {
+      return {
+        // all plugin vars is under v.[...]
+        v: Object(plugin.record)
+      }
+    },
+    mounted () {
+      console.log(`[${config.name}] activate`)
+    },
+    methods: {
+      ...hooks,
+      // callback from server
+      callbackFromServer (data: Record<string, any>) {
+        console.log(`[${config.name}] callback from server`)
+        for (const [k, v] of Object.entries(data)) {
+          // @ts-ignore
+          this.$set(this.v, k, v)
         }
       },
-      mounted () {
-        // @ts-ignore
-        console.log(`[${this.pluginName}] activate`)
-      },
-      methods: {
-        ...hooks,
-        // callback from server
-        callbackFromServer (data: Record<string, any>) {
-          // @ts-ignore
-          console.log(`[${this.pluginName}] callback from server`)
-          for (const [k, v] of Object.entries(data)) {
-            this.$set(this.v, k, v)
-          }
-        },
-      },
-    })
+    },
+  })
 }
 
 export const compile = ({ template, events, record, addons }: Plugin, config: PluginConfig): Component => {
