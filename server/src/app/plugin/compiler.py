@@ -5,21 +5,25 @@ From the html template, extract `events`, `records`, and `python`
 """
 # sample counter plugin
 counter_plugin = '''
-    <html>
-      <div>
-        <h3> {{ count }} </h3>
-        <v-btn @click="plus"> Add </v-btn>
-      </div>
-    </html>
-    <python>
-    class Plugin():
-      def __init__(self):
-        self.count = 0
+<html>
+  <div>
+    <h3> {{ count }} </h3>
+    <v-btn @click="plus"> Add </v-btn>
+  </div>
+</html>
+<python>
+  class Plugin():
+    def __init__(self):
+      self.events = ['plus']
+      self.count = 0
 
-      def plus(self, data):
-        self.count += data
-        return ['count']
-    </python>
+    def constructor(self):
+      return { count: self.count }
+
+    def plus(data):
+      self.count += data
+      return { count: self.count }
+</python>
   '''
 
 # sample chat plugin
@@ -91,6 +95,6 @@ def plugin_compiler(plugin_content):
   return compile(plugin_content)
 
 # test
-template, events, records, python, addons = plugin_compiler(chat_plugin)
+template, events, records, python, addons = plugin_compiler(counter_plugin)
 # print('template: \n{}'.format(template))
 # print('{} {} {}'.format(events, records, addons))

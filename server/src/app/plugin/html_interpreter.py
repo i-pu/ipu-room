@@ -49,7 +49,7 @@ class Parser(HTMLParser):
           self.records[value] = None
       # '@event="foo(bar)"', 'v-on:hoge="foo"'
       if attr[0] == '@' or attr.split(':')[0] == 'v-on':
-        event, args = re.match('^(.*)(?:\((.*)\)).*$', value).groups()
+        event, args = re.match('^(.*)(?:\((.*)\))?.*$', value).groups()
         print('[Plugin Compiler] detect event {}'.format(event))
         self.events.append(event)
 
