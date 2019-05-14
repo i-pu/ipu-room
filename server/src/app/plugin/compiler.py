@@ -1,4 +1,4 @@
-from html_interpreter import compile
+from .html_interpreter import compile
 
 """
 From the html template, extract `events`, `records`, and `python`
@@ -91,9 +91,12 @@ class Plugin():
 </python>
 """
 
+
 def plugin_compiler(plugin_content):
     return compile(plugin_content)
+
+
 # test
-template, events, records, python, addons = plugin_compiler(counter_plugin)
+# template, events, records, python, addons = plugin_compiler(counter_plugin)
 # print('template: \n{}'.format(template))
 # print('{} {} {}'.format(events, records, addons))
