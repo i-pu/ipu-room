@@ -1,111 +1,83 @@
 import Vue, { Component } from 'vue'
-import { Plugin, PluginConfig } from '@/model'
+import { Plugin, PluginConfig, PluginMeta } from '@/model'
 
-export const compileLocal = async (
-  instance: Plugin,
-  meta: PluginConfig,
-  server: any,
-): Promise<Component> => {
+const fetchPreinstalledModules = async () => {
   // addons
-  const addonComponents: Record<string, Component> = {}
-  // module import
-  await import('vuetify/lib').then((addons: Record<string, any>) => {
-    Object.entries(addons)
-      .filter(([key, _]) => key[0] === 'V')
-      .forEach(([key, component]) => {
-        addonComponents[key] = component
-      })
-  })
-
-  for (const [key, path] of Object.entries(instance.addons)) {
-    import(path).then((addon) => {
-      console.log({ key, addon })
-      addonComponents[key] = addon.Youtube
+  const modules: Record<string, Component> = {}
+  // vuetify/*
+  const addons: Record<string, any> = await import('vuetify/lib')
+  Object.entries(addons)
+    .filter(([componentName, _]) => componentName[0] === 'V')
+    .forEach(([componentName, component]) => {
+      modules[componentName] = component
     })
-  }
-  // single import
-  // for (const [key, path] of Object.entries(plugin.addons)) {
-  //   import(path).then((addon: Component) => {
-  //     console.log(addon)
-  //     addonComponents[key] = addon
-  //   })
-  // }
+  // vue-youtube
+  modules['player'] = (await import('vue-youtube'))['Youtube']
 
-  // create hooks
-  const methodNames = Object
-    .getOwnPropertyNames(Object.getPrototypeOf(server))
-    .filter ((name) => typeof server[name] === 'function' && name !== 'constructor')
-  const hooks: Record<string, (...args: any[]) => void> = {}
-  methodNames.map((method) => {
-    hooks[method] = function (...args: any[]): void {
-      // invoke function
-      server[method](...args)
-      const record = Object(server)
-      this.callbackFromServer(record)
-    }
-  })
-
-  // create dynamic component
-  return Vue.extend({
-    template: instance.template,
-    components: addonComponents,
-    data () {
-      return {
-        // all plugin vars is under v.[...]
-        v: Object(instance.record),
-        meta,
-        instance,
-      }
-    },
-    mounted () {
-      console.log(`[${instance.id}] activate`)
-    },
-    methods: {
-      ...hooks,
-      // callback from server
-      callbackFromServer (data: Record<string, any>) {
-        console.log(`[${instance.id}] callback from server`)
-        for (const [k, v] of Object.entries(data)) {
-          // @ts-ignore
-          this.$set(this.v, k, v)
-        }
-      },
-    },
-  })
+  return modules
 }
 
-export const compile = async (instance: Plugin, meta: PluginConfig): Promise<Component> => {
-  console.log(`[Compiler] ${instance.id} try to compile`)
+export const compile = async (
+  instance: Plugin, 
+  meta: PluginMeta, 
+  config: PluginConfig,
+  server?: any
+): Promise<Component> => {
+  const isLocalOnly = !!server
 
-  // TODO : addon by dynamic imports
+  if (isLocalOnly) {
+    console.log(`[Compiler] ${config.id} try to compile with local mode`)
+  } else {
+    console.log(`[Compiler] ${config.id} try to compile`)
+  }
+
   // addons
-  const addonComponents: Record<string, Component> = {}
-  // module import
-  await import('vuetify/lib').then((addons: Record<string, any>) => {
-    Object.entries(addons)
-      .filter(([key, _]) => key[0] === 'V')
-      .forEach(([key, component]) => {
-        addonComponents[key] = component
-      })
-  })
-  // for (const [key, path] of Object.entries(instance.addons)) {
-  //   import(path).then(addon => {
-  //     addonComponents[key] = addon
-  //   })
-  // }
+  const addonComponents: Record<string, Component> = await fetchPreinstalledModules()
 
-  const hooks: Record<string, (vm: any, ...args: any) => void> = {}
-  instance.events.map((event) => {
-    hooks[event] = function (_: Event): void {
+  for (const [key, path] of Object.entries(instance.addons)) {
+    const [library, comp] = path.split('/')
+    console.log([library, comp])
+    if (comp) {
+      const addon = await import(library)
+      console.log(addon[comp])
+      addonComponents[key] = addon[comp]
+    } else {
+      const addon = await import(path)
+      console.log(addon)
+      addonComponents[key] = addon
+    }
+  }
+
+  const socketInterface = (event: string) => {
+    return function (this: Vue, _: Event): void {
       const args = [].slice.call(arguments)
-      console.log(`[${instance.id}] Trigger ${event} with args [${args.join(',')}]`)
-      // @ts-ignore
+      console.log(`[${config.id}] Trigger ${event} with args [${args.join(',')}]`)
       this.$socket.emit('plugin/trigger', {
-        room_id: instance.room_id,
-        instance_id: instance.id,
+        room_id: config.room_id,
+        instance_id: config.id,
         event_name: event,
         args,
       })
+    }
+  }
+
+  const localInterface = (event: string) => {
+    return function (this: Vue & { callbackFromServer: (record: Record<string, any>) => void }, _: Event): void {
+      const args = [].slice.call(arguments)
+      console.log(`[local:${config.id}] Trigger ${event} with args [${args.join(',')}]`)
+      // invoke function
+      server[event](...args)
+      const record = Object(server)
+      this.callbackFromServer(record)
+    }
+  }
+
+  const hooks: Record<string, (vm: any, ...args: any) => void> = {}
+  instance.events.map((event: string) => {
+    if (isLocalOnly) {
+      hooks[event] = localInterface(event)
+    } else {
+      hooks[event] = socketInterface(event)
     }
   })
 
@@ -120,24 +92,20 @@ export const compile = async (instance: Plugin, meta: PluginConfig): Promise<Com
       },
     },
     data (): {
-      v: Record<string, any>,
-      meta: PluginConfig,
-      instance: Plugin,
+      v: Record<string, any>
     } {
       return {
-        v: Object(instance.record),
-        meta,
-        instance,
+        v: Object(instance.record)
       }
     },
     mounted () {
-      console.log(`[${instance.id}] active`)
+      console.log(`[${config.id}] active`)
     },
     methods: {
       ...hooks,
       // callback from server
       callbackFromServer (vs: Record<string, any>) {
-        console.log(`[${instance.id}] callback from server ${Object.keys(vs)}`)
+        console.log(`[${config.id}] callback from server ${Object.keys(vs)}`)
         for (const [k, v] of Object.entries(vs)) {
           // @ts-ignore
           this.$set(this.v, k, v)

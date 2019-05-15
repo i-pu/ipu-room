@@ -22,14 +22,14 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 
-import { Room, User, Plugin, PluginConfig } from '@/model'
+import { Room, User, Plugin, PluginConfig, PluginMeta } from '@/model'
 
 import Desk from '@/components/room/Desk.vue'
 import Status from '@/components/room/Status.vue'
 import Settings from '@/components/room/Settings.vue'
 
 import { ROOMS_MOCK } from '@/api/mock'
-import { compile, compileLocal } from '@/logic/compiler'
+import { compile } from '@/logic/compiler'
 
 import Counter, { CounterServer } from '@/plugin_examples/counter'
 import YoutubePlayer, { YoutubePlayerServer } from '@/plugin_examples/youtubePlayer'
@@ -47,10 +47,10 @@ import Chat, { ChatServer } from '@/plugin_examples/chat'
     'room/exit-event' ({ members }: { members: User[] }) {
       this.room!!.members = members
     },
-    'plugin/info' (packages: Array<{ instance: Plugin, meta: PluginConfig }>) {
+    'plugin/info' (packages: Array<{ instance: Plugin, meta: PluginMeta, config: PluginConfig }>) {
       this.room!!.plugins = []
-      for (const { instance, meta } of packages) {
-        this.addPlugin(instance, meta)
+      for (const { instance, meta, config } of packages) {
+        this.addPlugin(instance, meta, config)
       }
     },
   },
@@ -86,14 +86,9 @@ export default class RoomView extends Vue {
     }
   }
 
-  private async addPlugin (instance: Plugin, meta: PluginConfig, server?: any) {
-    if (this.$store.getters.localOnly) {
-      const component = await compileLocal(instance, meta, server)
-      this.room!!.plugins.push({ component })
-    } else {
-      const component = await compile(instance, meta)
-      this.room!!.plugins.push({ component })
-    }
+  private async addPlugin (instance: Plugin, meta: PluginMeta, config: PluginConfig, server?: any) {
+    const component = await compile(instance, meta, config, server)
+    this.room!!.plugins.push({ component, meta, config })
   }
 
   private requestExitRoom () {

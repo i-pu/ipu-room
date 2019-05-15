@@ -5,8 +5,8 @@
       v-layout(row wrap)
         v-flex(
           d-flex xs12 sm12 md9
-          v-for="{ component } in room.plugins"
-          v-if="true"
+          v-for="{ component, config } in room.plugins"
+          v-if="config.enabled"
         )
           v-card(white fluid)
             component(:is="component")
