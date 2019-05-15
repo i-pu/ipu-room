@@ -28,9 +28,7 @@ export interface PluginConfig {
   description: string,
   author: string,
   tags: string,
-  content: string,
-  // plugin enabled
-  enabled: boolean
+  content: string
 }
 
 export interface Comment {

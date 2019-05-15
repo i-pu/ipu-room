@@ -17,6 +17,9 @@ const counter: Plugin = {
   events: ['plus'],
   record: { count: 0 },
   addons: { VBtn: 'vuetify/lib/components/VBtn' },
+  room_id: '',
+  id: '',
+  enabled: true,
 }
 
 export default counter

@@ -51,9 +51,9 @@ export default class RoomCreateForm extends Vue {
 
   private fetchPluginData () {
     fetch(`${process.env.VUE_APP_API_ORIGIN}/plugin`)
-      .then(res => res.json())
-      .then(({ plugins }: { plugins: { id }[]}) => {
-        this.plugins = plugins.map(plugin => plugin.id)
+      .then((res) => res.json())
+      .then(({ plugins }: { plugins: Array<{ id: string }>}) => {
+        this.plugins = plugins.map((plugin) => plugin.id)
       })
   }
 

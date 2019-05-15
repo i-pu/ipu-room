@@ -43,7 +43,7 @@
                       label="プラグイン"
                     )
                   v-flex(xs6 sm6)
-                    v-btn(color="success" block @click="addPlugin") を追加
+                    v-btn(color="success" block @click="onAddPlugin") を追加
           v-card-actions
 </template>
 
@@ -72,31 +72,38 @@ export default class Settings extends Vue {
     console.log(this.room.plugins)
   }
 
-  private addPlugin () {
-    if (this.selectedPlugin === 'counter') {
-      const config: PluginConfig = {
-        room_id: this.room.roomId,
-        plugin_id: 'counter--1',
-        name: 'counter',
-        enabled: true,
-      }
-      this.$emit('add-plugin', config, Counter)
-    } else if (this.selectedPlugin === 'chat') {
-      const config: PluginConfig = {
-        room_id: this.room.roomId,
-        plugin_id: 'chat001',
-        name: 'chat',
-        enabled: true,
-      }
-      this.$emit('add-plugin', config, Chat)
+  private onAddPlugin () {
+    if (this.$store.getters.localOnly) {
+      // TODO
+      return
     } else {
-      const config: PluginConfig = {
-        room_id: this.room.roomId,
-        plugin_id: 'player001',
-        name: 'player',
-        enabled: true,
+      const meta: PluginConfig = {
+        plugin_id: '${this.selectedPlugin}001',
+        name: this.selectedPlugin,
+        description: '',
+        author: '',
+        content: '',
+        tags: '',
       }
-      this.$emit('add-plugin', config, YoutubePlayer)
+      if (this.selectedPlugin === 'counter') {
+        this.$emit('add-plugin', {
+          ...Counter,
+          room_id: this.room.id,
+          enabled: true,
+        }, meta, new CounterServer())
+      } else if (this.selectedPlugin === 'chat') {
+        this.$emit('add-plugin', {
+          ...Chat,
+          room_id: this.room.id,
+          enabled: true,
+        }, new ChatServer())
+      } else if (this.selectedPlugin === 'player') {
+        this.$emit('add-plugin', {
+          ...YoutubePlayer,
+          room_id: this.room.id,
+          enabled: true,
+        }, new YoutubePlayerServer())
+      }
     }
   }
 

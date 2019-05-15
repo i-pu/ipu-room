@@ -45,10 +45,10 @@ import Chat, { ChatServer } from '@/plugin_examples/chat'
       this.responseExitRoom()
     },
     'room/exit-event' ({ members }: { members: User[] }) {
-      this.room.members = members
+      this.room!!.members = members
     },
     'plugin/info' (packages: Array<{ instance: Plugin, meta: PluginConfig }>) {
-      this.room.plugins = []
+      this.room!!.plugins = []
       for (const { instance, meta } of packages) {
         this.addPlugin(instance, meta)
       }
@@ -80,46 +80,20 @@ export default class RoomView extends Vue {
     console.log(JSON.parse(JSON.stringify(data.room.plugins)))
     this.room = data.room
     if (this.$store.getters.localOnly) {
-      this.addPluginLocal('chat')
+      // this.addPluginLocal('chat')
     } else {
       this.$socket.emit('plugin/info', { room_id: this.room.id })
     }
   }
 
-  private async addPluginLocal (name: string) {
-    if (!this.room) {
-      return
-    }
-    const meta: PluginConfig = {
-      room_id: this.roomId,
-      plugin_id: '${name}001',
-      name: name,
-      enabled: true,
-    }
-    // counter
-    if (meta.name === 'counter') {
-      this.room.plugins.push({
-        component: await compileLocal(Counter, meta, new CounterServer()),
-        config: meta,
-      })
-    } else if (meta.name === 'chat') {
-      this.room.plugins.push({
-        component: await compileLocal(Chat, meta, new ChatServer()),
-        config: meta,
-      })
-    } else if (meta.name === 'player') {
-      this.room.plugins.push({
-        component: await compileLocal(YoutubePlayer, meta, new YoutubePlayerServer()),
-        config: meta,
-      })
+  private async addPlugin (instance: Plugin, meta: PluginConfig, server?: any) {
+    if (this.$store.getters.localOnly) {
+      const component = await compileLocal(instance, meta, server)
+      this.room!!.plugins.push({ component })
     } else {
-      console.warn(`[Room] plugin ${meta.name} not found`)
+      const component = await compile(instance, meta)
+      this.room!!.plugins.push({ component })
     }
-  }
-
-  private async addPlugin (instance: Plugin, meta: PluginConfig) {
-    const component = await compile(instance, meta)
-    this.room!!.plugins.push({ component })
   }
 
   private requestExitRoom () {

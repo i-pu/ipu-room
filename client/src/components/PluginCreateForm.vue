@@ -86,13 +86,13 @@ export default class PluginCreateForm extends Vue {
     description: string,
     author: string,
     tags: string,
-    content: string
+    content: string,
   } = {
     name: '',
     description: '',
     author: '',
     tags: '',
-    content: ''
+    content: '',
   }
 
   public onFileSelected (event: Event) {

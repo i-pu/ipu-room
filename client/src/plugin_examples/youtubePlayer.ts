@@ -19,9 +19,12 @@ const youtubePlayer: Plugin = {
   template: youtubeTemplate,
   events: [],
   record: {
-    videoId: 'SX_ViT4Ra7k'
+    videoId: 'SX_ViT4Ra7k',
   },
   addons: { player: 'vue-youtube' },
+  room_id: '',
+  id: '',
+  enabled: true,
 }
 
 export default youtubePlayer

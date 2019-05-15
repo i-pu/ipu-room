@@ -4,21 +4,21 @@ import { Plugin, PluginConfig } from '@/model'
 export const compileLocal = async (
   instance: Plugin,
   meta: PluginConfig,
-  server: any
+  server: any,
 ): Promise<Component> => {
   // addons
   const addonComponents: Record<string, Component> = {}
   // module import
-  await import('vuetify/lib').then((addons: Object) => {
+  await import('vuetify/lib').then((addons: Record<string, any>) => {
     Object.entries(addons)
-      .filter(([key, _]) => key[0] == 'V')
+      .filter(([key, _]) => key[0] === 'V')
       .forEach(([key, component]) => {
         addonComponents[key] = component
       })
   })
 
   for (const [key, path] of Object.entries(instance.addons)) {
-    import(path).then(addon => {
+    import(path).then((addon) => {
       console.log({ key, addon })
       addonComponents[key] = addon.Youtube
     })
@@ -53,8 +53,8 @@ export const compileLocal = async (
       return {
         // all plugin vars is under v.[...]
         v: Object(instance.record),
-        meta: meta,
-        instance: instance,
+        meta,
+        instance,
       }
     },
     mounted () {
@@ -81,9 +81,9 @@ export const compile = async (instance: Plugin, meta: PluginConfig): Promise<Com
   // addons
   const addonComponents: Record<string, Component> = {}
   // module import
-  await import('vuetify/lib').then((addons: Object) => {
+  await import('vuetify/lib').then((addons: Record<string, any>) => {
     Object.entries(addons)
-      .filter(([key, _]) => key[0] == 'V')
+      .filter(([key, _]) => key[0] === 'V')
       .forEach(([key, component]) => {
         addonComponents[key] = component
       })
@@ -104,7 +104,7 @@ export const compile = async (instance: Plugin, meta: PluginConfig): Promise<Com
         room_id: instance.room_id,
         instance_id: instance.id,
         event_name: event,
-        args: args,
+        args,
       })
     }
   })
@@ -122,12 +122,12 @@ export const compile = async (instance: Plugin, meta: PluginConfig): Promise<Com
     data (): {
       v: Record<string, any>,
       meta: PluginConfig,
-      instance: Plugin
+      instance: Plugin,
     } {
       return {
         v: Object(instance.record),
-        meta: meta,
-        instance: instance,
+        meta,
+        instance,
       }
     },
     mounted () {

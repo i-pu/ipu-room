@@ -16,7 +16,7 @@ export class ChatServer {
       comment_id: Math.random().toString(36),
       user_name: 'John',
       user_id: 'xxxx',
-      text: text,
+      text,
       commented_at: new Date(),
     }
     this.comments.push(comment)
@@ -71,7 +71,7 @@ const rawPlugin = `
         </v-list-tile>
       </template>
     </v-list>
-    
+
     <v-container fluid="fluid" grid-list-md="grid-list-md" text-xs-center="text-xs-center">
       <v-layout row="row" wrap="wrap">
         <v-flex d-flex="d-flex" xs8="xs8" sm8="sm8" md8="md8">
@@ -111,6 +111,9 @@ const chat: Plugin = {
     chatInput: '',
   },
   addons: {},
+  id: '',
+  room_id: '',
+  enabled: true,
 }
 
 export default chat
