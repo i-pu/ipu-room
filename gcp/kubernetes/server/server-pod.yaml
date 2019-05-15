@@ -20,36 +20,51 @@ spec:
         app: server
     spec:
       containers:
-      - name: server
-        image: docker.io/DOCKER_USERNAME/IMAGE:TAG
-        imagePullPolicy: IfNotPresent
-        env:
-        - name: POSTGRES_HOST
-          value: postgres
-        envFrom:
-        - configMapRef:
-            name: postgres-configmap
-        ports:
-        - containerPort: 8000
-        resources:
-          requests:
-            memory: 50Mi
-            cpu: 10m
-
+        - name: server
+          image: docker.io/DOCKER_USERNAME/IMAGE:TAG
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POSTGRES_HOST
+              value: postgres
+          envFrom:
+            - configMapRef:
+                name: postgres-configmap
+          ports:
+            - containerPort: 8000
+          resources:
+            requests:
+              memory: 50Mi
+              cpu: 10m
 
 ---
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: postgres
-  labels:
-    app: postgres
 spec:
-  containers:
-  - name: postgres
-    image: postgres
-    envFrom:
-    - configMapRef:
-        name: postgres-configmap
-    ports:
-    - containerPort: 5432
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 0
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres
+          envFrom:
+            - configMapRef:
+                name: postgres-configmap
+          ports:
+            - containerPort: 5432
+          resources:
+            requests:
+              memory: 50Mi
+              cpu: 10m

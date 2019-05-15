@@ -27,5 +27,5 @@ class Room(db.Model):
             'thumbnail_url': self.thumbnail_url,
             'members': list(map(User.__to_dict__, self.members)),
             'comments': self.comments,
-            'plugins': list(map(lambda x: {'config': {'name': x.name, 'enabled': True}}, self.active_plugins)),
+            'plugins': list({'config': map(ActivePlugin.__to_dict__, self.active_plugins)}),
         }

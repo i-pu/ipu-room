@@ -36,19 +36,16 @@ class TestSocketIOHandler(unittest.TestCase):
     def test_lobby(self):
         @self.sio.on('lobby')
         def lobby(data):
-            self.expected = 0
-            self.actual = data['rooms']
+            self.assertFalse('rooms' in data.values())
 
         self.sio.emit('visit', {'user_name': 'lobby user'})
         self.sio.emit('lobby')
         self.sio.sleep(2)
-        self.assertIsNotNone(self.expected)
-        self.assertIsNotNone(self.actual)
-        self.assertTrue(self.expected == len(self.actual))
 
     def test_room_create(self):
         @self.sio.on('room/create')
         def room_create(data):
+            self.assertFalse('room' in data.values())
             self.expected = {'room_name': data['room']['name']}
             self.actual = {'room_name': 'some_room'}
 
@@ -60,11 +57,12 @@ class TestSocketIOHandler(unittest.TestCase):
     def test_plugin_register(self):
         @self.sio.on('plugin/register')
         def plugin_register(data):
+            self.assertFalse('state' in data.values())
             self.expected = True
             self.actual = data['state']
 
         plugin_name = 'counter'
-        with open(os.path.join(os.path.dirname(__file__), plugin_name + '.py'), mode='r') as f:
+        with open(os.path.join(os.path.dirname(__file__), plugin_name + '.py.txt'), mode='r') as f:
             plugin_file = f.read()
         self.sio.emit('visit', {'user_name': 'plugin_register user'})
         self.sio.emit('plugin/register', {'plugin_name': plugin_name, 'plugin_file': plugin_file})
@@ -74,6 +72,7 @@ class TestSocketIOHandler(unittest.TestCase):
     def test_room_create_with_plugin(self):
         @self.sio.on('room/create')
         def room_create(data):
+            self.assertFalse('room' in data.values())
             self.expected = [{'config': {'name': 'counter', 'enabled': True}}]
             self.actual = data['room']['plugins']
 
@@ -81,6 +80,21 @@ class TestSocketIOHandler(unittest.TestCase):
         self.sio.emit('room/create', {'room_name': 'some_room', 'plugins': ['counter']})
         self.sio.sleep(1)
         self.assertEqual(self.expected, self.actual)
+
+    def test_room_enter(self):
+
+        @self.sio.on('room/create')
+        def room_create(data):
+            self.assertFalse('room' in data.values())
+            room_id = data['room']['id']
+            self.sio.emit('room/enter', {'room_id': room_id})
+
+        @self.sio.on('room/enter')
+        def room_enter(data):
+            self.assertFalse('room' in data.values())
+
+        self.sio.emit('visit', {'user_name': 'room/enter user'})
+        self.sio.sleep(1)
 
     # 最後に実行したいので zzz をつけている
     def test_zzz_sample(self):

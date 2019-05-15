@@ -49,7 +49,11 @@ def visit(data):
     db.session.commit()
 
     mylogger.debug('- - user: {}'.format(user))
-    socketio.emit('visit', data={'user': user.__to_dict__()})
+
+    ret = {'user': user.__to_dict__()}
+    mylogger.info('- - return')
+    mylogger.info('{}'.format(ret))
+    socketio.emit('visit', data=ret)
 
 
 @socketio.on('lobby')
@@ -59,10 +63,10 @@ def visit(data):
 def lobby(data):
     all_room = Room.query.all()
 
-    socketio.emit('lobby',
-                  data={
-                      'rooms': list(map(Room.__to_dict__, all_room)),
-                  })
+    ret = {'rooms': list(map(Room.__to_dict__, all_room))}
+    mylogger.info('- - return')
+    mylogger.info('{}'.format(ret))
+    socketio.emit('lobby', data=ret)
 
 
 @socketio.on('plugin/register')
@@ -71,20 +75,44 @@ def lobby(data):
 @utils.function_info_wrapper
 def plugin_register(data):
     mylogger.debug('- - data: {}'.format(data))
-    plugin_name: str = data['plugin_name']
-    plugin_file = data['plugin_file']
+    plugin_name: str = data['name']
+    plugin_content = data['content']
+    plugin_description = data['description']
+    # name: string,
+    # description: string,
+    # author: string,
+    # tags: string,
+    # content: string,
 
-    # todo: compiler を使ったやつを実装する
-    # html, _, python = plugin_compiler(plugin_file)
+    try:
+        template, events, records, python, addons = plugin_compiler(plugin_content)
+        # todo: compiler error
+        template = \
+            '''
+      <div>
+        <h3> {{ v.count }} </h3>
+        <v-btn @click="plus(1)"> Add </v-btn>
+      </div>
+    '''
+    except Exception as e:
+        mylogger.error(e)
+        raise e
 
-    plugin = Plugin(name=plugin_name, python_code=plugin_file)
+    plugin = Plugin(name=plugin_name,
+                    python=python,
+                    template=template,
+                    description=plugin_description)
     try:
         db.session.add(plugin)
         db.session.commit()
-        socketio.emit('plugin/register', data={'state': True})
+        ret = {'state': True}
     except Exception as e:
-        socketio.emit('plugin/register', data={'state': False})
-        raise e
+        mylogger.error(e)
+        ret = {'state': False}
+
+    mylogger.info('- - return')
+    mylogger.info('{}'.format(ret))
+    socketio.emit('plugin/register', data=ret)
 
 
 @socketio.on('room/create')
@@ -98,7 +126,7 @@ def room_create(data):
     部屋の情報を作成し返す．
 
     Args:
-        data: {'room_name': str, 'plugins': [plugin_name]}
+        data: {'room_name': str, 'plugins': [plugin_id]}
 
     Emit:
         room
@@ -111,30 +139,30 @@ def room_create(data):
     db.session.add(room)
     db.session.commit()
 
-    plugin_names = data['plugins']
+    plugins = data['plugins']
 
-    if config.global_plugins is None:
-        mylogger.error('----------- plugins error --------')
-        mylogger.error('config global is None!!!!!!!')
-        raise Exception('config global is None')
+    for plugin_id in plugins:
 
-    for plugin_name in plugin_names:
+        try:
+            plugin = Plugin.query.filter_by(id=plugin_id).one()
+        except Exception as e:
+            mylogger.error(e)
+            raise e
 
-        plugin = Plugin.query.filter_by(name=plugin_name).one_or_none()
-        if plugin is None:
-            raise RuntimeError('plugin: {} does not exist'.format(plugin_name))
-
-        active_plugin = ActivePlugin(room_id=room.id, name=plugin_name)
+        active_plugin = ActivePlugin(room_id=room.id, plugin_id=plugin_id)
         db.session.add(active_plugin)
         db.session.commit()
 
-        exec(plugin.python_code)
+        exec(plugin.python)
 
-        config.global_plugins[room.id + '-' + plugin_name] = eval('UserPlugin()')
+        config.global_plugins[room.id + '-' + active_plugin.id] = eval('Plugin()')
         mylogger.info('--------------- plugins ---------------')
-        mylogger.info(config.global_plugins[room.id + '-' + plugin_name])
+        mylogger.info(config.global_plugins[room.id + '-' + active_plugin.id])
 
-    socketio.emit('room/create', data={'room': room.__to_dict__()})
+    ret = {'room': room.__to_dict__()}
+    mylogger.info('- - return')
+    mylogger.info('{}'.format(ret))
+    socketio.emit('room/create', data=ret)
 
 
 @socketio.on('room/enter')
@@ -153,11 +181,11 @@ def room_enter(data):
 
     room.members.append(user)
     db.session.commit()
-    mylogger.debug('- - room: {}'.format(room))
 
-    socketio.emit('room/enter',
-                  data={'room': room.__to_dict__()},
-                  room=room_id)
+    ret = {'room': room.__to_dict__()}
+    mylogger.info('- - return')
+    mylogger.info('{}'.format(ret))
+    socketio.emit('room/enter', data=ret, room=room_id)
 
 
 @socketio.on('plugin/info')
@@ -165,38 +193,53 @@ def room_enter(data):
 @utils.check_user
 @utils.function_info_wrapper
 def plugin_info(data):
-    # room_id から plugin を呼び出す．
-    # 今のplugins の状態を返す
-    # todo: とりあえず 1つ
-    active_plugin = ActivePlugin.query.filter_by(room_id=data['room_id']).first()
-    mylogger.debug('active_plugins: {}'.format(active_plugin))
+    active_plugins = ActivePlugin.query.filter_by(room_id=data['room_id']).all()
+    mylogger.debug('active_plugins: {}'.format(active_plugins))
 
-    plugin = config.global_plugins[data['room_id'] + '-' + active_plugin.name]
+    configs = []
+    for ap in active_plugins:
+        plugin_obj = config.global_plugins[data['room_id'] + '-' + ap.id]
+        plugin = Plugin.query.filter_by(id=ap.plugin_id).one()
+        try:
+            configs.append(
+                {'instance': {'template': plugin.template,
+                              'events': plugin_obj.events,
+                              'record': plugin_obj.constructor(),
+                              'addons': [],
+                              **ap.__to_dict__(),
+                              },
+                 'meta': plugin.__to_dict__(),
+                 }
+            )
+        except Exception as e:
+            import traceback
+            mylogger.error(e)
+            traceback.print_exc()
+            raise e
 
-    socketio.emit('plugin/info',
-                  data={
-                      'template': '<div><h3> {{ v.count }} </h3><v-btn @click="plus"> Add </v-btn></div>',
-                      'events': plugin.all(),
-                      'record': plugin.constructor(),
-                  })
+    mylogger.info('- - return')
+    mylogger.info('{}'.format(configs))
+    socketio.emit('plugin/info', data=configs)
 
 
+# todo: trigger するときにはroom.idとactive_plugin.idがほしい
 @socketio.on('plugin/trigger')
 @utils.byte_data_to_dict
 @utils.check_user
 @utils.function_info_wrapper
 def plugin_trigger(data):
     room_id = data['room_id']
-    plugin_id = data['plugin_id']
+    instance_id = data['instance_id']
     event_name = data['event_name']
     event_args: List[Any] = data['args']
 
-    user_plugin = config.global_plugins[room_id + '-' + plugin_id]
+    user_plugin = config.global_plugins[room_id + '-' + instance_id]
     event_func = eval('user_plugin.{}'.format(event_name))
     result = {'record': event_func(*event_args)}
 
+    mylogger.info('- - return')
+    mylogger.info('{}'.format(result))
     socketio.emit('plugin/trigger', data=result, room=room_id)
-    # plugin trigger の返り値にはrecord を指定するので，UserPluginは辞書を返す関数だと嬉しい
 
 
 @socketio.on('chat')
@@ -229,8 +272,12 @@ def room_exit(data):
     db.session.commit()
 
     socketio.emit('room/exit')  # 抜けた人に通知
-    socketio.emit('room/exit',  # 残ってる人に通知
-                  data={'user': user.__to_dict__()},
+
+    users = User.query.filter_by(room_id=room_id).all()
+
+    ret = {'members': list(map(User.__to_dict__, users))}
+    socketio.emit('room/exit_event',  # 残ってる人に通知
+                  data=ret,
                   room=room_id)
 
 

@@ -1,0 +1,19 @@
+<html>
+  <div>
+    <h3> {{ count }} </h3>
+    <v-btn @click="plus"> Add </v-btn>
+  </div>
+</html>
+<python>
+  class Plugin():
+    def __init__(self):
+      self.events = ['plus']
+      self.count = 0
+
+    def constructor(self):
+      return { 'count': self.count }
+
+    def plus(data):
+      self.count += data
+      return { 'count': self.count }
+</python>
