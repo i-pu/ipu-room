@@ -9,19 +9,26 @@ export interface Plugin {
   // variables in plugin
   record: Record<string, any>,
   // custom component that be used in
-  addons: Record<string, Component>
+  addons: Record<string, string>,
+  // === instanve infos ===
+  // unique instance
+  id: string,
+  // room id
+  room_id: string,
+  // instance's state
+  enabled: boolean
 }
 
 // typeof plugin config
 export interface PluginConfig {
-  //
-  room_id: string,
-  //
+  // plugin id
   plugin_id: string,
   // plugin name
   name: string,
-  // plugin enabled
-  enabled: boolean
+  description: string,
+  author: string,
+  tags: string,
+  content: string
 }
 
 export interface Comment {
@@ -39,7 +46,7 @@ export interface Room {
   id: string,
   thumbnail_url: string,
   members: User[],
-  plugins: Array<{ component: Component, config: PluginConfig }>
+  plugins: Array<{ component: Component }>
 }
 
 export interface User {

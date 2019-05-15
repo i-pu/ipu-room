@@ -3,7 +3,7 @@
     v-layout(row justify-center)
       v-dialog(v-model="dialog" max-width="600px")
         template(v-slot:activator="{ on }")
-          v-btn(color="success" v-on="on") 部屋を作成
+          v-btn(color="success" @click="fetchPluginData" v-on="on") 部屋を作成
         v-card
           v-card-title
             span.headline 部屋を作成
@@ -46,8 +46,16 @@ export default class RoomCreateForm extends Vue {
 
   private dialog: boolean = false
   private roomNameInput: string = ''
-  private plugins: string[] = ['counter']
+  private plugins: string[] = []
   private selectedPlugins: string[] = []
+
+  private fetchPluginData () {
+    fetch(`${process.env.VUE_APP_API_ORIGIN}/plugin`)
+      .then((res) => res.json())
+      .then(({ plugins }: { plugins: Array<{ id: string }>}) => {
+        this.plugins = plugins.map((plugin) => plugin.id)
+      })
+  }
 
   private requestCreateRoom () {
     if (this.$store.getters.localOnly) {

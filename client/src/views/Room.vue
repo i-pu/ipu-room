@@ -4,7 +4,7 @@
       v-layout(row wrap)
         v-flex(d-flex xs12 sm12 md12)
           v-toolbar(dense)
-            v-toolbar-title {{ room.room_name }}
+            v-toolbar-title {{ room.name }}
             v-spacer
             settings(:room="room" @add-plugin="addPlugin")
             v-btn(color="error" @click="requestExitRoom") 退出
@@ -22,8 +22,7 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 
-import { Room } from '@/model'
-import { Plugin, PluginConfig } from '@/model'
+import { Room, User, Plugin, PluginConfig } from '@/model'
 
 import Desk from '@/components/room/Desk.vue'
 import Status from '@/components/room/Status.vue'
@@ -32,12 +31,9 @@ import Settings from '@/components/room/Settings.vue'
 import { ROOMS_MOCK } from '@/api/mock'
 import { compile, compileLocal } from '@/logic/compiler'
 
-// =================
-//  Example Plugins
-// =================
 import Counter, { CounterServer } from '@/plugin_examples/counter'
-import YoutubePlayer, { YoutubePlayerServer } from '@/plugin_examples//youtubePlayer'
-import Chat, { ChatServer } from '@/plugin_examples//chat'
+import YoutubePlayer, { YoutubePlayerServer } from '@/plugin_examples/youtubePlayer'
+import Chat, { ChatServer } from '@/plugin_examples/chat'
 
 @Component<RoomView>({
   components: { Desk, Status, Settings },
@@ -48,17 +44,14 @@ import Chat, { ChatServer } from '@/plugin_examples//chat'
     'room/exit' (data: {}) {
       this.responseExitRoom()
     },
-    'plugin/info' (plugin: Plugin) {
-      // Repair data from server
-      plugin.addons = Object.assign(plugin.addons, Counter.addons)
-      const config: PluginConfig = {
-        room_id: this.roomId,
-        name: 'counter',
-        plugin_id: 'counter',
-        enabled: true,
+    'room/exit-event' ({ members }: { members: User[] }) {
+      this.room!!.members = members
+    },
+    'plugin/info' (packages: Array<{ instance: Plugin, meta: PluginConfig }>) {
+      this.room!!.plugins = []
+      for (const { instance, meta } of packages) {
+        this.addPlugin(instance, meta)
       }
-
-      this.addPlugin(config, plugin)
     },
   },
 })
@@ -87,21 +80,19 @@ export default class RoomView extends Vue {
     console.log(JSON.parse(JSON.stringify(data.room.plugins)))
     this.room = data.room
     if (this.$store.getters.localOnly) {
-      const config: PluginConfig = {
-        room_id: this.roomId,
-        plugin_id: 'counter',
-        name: 'counter',
-        enabled: true,
-      }
-      const plugin = {
-        template: Counter.template,
-        events: ['plus'],
-        addons: Counter.addons,
-        record: { count: 0 },
-      }
-      this.addPlugin(config, plugin)
+      // this.addPluginLocal('chat')
     } else {
       this.$socket.emit('plugin/info', { room_id: this.room.id })
+    }
+  }
+
+  private async addPlugin (instance: Plugin, meta: PluginConfig, server?: any) {
+    if (this.$store.getters.localOnly) {
+      const component = await compileLocal(instance, meta, server)
+      this.room!!.plugins.push({ component })
+    } else {
+      const component = await compile(instance, meta)
+      this.room!!.plugins.push({ component })
     }
   }
 
@@ -115,35 +106,6 @@ export default class RoomView extends Vue {
 
   private responseExitRoom () {
     this.$router.push('/lobby')
-  }
-
-  private addPlugin (config: PluginConfig, plugin?: Plugin) {
-    if (this.$store.getters.localOnly) {
-      // counter
-      if (config.name === 'counter') {
-        this.room!!.plugins.push({
-          component: compileLocal({
-            template: Counter.template,
-            addons: Counter.addons,
-            server: new CounterServer(),
-          }),
-          config,
-        })
-      } else if (config.name === 'chat') {
-        // this.room!!.plugins.push({
-        //   component: compileLocal({ ...Chat, server: new ChatServer() }),
-        //   config
-        // })
-      } else {
-        console.warn(`[Room] plugin ${config.name} not found`)
-      }
-    } else {
-      console.log(plugin)
-      this.room!!.plugins.push({
-        component: compile({ ...plugin!! }, config),
-        config,
-      })
-    }
   }
 }
 </script>

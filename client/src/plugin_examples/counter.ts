@@ -1,24 +1,8 @@
 // ==========================
 //  Example plugin counter
-// ==========================
-import { Plugin } from '@/model'
+// ========================
 
-export const rawPlugin = `
-<html>
-  <div>
-    <h3> {{ v.count }} </h3>
-    <v-btn @click="plus"> Add </v-btn>
-  </div>
-</html>
-<pyhton>
-  class Plugin():
-    def __init__(self):
-      self.count = 0
-    def plus(data):
-      self.count += data
-      return ['count']
-</pyhton>
-`
+import { Plugin } from '@/model'
 
 export class CounterServer {
   public count: number = 0
@@ -28,13 +12,14 @@ export class CounterServer {
   }
 }
 
-import { VBtn } from 'vuetify/lib'
-
-const counter: Plugin =  {
+const counter: Plugin = {
   template: `<div><h3> {{ v.count }} </h3><v-btn @click="plus"> Add </v-btn></div>`,
   events: ['plus'],
   record: { count: 0 },
-  addons: { VBtn },
+  addons: { VBtn: 'vuetify/lib/components/VBtn' },
+  room_id: '',
+  id: '',
+  enabled: true,
 }
 
 export default counter

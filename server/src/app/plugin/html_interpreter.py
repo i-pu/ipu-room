@@ -77,8 +77,25 @@ def compile(plugin):
     parser = Parser()
     parser.feed(plugin)
 
+<<<<<<< HEAD
+    @staticmethod
+    def compile(plugin):
+        parser = Parser()
+        parser.feed(plugin)
+        parser.template = re.sub(r'.*\{\{\s*(.*)\}\}.*', r'{{v.\1}}', plugin)
+        # TODO <html> ... </html><python> => ...
+        parser.template = re.sub(r'$<html>(.*)</html>', r'\1', parser.template, flags = re.MULTILINE | re.DOTALL)
+        print(parser.template)
+        g = {}
+        print(parser.python)
+        exec(parser.python, g)
+        instance = g['Plugin']()
+        methods = list(set(filter(lambda method: method[0] != '_', dir(instance))) - set(vars(instance)))
+        variables = dict.keys(vars(instance))
+=======
     # {{ hoge }} -> {{ v.hoge }}
     parser.template = re.sub(r'.*\{\{\s*(.*)\}\}.*', r'{{v.\1}}' , plugin)
+>>>>>>> master
 
     # emulate plugin to extract methods and member variables
     try:

@@ -27,23 +27,23 @@
                       label="設定1"
                     )
 
-                    h3 プラグイン
+                    //- h3 プラグイン
 
-                    template(v-for="{ config } in room.plugins")
-                      v-switch(
-                        v-model="config.enabled"
-                        :label="config.name"
-                        @change="onChangePluginSettings(config.name)"
-                      )
+                    //- template(v-for="{ component } in room.plugins")
+                    //-   v-switch(
+                    //-     v-model="component.enabled"
+                    //-     :label="component.meta.name"
+                    //-     @change="onChangePluginSettings(component.meta.name)"
+                    //-   )
 
                   v-flex(xs6 sm6)
                     v-select(
                       v-model="selectedPlugin"
-                      :items="['counter', 'chat']"
+                      :items="['counter', 'chat', 'player']"
                       label="プラグイン"
                     )
                   v-flex(xs6 sm6)
-                    v-btn(color="success" block @click="$emit('add-plugin', selectedPlugin)") を追加
+                    v-btn(color="success" block @click="onAddPlugin") を追加
           v-card-actions
 </template>
 
@@ -52,6 +52,11 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Prop } from 'vue-property-decorator'
 import { Room } from '@/model'
+import { Plugin, PluginConfig } from '@/model'
+
+import Counter, { CounterServer } from '@/plugin_examples/counter'
+import YoutubePlayer, { YoutubePlayerServer } from '@/plugin_examples/youtubePlayer'
+import Chat, { ChatServer } from '@/plugin_examples/chat'
 
 @Component
 export default class Settings extends Vue {
@@ -67,6 +72,40 @@ export default class Settings extends Vue {
     console.log(this.room.plugins)
   }
 
+  private onAddPlugin () {
+    if (this.$store.getters.localOnly) {
+      // TODO
+      return
+    } else {
+      const meta: PluginConfig = {
+        plugin_id: '${this.selectedPlugin}001',
+        name: this.selectedPlugin,
+        description: '',
+        author: '',
+        content: '',
+        tags: '',
+      }
+      if (this.selectedPlugin === 'counter') {
+        this.$emit('add-plugin', {
+          ...Counter,
+          room_id: this.room.id,
+          enabled: true,
+        }, meta, new CounterServer())
+      } else if (this.selectedPlugin === 'chat') {
+        this.$emit('add-plugin', {
+          ...Chat,
+          room_id: this.room.id,
+          enabled: true,
+        }, new ChatServer())
+      } else if (this.selectedPlugin === 'player') {
+        this.$emit('add-plugin', {
+          ...YoutubePlayer,
+          room_id: this.room.id,
+          enabled: true,
+        }, new YoutubePlayerServer())
+      }
+    }
+  }
 
   private onChangePluginSettings (pluginName: string) {
     return {}
