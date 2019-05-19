@@ -1,5 +1,6 @@
 provider "google" {
-  project = "cka-practice-kafu"
+  project = "ipu-project"
+  credentials = "${file("${var.credentials_file}")}"
 }
 
 resource "google_container_cluster" "node" {

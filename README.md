@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/i-pu/ipu.svg?branch=master)](https://travis-ci.org/i-pu/ipu)
 
 ## CD
-http://35.247.48.47:31421  
+http://35.247.18.78:31421  
 [google kubernetes engine](https://cloud.google.com/kubernetes-engine/)
 ### client
 #### push
