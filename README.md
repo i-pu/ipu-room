@@ -1,7 +1,12 @@
-# IPU-ROOM
-[![Build Status](https://travis-ci.org/i-pu/ipu.svg?branch=master)](https://travis-ci.org/i-pu/ipu)
+# IPU-ROOM (仮称)
+[![Build Status](https://travis-ci.org/i-pu/ipu.svg?branch=master)](https://travis-ci.org/i-pu/ipu) (大嘘)
 
-## CD
+## Change Logs
+
+## Document
+(準備中)
+
+## Deploy
 http://35.247.18.78:31421  
 [google kubernetes engine](https://cloud.google.com/kubernetes-engine/)
 ### client
@@ -12,23 +17,13 @@ tag: client-cd
 #### push
 tag: server-cd
 
-## local
-### Run client
+## Development
+### run client
 ```
 cd client && docker-compose up --build
 ```
 
-### Delete server
-```
-docker-compose down
-```
-
-### Run server
+### run server
 ```
 cd server && docker-compose up --build
-```
-
-### Delete server
-```
-docker-compose down
 ```
