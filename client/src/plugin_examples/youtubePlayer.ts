@@ -10,15 +10,15 @@ export class YoutubePlayerServer {
 
 const youtubeTemplate = `
 <div>
-  <v-btn> Test </v-btn>
-  <player :video-id="v.video_id" player-width="1280" player-height="750" :player-vars="{autoplay: 1}" />
+  <v-btn @click="$log('test')"> Test </v-btn>
+  <player :video-id="v.video_id" player-width="1280" player-height="750" :player-vars="{autoplay: 1}"  @ready="$log('ready')" @playing="$log('playing')" />
 </div>
 `
 
 const youtubePlayer: Plugin = {
   template: youtubeTemplate,
   events: [],
-  record: { video_id: '' },
+  record: { video_id: 'SX_ViT4Ra7k' },
   addons: {},
 }
 

@@ -1,12 +1,28 @@
 import Vue, { Component } from 'vue'
 import { Plugin, PluginConfig, PluginMeta } from '@/model'
 
-const fetchPreinstalledModules = async () => {
+const fetchPreinstalledModules = async (addons: Record<string, string>) => {
   // addons
   const modules: Record<string, Component> = {}
-  // vuetify/*
-  const addons: Record<string, any> = await import('vuetify/lib')
-  Object.entries(addons)
+
+  // custom install
+  // for (const [key, path] of Object.entries(addons)) {
+  //   const [library, comp] = path.split('/')
+  //   console.log([library, comp])
+  //   if (comp) {
+  //     const addon = await import(library)
+  //     console.log(addon[comp])
+  //     modules[key] = addon[comp]
+  //   } else {
+  //     const addon = await import(path)
+  //     console.log(addon)
+  //     modules[key] = addon
+  //   }
+  // }
+  
+  // vuetify
+  const vuetifyAddons: Record<string, any> = await import('vuetify/lib')
+  Object.entries(vuetifyAddons)
     .filter(([componentName, _]) => componentName[0] === 'V')
     .forEach(([componentName, component]) => {
       modules[componentName] = component
@@ -32,21 +48,7 @@ export const compile = async (
   }
 
   // addons
-  const addonComponents: Record<string, Component> = await fetchPreinstalledModules()
-
-  for (const [key, path] of Object.entries(instance.addons)) {
-    const [library, comp] = path.split('/')
-    console.log([library, comp])
-    if (comp) {
-      const addon = await import(library)
-      console.log(addon[comp])
-      addonComponents[key] = addon[comp]
-    } else {
-      const addon = await import(path)
-      console.log(addon)
-      addonComponents[key] = addon
-    }
-  }
+  const addonComponents: Record<string, Component> = await fetchPreinstalledModules(instance.addons)
 
   const socketInterface = (event: string) => {
     return function (this: Vue, _: Event): void {
@@ -63,7 +65,7 @@ export const compile = async (
 
   const localInterface = (event: string) => {
     return function (this: Vue & { callbackFromServer: (record: Record<string, any>) => void }, _: Event): void {
-      const args = [].slice.call(arguments)
+      const args = [].slice.call(arguments).splice(1)
       console.log(`[local:${config.id}] Trigger ${event} with args [${args.join(',')}]`)
       // invoke function
       server[event](...args)
@@ -95,13 +97,16 @@ export const compile = async (
       v: Record<string, any>
     } {
       return {
-        v: Object(instance.record)
+        v: Object.assign({}, instance.record)
       }
     },
     mounted () {
       console.log(`[${config.id}] active`)
     },
     methods: {
+      '$log' (message: any) {
+        console.log(message)
+      },
       ...hooks,
       // callback from server
       callbackFromServer (vs: Record<string, any>) {
