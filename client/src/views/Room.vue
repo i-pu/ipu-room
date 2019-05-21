@@ -33,6 +33,7 @@ import { compile } from '@/logic/compiler'
 
 import { COUNTER_PLUGIN, COUNTER_META } from '@/plugin_examples/counter'
 import { CHAT_PLUGIN, CHAT_RECORD, CHAT_META } from '@/plugin_examples/chat'
+import { PAINT_PLUGIN, PAINT_META } from '@/plugin_examples/paint'
 
 @Component<RoomView>({
   components: { Desk, Status, Settings },
@@ -48,11 +49,12 @@ import { CHAT_PLUGIN, CHAT_RECORD, CHAT_META } from '@/plugin_examples/chat'
     },
     'plugin/clone' () {
       // clone all plugin
-      const packages: Array<{ plugin: Plugin, properties: PluginProperties }> = []
+      const plugins: Array<{ plugin: Plugin, properties: PluginProperties }> = []
       for (const { component, properties } of this.room!!.plugins) {
-        packages.push(component.sealedOptions.methods.clone())
+        // @ts-ignore
+        plugins.push(component.sealedOptions.methods.clone())
       }
-      this.$socket.emit('plugin/clone', {})
+      this.$socket.emit('plugin/clone', { plugins })
     },
     'plugin/info' (packages: Array<{ plugin: Plugin, properties: PluginProperties }>) {
       this.room!!.plugins = []
@@ -84,17 +86,27 @@ export default class RoomView extends Vue {
 
   private responseEnterRoom ({ room }: { room: Room }) {
     console.log(`[Room] entered`)
-    this.room = room
+    this.room = {
+      ...room,
+      plugins: []
+    }
     if (this.$store.getters.localOnly) {
       const properties: PluginProperties = {
-        record: new Function(...COUNTER_PLUGIN.functions['initialize'])(),
-        env: {
-          instanceId: 'xxxx-yyyy-zzzz',
-          room: this.room
-        },
-        meta: COUNTER_META
+        record: new Function(...PAINT_PLUGIN.functions['initialize'])(),
+        env: { instanceId: 'xxxx-yyyy-zzzz', room: this.room },
+        meta: PAINT_META,
       }
-      this.addPlugin(COUNTER_PLUGIN, properties)
+      this.addPlugin(PAINT_PLUGIN, properties)
+
+      // const properties: PluginProperties = {
+      //   record: new Function(...COUNTER_PLUGIN.functions.initialize)(),
+      //   env: {
+      //     instanceId: 'xxxx-yyyy-zzzz',
+      //     room: this.room,
+      //   },
+      //   meta: COUNTER_META,
+      // }
+      // this.addPlugin(COUNTER_PLUGIN, properties)
 
       // const properties: PluginProperties = {
       //   record: CHAT_RECORD,

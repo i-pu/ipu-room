@@ -26,7 +26,7 @@ export interface PluginProperties {
   record: Record<string, any>,
   env: {
     instanceId: string,
-    room: Room
+    room: Room,
   },
   meta: PluginMeta
 }
@@ -48,7 +48,7 @@ export interface Room {
   members: User[],
   plugins: Array<{
     component: Component,
-    properties: PluginProperties
+    properties: PluginProperties,
   }>
 }
 

@@ -7,9 +7,9 @@ import { Plugin, PluginMeta } from '@/model'
 export const COUNTER_PLUGIN: Plugin = {
   template: `<div><h3> {{ record.count }} </h3><v-btn @click="plus"> Add </v-btn></div>`,
   functions: {
-    'initialize': ['return { count: 0 }'],
-    'plus': ['this.record.count++']
-  }
+    initialize: ['return { count: 0 }'],
+    plus: ['this.record.count++'],
+  },
 }
 
 export const COUNTER_META: PluginMeta = {
@@ -20,5 +20,5 @@ export const COUNTER_META: PluginMeta = {
   description: 'aaa',
   author: 'a',
   tags: 'a,b,c',
-  content: '<html></html>'
+  content: '<html></html>',
 }
