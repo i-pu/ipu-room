@@ -6,7 +6,6 @@ from ..config import socketio
 from ..models import db, Plugin, ActivePlugin
 from .. import utils
 
-# todo: skip id を 使ってみる
 
 basicConfig()
 mylogger = getLogger(__name__)
@@ -30,7 +29,6 @@ def plugin_register(data):
 
     try:
         template, events, records, python, addons = plugin_compiler(plugin_content)
-        # todo: compiler error
         template = \
             '''
       <div>
@@ -93,7 +91,6 @@ def plugin_info(data):
     socketio.emit('plugin/info', data=configs)
 
 
-# todo: trigger するときにはroom.idとactive_plugin.idがほしい
 @socketio.on('plugin/trigger')
 @utils.byte_data_to_dict
 @utils.check_user

@@ -8,8 +8,6 @@ from ..config import socketio
 from ..models import db, Room, Comment, User, Plugin, ActivePlugin
 from .. import utils
 
-# todo: skip id を 使ってみる
-
 basicConfig()
 mylogger = getLogger(__name__)
 mylogger.setLevel(DEBUG)

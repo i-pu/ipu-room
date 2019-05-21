@@ -6,8 +6,6 @@ from ..config import socketio
 from ..models import db, User, Room
 from .. import utils
 
-# todo: skip id を 使ってみる
-
 basicConfig()
 mylogger = getLogger(__name__)
 mylogger.setLevel(DEBUG)
