@@ -3,7 +3,7 @@ from logging import basicConfig, DEBUG, getLogger
 from flask import request, g
 
 from ..config import socketio
-from ..models import db, User
+from ..models import db, User, Room
 from .. import utils
 
 # todo: skip id を 使ってみる
@@ -17,6 +17,7 @@ mylogger.setLevel(DEBUG)
 @utils.byte_data_to_dict
 @utils.function_info_wrapper
 def sample(data):
+
     mylogger.debug('- - socket id: {}'.format(request.sid))
     mylogger.debug('- - global plugins: {}'.format(config.global_plugins))
 
@@ -25,6 +26,7 @@ def sample(data):
 @utils.byte_data_to_dict
 @utils.function_info_wrapper
 def visit(data):
+
     user = User(name=data['user_name'], id=request.sid)
     db.session.add(user)
     db.session.commit()
@@ -42,6 +44,7 @@ def visit(data):
 @utils.check_user
 @utils.function_info_wrapper
 def lobby(data):
+
     all_room = Room.query.all()
 
     ret = {'rooms': list(map(Room.__to_dict__, all_room))}
