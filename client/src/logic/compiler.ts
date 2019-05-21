@@ -72,10 +72,11 @@ export const compile = async (
         //   event_name: event,
         //   args,
         // })
-        console.log(`${this.env.instanceId} ${event} clicked with`)
-        console.log(arguments)
+        // console.log(`${this.env.instanceId} ${event} clicked with`)
+        // console.log(arguments)
         this.callbackFromServer(event, args)
       }
+
       hooks[`__callback__${event}`] = new Function(...fn) as (...args: any[]) => void
     }
   }
@@ -129,7 +130,8 @@ export const compile = async (
         & { env: { instanceId: string } }
         , event: string, args: any[]
       ) {
-        console.log(`[plugin/trigger/${this.env.instanceId}] ${event}(${args})`)
+        console.log('a')
+        // console.log(`[plugin/trigger/${this.env.instanceId}] ${event}(${args})`)
         this[`__callback__${event}`](...args)
       },
     }

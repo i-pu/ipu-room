@@ -18,6 +18,7 @@ export const PAINT_PLUGIN: Plugin = {
       }
     `],
     _mouseDragged: ['p', `
+      // console.log({ x: p.mouseX, y: p.mouseY, px: p.pmouseX, py: p.pmouseY })
       this.record.lines.push({ x: p.mouseX, y: p.mouseY, px: p.pmouseX, py: p.pmouseY })
     `]
   },

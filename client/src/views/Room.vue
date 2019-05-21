@@ -86,7 +86,10 @@ export default class RoomView extends Vue {
 
   private responseEnterRoom ({ room }: { room: Room }) {
     console.log(`[Room] entered`)
-    this.room = room
+    this.room = {
+      ...room,
+      plugins: []
+    }
     if (this.$store.getters.localOnly) {
       const properties: PluginProperties = {
         record: new Function(...PAINT_PLUGIN.functions['initialize'])(),
