@@ -30,6 +30,17 @@ spec:
           volumeMounts:
             - mountPath: /etc/nginx/conf.d
               name: nginx-default.conf
+          readinessProbe:
+            httpGet:
+              port: 8000
+              path: /
+              scheme: http
+              host: 0.0.0.0
+            successThreshold: 1
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+
       volumes:
         - name: nginx-default.conf
           configMap:

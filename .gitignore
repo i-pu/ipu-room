@@ -34,3 +34,7 @@ __pycache__/
 # terraform
 /gcp/terraform/*
 !/gcp/terraform/*.tf
+
+# rust
+/plugin_market/target
+/plugin_market/plugin_market.iml

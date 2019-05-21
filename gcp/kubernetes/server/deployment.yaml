@@ -8,7 +8,7 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxUnavailable: 1
+      maxUnavailable: 0
       maxSurge: 1
   replicas: 1
   selector:
@@ -35,6 +35,13 @@ spec:
             requests:
               memory: 5Mi
               cpu: 1m
+          readinessProbe:
+            tcpSocket:
+              port: 8000
+            successThreshold: 1
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
 
 ---
 apiVersion: apps/v1
@@ -66,5 +73,5 @@ spec:
             - containerPort: 5432
           resources:
             requests:
-              memory: 50Mi
-              cpu: 10m
+              memory: 5Mi
+              cpu: 1m
