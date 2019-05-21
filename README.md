@@ -163,7 +163,8 @@ export interface PluginObject {
 #### RES `plugin/trigger`
 ```ts
 {
-  record: Record<string, any>
+  record: Record<string, any>,
+  function_name: string
 }
 ```
 
