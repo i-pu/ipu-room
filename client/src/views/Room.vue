@@ -45,6 +45,14 @@ import { COUNTER_PLUGIN, COUNTER_META } from '@/plugin_examples/counter'
     'room/exit-event' ({ members }: { members: User[] }) {
       this.room!!.members = members
     },
+    'plugin/clone' () {
+      // clone all plugin
+      const packages: Array<{ plugin: Plugin, properties: PluginProperties }> = []
+      for (const { component, properties } of this.room!!.plugins) {
+        
+      }
+      this.$socket.emit('plugin/clone', )
+    },
     'plugin/info' (packages: Array<{ plugin: Plugin, properties: PluginProperties }>) {
       this.room!!.plugins = []
       for (const { plugin, properties } of packages) {

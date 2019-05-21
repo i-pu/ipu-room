@@ -102,6 +102,16 @@ export const compile = async (
       console.log(`[${this.env.instanceId}] active`)
     },
     methods: {
+      clone (this: Vue & { record: Record<string, any> }): { plugin: Plugin, properties: PluginProperties } {
+        const currentRecord: Record<string, any> = Object.assign({}, this.record)
+        return { 
+          plugin,
+          properties: {
+          ...properties,
+          record: currentRecord
+          }
+        }
+      },
       '$log' (message: any) {
         console.log(message)
       },
