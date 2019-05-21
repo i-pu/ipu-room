@@ -7,6 +7,7 @@
 import re
 from textwrap import dedent
 
+
 def compile(ipl):
     """
     extract template and functions from the ipl file, 
@@ -24,12 +25,12 @@ def compile(ipl):
         A python code that'll be run as a socket server.
     """
 
-    res = re.match(r'.*<html>(.*)</html>.*<script>(.*)</script>.*', ipl, flags = re.DOTALL)
+    res = re.match(r'.*<html>(.*)</html>.*<script>(.*)</script>.*', ipl, flags=re.DOTALL)
     if res:
         functions = dict()
         template, script = res.groups()
         # [(f, args, stmt), ...]
-        it = re.finditer(r"^(\w+)\s*\((.*?)\)\s*\{(.*?)^\}", script, flags = re.DOTALL | re.MULTILINE)
+        it = re.finditer(r"^(\w+)\s*\((.*?)\)\s*\{(.*?)^\}", script, flags=re.DOTALL | re.MULTILINE)
         for match in it:
             (f, args, stmt) = match.groups()
             args = [] if args == '' else [arg.strip() for arg in args.split(',')]

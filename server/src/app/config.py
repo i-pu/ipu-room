@@ -51,6 +51,7 @@ def create_app(env):
     with app.app_context():
         init_db(app)
 
-    from .socketio_handler import socketio
+    from . import socketio_handler
+    from . import handler
 
     return app, socketio
