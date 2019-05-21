@@ -1,5 +1,5 @@
 import Vue, { Component } from 'vue'
-import { Plugin, PluginProperties, PluginMeta } from '@/model'
+import { Plugin, PluginProperties } from '@/model'
 
 const fetchPreinstalledModules = async () => {
   // addons
@@ -56,7 +56,6 @@ export const compile = async (
   // }
 
   const hooks: Record<string, (...args: any) => void> = {}
-  console.log(plugin.functions)
   Object.entries(plugin.functions).forEach(([event, fn]) => {
     console.log(`[Compiler] ${properties.env.instanceId} register ${event}`)
     hooks[event] = function(this: Vue & { callbackFromServer: (functionName: string, args: any[]) => void, env: PluginProperties['env'] }, e: Event, ...args: any[]) {
@@ -70,7 +69,7 @@ export const compile = async (
       console.log(`${this.env.instanceId} ${event} clicked`)
       this.callbackFromServer(event, args)
     }
-    hooks[`__callback__${event}`] = fn
+    hooks[`__callback__${event}`] = new Function(...fn) as (...args: any[]) => void
   })
 
   console.log(properties.env)
@@ -89,7 +88,7 @@ export const compile = async (
     },
     data (): {
       record: Record<string, any>,
-      meta: PluginMeta,
+      meta: PluginProperties['meta'],
       env: PluginProperties['env']
     } {
       return {

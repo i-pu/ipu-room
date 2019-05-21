@@ -27,14 +27,13 @@
                       label="設定1"
                     )
 
-                    //- h3 プラグイン
+                    h3 プラグイン
 
-                    //- template(v-for="{ config, meta } in room.plugins")
-                    //-   v-switch(
-                    //-     v-model="config.enabled"
-                    //-     :label="meta.name"
-                    //-     @change="onChangePluginSettings(meta.name)"
-                    //-   )
+                    template(v-for="{ plugin, properties } in room.plugins")
+                      v-switch(
+                        :label="properties.meta.name"
+                        @change="onChangePluginSettings(properties.name)"
+                      )
 
                   v-flex(xs6 sm6)
                     v-select(

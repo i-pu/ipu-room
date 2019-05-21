@@ -32,6 +32,7 @@ import { ROOMS_MOCK } from '@/api/mock'
 import { compile } from '@/logic/compiler'
 
 import { COUNTER_PLUGIN, COUNTER_META } from '@/plugin_examples/counter'
+import { CHAT_PLUGIN, CHAT_RECORD, CHAT_META } from '@/plugin_examples/chat'
 
 @Component<RoomView>({
   components: { Desk, Status, Settings },
@@ -49,9 +50,9 @@ import { COUNTER_PLUGIN, COUNTER_META } from '@/plugin_examples/counter'
       // clone all plugin
       const packages: Array<{ plugin: Plugin, properties: PluginProperties }> = []
       for (const { component, properties } of this.room!!.plugins) {
-        
+        packages.push(component.sealedOptions.methods.clone())
       }
-      this.$socket.emit('plugin/clone', )
+      this.$socket.emit('plugin/clone', {})
     },
     'plugin/info' (packages: Array<{ plugin: Plugin, properties: PluginProperties }>) {
       this.room!!.plugins = []
@@ -86,9 +87,7 @@ export default class RoomView extends Vue {
     this.room = room
     if (this.$store.getters.localOnly) {
       const properties: PluginProperties = {
-        record: {
-          count: 0
-        },
+        record: new Function(...COUNTER_PLUGIN.functions['initialize'])(),
         env: {
           instanceId: 'xxxx-yyyy-zzzz',
           room: this.room
@@ -96,6 +95,16 @@ export default class RoomView extends Vue {
         meta: COUNTER_META
       }
       this.addPlugin(COUNTER_PLUGIN, properties)
+
+      // const properties: PluginProperties = {
+      //   record: CHAT_RECORD,
+      //   env: {
+      //     instanceId: 'xxxx-yyyy-zzzz',
+      //     room: this.room
+      //   },
+      //   meta: CHAT_META
+      // }
+      // this.addPlugin(CHAT_PLUGIN, properties)
     } else {
       this.$socket.emit('plugin/info', { room_id: this.room.id })
     }
@@ -103,6 +112,7 @@ export default class RoomView extends Vue {
 
   private async addPlugin (plugin: Plugin, properties: PluginProperties) {
     const component = await compile(plugin, properties)
+    // component.sealedOptions.methods.clone()
     this.room!!.plugins.push({ component, properties })
   }
 

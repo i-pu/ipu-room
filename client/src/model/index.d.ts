@@ -5,14 +5,15 @@ export interface Plugin {
   // html template
   template: string,
   // functions
-  functions: Record<string, (...args: any[]) => void>
+  functions: Record<string, string[]>
 }
 
 // static plugin info
-export interface PluginMeta {
+interface PluginMeta {
   // plugin id
   plugin_id: string,
   // plugin name
+  thumbnail_url: string,
   name: string,
   description: string,
   author: string,
