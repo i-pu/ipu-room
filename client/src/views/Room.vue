@@ -48,11 +48,11 @@ import { CHAT_PLUGIN, CHAT_RECORD, CHAT_META } from '@/plugin_examples/chat'
     },
     'plugin/clone' () {
       // clone all plugin
-      const packages: Array<{ plugin: Plugin, properties: PluginProperties }> = []
+      const plugins: Array<{ plugin: Plugin, properties: PluginProperties }> = []
       for (const { component, properties } of this.room!!.plugins) {
-        packages.push(component.sealedOptions.methods.clone())
+        plugins.push(component.sealedOptions.methods.clone())
       }
-      this.$socket.emit('plugin/clone', {})
+      this.$socket.emit('plugin/clone', { plugins: plugins })
     },
     'plugin/info' (packages: Array<{ plugin: Plugin, properties: PluginProperties }>) {
       this.room!!.plugins = []
