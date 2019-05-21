@@ -6,7 +6,7 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxUnavailable: 1
+      maxUnavailable: 0
       maxSurge: 1
   replicas: 1
   selector:
@@ -27,3 +27,13 @@ spec:
             requests:
               memory: 5Mi
               cpu: 1m
+          volumeMounts:
+            - mountPath: /etc/nginx/conf.d
+              name: nginx-default.conf
+      volumes:
+        - name: nginx-default.conf
+          configMap:
+            name: nginx-configmap
+            items:
+              - key: default.conf
+                path: default.conf

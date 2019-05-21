@@ -13,7 +13,3 @@ RUN yarn build
 
 FROM nginx:1.15-alpine as deploy
 COPY --from=builder /app/dist /usr/share/nginx/html
-# For google cloud run
-ENV PORT 8000
-
-COPY nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf

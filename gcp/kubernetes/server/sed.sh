@@ -8,7 +8,7 @@ tag=$3
 
 image=$1-server
 curDir=$(cd $(dirname $0);pwd)
-filepath=${curDir}/server-pod.yaml
+filepath=${curDir}/deployment.yaml
 
 sed -i s/PROJECT_ID/${projectid}/g ${filepath}
 sed -i s/DOCKER_USERNAME/${dockerusername}/g ${filepath}
