@@ -11,24 +11,20 @@ from compiler import compile
 counter_plugin = '''
 <html>
   <div>
-    <h3> {{ v.count }} </h3>
-    <v-btn @click="plus"> Add </v-btn>
+    <h3> {{ record.count }} </h3>
+    <v-btn @click="plus(1)"> Add </v-btn>
   </div>
 </html>
-<python>
-  class Plugin():
-    def __init__(self):
-      self.events = ['plus']
-      self.count = 0
+<script>
+initializer (aa, b) {
+  return { count: 0 }
+}
 
-    def constructor(self):
-      return { count: self.count }
-
-    def plus(data):
-      self.count += data
-      return { count: self.count }
-</python>
-  '''
+plus() {
+  this.record.count++
+}
+</script>
+'''
 
 # sample chat plugin
 chat_plugin = """
@@ -36,7 +32,7 @@ chat_plugin = """
   <div>
     <v-list id="chat" two-line="two-line" height="50%">
       <v-subheader>チャット</v-subheader>
-      <template v-for="comment, i in v.comments">
+      <template v-for="comment, i in record.comments">
         <v-list-tile v-if="comment.type === 'comment'" :key="comment.comment_id" avatar="avatar">
           <v-list-tile-avatar>
             <img :src="comment.avatar"/>
@@ -48,55 +44,35 @@ chat_plugin = """
         </v-list-tile>
       </template>
     </v-list>
-    
+
     <v-container fluid="fluid" grid-list-md="grid-list-md" text-xs-center="text-xs-center">
       <v-layout row="row" wrap="wrap">
         <v-flex d-flex="d-flex" xs8="xs8" sm8="sm8" md8="md8">
-          <v-text-field v-model="chatInput" label="コメント"></v-text-field>
+          <v-text-field v-model="record.chatInput" label="コメント"></v-text-field>
         </v-flex>
         <v-flex d-flex="d-flex" xs4="xs4" sm4="sm4" md4="md4">
-          <v-btn color="info" @click="comment(chatInput); chatInput = ''">送信</v-btn>
+          <v-btn color="info" @click="comment(); record.chatInput = ''">送信</v-btn>
         </v-flex>
       </v-layout>
     </v-container>
   </div>
 </html>
-<python>
-class Plugin():
-  def __init__(self):
-    self.comments = []
-    self.chatInput = ''
-  def comment(self, comment_text):
-    comment = {
-      type: 'comment',
-      avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-      comment_id: uuidv4(),
-      user_name: 'John',
-      user_id: 'xxxx',
-      text: comment_text
-    }
-    self.comments.append(comment)
-    return ['comments']
-</python>
-"""
-
-# youtube plugin
-youtube_plugin = """
-<html>
-  <div>
-    <v-btn> Test </v-btn>
-    <player :video-id="videoid" player-width="1280" player-height="750" :player-vars="{autoplay: 1}" />
-  </div>
-</html>
-<python>
-class Plugin():
-  def __init__(self):
-    self.videoid = 'SX_ViT4Ra7k'
-</python>
+<script>
+comment () {
+  this.record.comments.push({
+    type: 'comment',
+    avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
+    comment_id: 'a',
+    user_name: 'John',
+    user_id: 'xxxx',
+    text: this.record.chatInput
+  })
+}
+</script>
 """
 
 # test
 
-template, events, records, python, addons = compile(counter_plugin)
+template, functions = compile(counter_plugin)
 print('template: \n{}'.format(template))
-print('{} {} {}'.format(events, records, addons))
+print(functions)
