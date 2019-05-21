@@ -54,21 +54,6 @@ class TestSocketIOHandler(unittest.TestCase):
         self.sio.sleep(1)
         self.assertEqual(self.expected, self.actual)
 
-    def test_plugin_register(self):
-        @self.sio.on('plugin/register')
-        def plugin_register(data):
-            self.assertFalse('state' in data.values())
-            self.expected = True
-            self.actual = data['state']
-
-        plugin_name = 'counter'
-        with open(os.path.join(os.path.dirname(__file__), plugin_name + '.py.txt'), mode='r') as f:
-            plugin_file = f.read()
-        self.sio.emit('visit', {'user_name': 'plugin_register user'})
-        self.sio.emit('plugin/register', {'plugin_name': plugin_name, 'plugin_file': plugin_file})
-        self.sio.sleep(1)
-        self.assertEqual(self.expected, self.actual)
-
     def test_room_create_with_plugin(self):
         @self.sio.on('room/create')
         def room_create(data):
@@ -82,7 +67,6 @@ class TestSocketIOHandler(unittest.TestCase):
         self.assertEqual(self.expected, self.actual)
 
     def test_room_enter(self):
-
         @self.sio.on('room/create')
         def room_create(data):
             self.assertFalse('room' in data.values())
