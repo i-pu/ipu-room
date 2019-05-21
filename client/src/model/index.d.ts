@@ -4,12 +4,8 @@ import { Component } from 'vue'
 export interface Plugin {
   // html template
   template: string,
-  // trigger methods' name
-  events: string[],
-  // variables in plugin
-  record: Record<string, any>,
-  // custom component that be used in
-  addons: Record<string, string>
+  // functions
+  functions: Record<string, (...args: any[]) => { functionName: string, args: any[], to?: string }>
 }
 
 // static plugin info
@@ -25,11 +21,13 @@ export interface PluginMeta {
 }
 
 // instance info
-export interface PluginConfig {
-  room_id: string,
-  enabled: boolean,
-  // plugin unique instance id
-  id: string
+export interface PluginProperties {
+  record: Record<string, any>,
+  env: {
+    instanceId: string,
+    room: Room
+  },
+  meta: PluginMeta
 }
 
 export interface Comment {
@@ -47,10 +45,10 @@ export interface Room {
   id: string,
   thumbnail_url: string,
   members: User[],
-  plugins: Array<{ 
+  plugins: Array<{
     component: Component,
     meta: PluginMeta, 
-    config: PluginConfig
+    properties: PluginProperties
   }>
 }
 

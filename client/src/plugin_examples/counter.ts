@@ -4,19 +4,14 @@
 
 import { Plugin } from '@/model'
 
-export class CounterServer {
-  public count: number = 0
-
-  public plus () {
-    this.count++
-  }
-}
-
 const counter: Plugin = {
-  template: `<div><h3> {{ v.count }} </h3><v-btn @click="plus"> Add </v-btn></div>`,
-  events: ['plus'],
-  record: { count: 0 },
-  addons: { VBtn: 'vuetify/lib/components/VBtn' },
+  template: `<div><h3> {{ count }} </h3><v-btn @click="plus"> Add </v-btn></div>`,
+  functions: {
+    plus (this: { count: number }) {
+      this.count++
+      return [this.count]
+    }
+  }
 }
 
 export default counter

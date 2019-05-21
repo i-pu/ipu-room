@@ -1,7 +1,7 @@
 import Vue, { Component } from 'vue'
-import { Plugin, PluginConfig, PluginMeta } from '@/model'
+import { Plugin, PluginProperties, PluginMeta } from '@/model'
 
-const fetchPreinstalledModules = async (addons: Record<string, string>) => {
+const fetchPreinstalledModules = async () => {
   // addons
   const modules: Record<string, Component> = {}
 
@@ -34,29 +34,27 @@ const fetchPreinstalledModules = async (addons: Record<string, string>) => {
 }
 
 export const compile = async (
-  instance: Plugin, 
+  plugin: Plugin, 
   meta: PluginMeta, 
-  config: PluginConfig,
-  server?: any
+  properties: PluginProperties,
+  isLocal: boolean = true
 ): Promise<Component> => {
-  const isLocalOnly = !!server
-
-  if (isLocalOnly) {
-    console.log(`[Compiler] ${config.id} try to compile with local mode`)
+  if (isLocal) {
+    console.log(`[Compiler] ${properties.env.instanceId} try to compile with local mode`)
   } else {
-    console.log(`[Compiler] ${config.id} try to compile`)
+    console.log(`[Compiler] ${properties.env.instanceId} try to compile`)
   }
 
   // addons
-  const addonComponents: Record<string, Component> = await fetchPreinstalledModules(instance.addons)
+  const addonComponents: Record<string, Component> = await fetchPreinstalledModules()
 
   const socketInterface = (event: string) => {
-    return function (this: Vue, _: Event): void {
+    return function (this: Vue & { $env: PluginProperties['env'] }, _: Event): void {
       const args = [].slice.call(arguments)
-      console.log(`[${config.id}] Trigger ${event} with args [${args.join(',')}]`)
+      console.log(`[${this.$env.instanceId}] Trigger ${event} with args [${args.join(',')}]`)
       this.$socket.emit('plugin/trigger', {
-        room_id: config.room_id,
-        instance_id: config.id,
+        room_id: this.$env.room.id,
+        instance_id: this.$env.instanceId,
         event_name: event,
         args,
       })
@@ -64,19 +62,16 @@ export const compile = async (
   }
 
   const localInterface = (event: string) => {
-    return function (this: Vue & { callbackFromServer: (record: Record<string, any>) => void }, _: Event): void {
+    return function (this: Vue & { callbackFromServer: (functionName: string, args: any[]) => void, $env: PluginProperties['env'] }, _: Event): void {
       const args = [].slice.call(arguments).splice(1)
-      console.log(`[local:${config.id}] Trigger ${event} with args [${args.join(',')}]`)
-      // invoke function
-      server[event](...args)
-      const record = Object(server)
-      this.callbackFromServer(record)
+      console.log(`[local:${this.$env.instanceId}] Trigger ${event} with args [${args.join(',')}]`)
+      this.callbackFromServer(event, args)
     }
   }
 
   const hooks: Record<string, (vm: any, ...args: any) => void> = {}
-  instance.events.map((event: string) => {
-    if (isLocalOnly) {
+  Object.keys(plugin.functions).map((event: string) => {
+    if (isLocal) {
       hooks[event] = localInterface(event)
     } else {
       hooks[event] = socketInterface(event)
@@ -84,7 +79,7 @@ export const compile = async (
   })
 
   return Vue.extend({
-    template: instance.template,
+    template: plugin.template,
     components: addonComponents,
     sockets: {
       // from server
@@ -94,14 +89,18 @@ export const compile = async (
       },
     },
     data (): {
-      v: Record<string, any>
+      record: Record<string, any>,
+      $meta: PluginMeta,
+      $env: PluginProperties['env']
     } {
       return {
-        v: Object.assign({}, instance.record)
+        record: Object.assign({}, properties.record),
+        $meta: Object.assign({}, properties.meta),
+        $env: Object.assign({}, properties.env)
       }
     },
     mounted () {
-      console.log(`[${config.id}] active`)
+      console.log(`[${this.$env.instanceId}] active`)
     },
     methods: {
       '$log' (message: any) {
@@ -109,12 +108,9 @@ export const compile = async (
       },
       ...hooks,
       // callback from server
-      callbackFromServer (vs: Record<string, any>) {
-        console.log(`[${config.id}] callback from server ${Object.keys(vs)}`)
-        for (const [k, v] of Object.entries(vs)) {
-          // @ts-ignore
-          this.$set(this.v, k, v)
-        }
+      callbackFromServer (this: Vue & Record<string, (...args: any[]) => void>, event: string, passArgs: any[]) {
+        console.log(`[plugin/trigger/${this.$env.instanceId}] ${event}(${passArgs})`)
+        this[event](...passArgs)
       },
     },
   })

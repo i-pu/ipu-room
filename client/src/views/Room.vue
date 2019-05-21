@@ -22,7 +22,7 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 
-import { Room, User, Plugin, PluginConfig, PluginMeta } from '@/model'
+import { Room, User, Plugin, PluginProperties, PluginMeta } from '@/model'
 
 import Desk from '@/components/room/Desk.vue'
 import Status from '@/components/room/Status.vue'
@@ -31,9 +31,7 @@ import Settings from '@/components/room/Settings.vue'
 import { ROOMS_MOCK } from '@/api/mock'
 import { compile } from '@/logic/compiler'
 
-import Counter, { CounterServer } from '@/plugin_examples/counter'
-import YoutubePlayer, { YoutubePlayerServer } from '@/plugin_examples/youtubePlayer'
-import Chat, { ChatServer } from '@/plugin_examples/chat'
+import Counter from '@/plugin_examples/counter'
 
 @Component<RoomView>({
   components: { Desk, Status, Settings },
