@@ -74,8 +74,6 @@ export interface Plugin {
   template: string,
   // trigger functions' name
   funtions: string[],
-  // variables in plugin
-  record: Record<string, any>,
   // custom component that be used in
   addons: Record<string, string>
 }
@@ -104,7 +102,9 @@ export interface PluginObject {
   room_id: string,
   enabled: boolean,
   // plugin unique instance id
-  id: string
+  id: string,
+  // variable
+  record: Record<string, any>
 }
 ```
 
