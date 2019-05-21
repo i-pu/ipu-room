@@ -33,6 +33,7 @@ import { compile } from '@/logic/compiler'
 
 import { COUNTER_PLUGIN, COUNTER_META } from '@/plugin_examples/counter'
 import { CHAT_PLUGIN, CHAT_RECORD, CHAT_META } from '@/plugin_examples/chat'
+import { PAINT_PLUGIN, PAINT_META } from '@/plugin_examples/paint'
 
 @Component<RoomView>({
   components: { Desk, Status, Settings },
@@ -88,14 +89,21 @@ export default class RoomView extends Vue {
     this.room = room
     if (this.$store.getters.localOnly) {
       const properties: PluginProperties = {
-        record: new Function(...COUNTER_PLUGIN.functions.initialize)(),
-        env: {
-          instanceId: 'xxxx-yyyy-zzzz',
-          room: this.room,
-        },
-        meta: COUNTER_META,
+        record: new Function(...PAINT_PLUGIN.functions['initialize'])(),
+        env: { instanceId: 'xxxx-yyyy-zzzz', room: this.room },
+        meta: PAINT_META,
       }
-      this.addPlugin(COUNTER_PLUGIN, properties)
+      this.addPlugin(PAINT_PLUGIN, properties)
+
+      // const properties: PluginProperties = {
+      //   record: new Function(...COUNTER_PLUGIN.functions.initialize)(),
+      //   env: {
+      //     instanceId: 'xxxx-yyyy-zzzz',
+      //     room: this.room,
+      //   },
+      //   meta: COUNTER_META,
+      // }
+      // this.addPlugin(COUNTER_PLUGIN, properties)
 
       // const properties: PluginProperties = {
       //   record: CHAT_RECORD,

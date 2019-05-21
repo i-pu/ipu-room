@@ -1,6 +1,9 @@
 import Vue, { Component } from 'vue'
 import { Plugin, PluginProperties } from '@/model'
 
+// @ts-ignore
+import VueP5 from 'vue-p5'
+
 const fetchPreinstalledModules = async () => {
   // addons
   const modules: Record<string, Component> = {}
@@ -19,7 +22,6 @@ const fetchPreinstalledModules = async () => {
   //     modules[key] = addon
   //   }
   // }
-
   // vuetify
   const vuetifyAddons: Record<string, any> = await import('vuetify/lib')
   Object.entries(vuetifyAddons)
@@ -30,6 +32,8 @@ const fetchPreinstalledModules = async () => {
   // vue-youtube
   // @ts-ignore
   modules.player = (await import('vue-youtube')).Youtube
+
+  modules['VueP5'] = VueP5
 
   return modules
 }
@@ -49,24 +53,32 @@ export const compile = async (
   const addonComponents: Record<string, Component> = await fetchPreinstalledModules()
 
   const hooks: Record<string, (...args: any) => void> = {}
-  Object.entries(plugin.functions).forEach(([event, fn]) => {
-    console.log(`[Compiler] ${properties.env.instanceId} register ${event}`)
-    hooks[event] = function (this: Vue & {
-      callbackFromServer: (functionName: string, args: any[]) => void,
-      env: PluginProperties['env'],
-    },                       _: Event, ...args: any[]) {
-      // emit to server
-      // this.$socket.emit('plugin/trigger', {
-      //   room_id: this.$env.room.id,
-      //   instance_id: this.$env.instanceId,
-      //   event_name: event,
-      //   args,
-      // })
-      console.log(`${this.env.instanceId} ${event} clicked`)
-      this.callbackFromServer(event, args)
+  for (const [event, fn] of Object.entries(plugin.functions)) {
+    if (event[0] === '_') {
+      // direct
+      console.log(`[Compiler] ${properties.env.instanceId} directry ${event}`)
+      hooks[event] = new Function(...fn) as (...args: any[]) => void
+    } else {
+      console.log(`[Compiler] ${properties.env.instanceId} register hooks ${event}`)
+      hooks[event] = function (this: Vue & {
+        callbackFromServer: (functionName: string, args: any[]) => void,
+        env: PluginProperties['env'],
+      },
+      ...args: any[]) {
+        // emit to server
+        // this.$socket.emit('plugin/trigger', {
+        //   room_id: this.$env.room.id,
+        //   instance_id: this.$env.instanceId,
+        //   event_name: event,
+        //   args,
+        // })
+        console.log(`${this.env.instanceId} ${event} clicked with`)
+        console.log(arguments)
+        this.callbackFromServer(event, args)
+      }
+      hooks[`__callback__${event}`] = new Function(...fn) as (...args: any[]) => void
     }
-    hooks[`__callback__${event}`] = new Function(...fn) as (...args: any[]) => void
-  })
+  }
 
   console.log(properties.env)
 
@@ -120,6 +132,6 @@ export const compile = async (
         console.log(`[plugin/trigger/${this.env.instanceId}] ${event}(${args})`)
         this[`__callback__${event}`](...args)
       },
-    },
+    }
   })
 }
