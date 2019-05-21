@@ -2,16 +2,23 @@
 //  Example plugin counter
 // ========================
 
-import { Plugin } from '@/model'
+import { Plugin, PluginProperties, PluginMeta } from '@/model'
 
-const counter: Plugin = {
-  template: `<div><h3> {{ count }} </h3><v-btn @click="plus"> Add </v-btn></div>`,
+export const COUNTER_PLUGIN: Plugin = {
+  template: `<div><h3> {{ record.count }} </h3><v-btn @click="plus"> Add </v-btn></div>`,
   functions: {
-    plus (this: { count: number }) {
-      this.count++
-      return [this.count]
+    plus (this: { record: Record<string, any> }) {
+      this.record.count++
     }
   }
 }
 
-export default counter
+export const COUNTER_META: PluginMeta = {
+  plugin_id: 'counter_xxx',
+  // plugin name
+  name: 'counter',
+  description: 'aaa',
+  author: 'a',
+  tags: 'a,b,c',
+  content: '<html></html>'
+}

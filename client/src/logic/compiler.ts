@@ -35,7 +35,6 @@ const fetchPreinstalledModules = async () => {
 
 export const compile = async (
   plugin: Plugin, 
-  meta: PluginMeta, 
   properties: PluginProperties,
   isLocal: boolean = true
 ): Promise<Component> => {
@@ -48,35 +47,35 @@ export const compile = async (
   // addons
   const addonComponents: Record<string, Component> = await fetchPreinstalledModules()
 
-  const socketInterface = (event: string) => {
-    return function (this: Vue & { $env: PluginProperties['env'] }, _: Event): void {
-      const args = [].slice.call(arguments)
-      console.log(`[${this.$env.instanceId}] Trigger ${event} with args [${args.join(',')}]`)
-      this.$socket.emit('plugin/trigger', {
-        room_id: this.$env.room.id,
-        instance_id: this.$env.instanceId,
-        event_name: event,
-        args,
-      })
-    }
-  }
+  // const localInterface = (event: string) => {
+  //   return function (this: Vue & { callbackFromServer: (functionName: string, args: any[]) => void, $env: PluginProperties['env'] }, _: Event): void {
+  //     const args = [].slice.call(arguments).splice(1)
+  //     console.log(`[local:${this.$env.instanceId}] Trigger ${event} with args [${args.join(',')}]`)
+  //     this.callbackFromServer(event, args)
+  //   }
+  // }
 
-  const localInterface = (event: string) => {
-    return function (this: Vue & { callbackFromServer: (functionName: string, args: any[]) => void, $env: PluginProperties['env'] }, _: Event): void {
-      const args = [].slice.call(arguments).splice(1)
-      console.log(`[local:${this.$env.instanceId}] Trigger ${event} with args [${args.join(',')}]`)
+  const hooks: Record<string, (...args: any) => void> = {}
+  console.log(plugin.functions)
+  Object.entries(plugin.functions).forEach(([event, fn]) => {
+    console.log(`[Compiler] ${properties.env.instanceId} register ${event}`)
+    hooks[event] = function(this: Vue & { callbackFromServer: (functionName: string, args: any[]) => void, env: PluginProperties['env'] }, e: Event, ...args: any[]) {
+      // emit to server
+      // this.$socket.emit('plugin/trigger', {
+      //   room_id: this.$env.room.id,
+      //   instance_id: this.$env.instanceId,
+      //   event_name: event,
+      //   args,
+      // })
+      console.log(`${this.env.instanceId} ${event} clicked`)
       this.callbackFromServer(event, args)
     }
-  }
-
-  const hooks: Record<string, (vm: any, ...args: any) => void> = {}
-  Object.keys(plugin.functions).map((event: string) => {
-    if (isLocal) {
-      hooks[event] = localInterface(event)
-    } else {
-      hooks[event] = socketInterface(event)
-    }
+    hooks[`__callback__${event}`] = fn
   })
+
+  console.log(properties.env)
+
+  console.log(`[Compiler] compiled ${properties.env.instanceId} successfully`)
 
   return Vue.extend({
     template: plugin.template,
@@ -90,17 +89,17 @@ export const compile = async (
     },
     data (): {
       record: Record<string, any>,
-      $meta: PluginMeta,
-      $env: PluginProperties['env']
+      meta: PluginMeta,
+      env: PluginProperties['env']
     } {
       return {
         record: Object.assign({}, properties.record),
-        $meta: Object.assign({}, properties.meta),
-        $env: Object.assign({}, properties.env)
+        meta: properties.meta,
+        env: properties.env,
       }
     },
     mounted () {
-      console.log(`[${this.$env.instanceId}] active`)
+      console.log(`[${this.env.instanceId}] active`)
     },
     methods: {
       '$log' (message: any) {
@@ -108,9 +107,9 @@ export const compile = async (
       },
       ...hooks,
       // callback from server
-      callbackFromServer (this: Vue & Record<string, (...args: any[]) => void>, event: string, passArgs: any[]) {
-        console.log(`[plugin/trigger/${this.$env.instanceId}] ${event}(${passArgs})`)
-        this[event](...passArgs)
+      callbackFromServer (this: Vue & Record<string, (...args: any[]) => void>, event: string, args: any[]) {
+        console.log(`[plugin/trigger/${this.env.instanceId}] ${event}(${args})`)
+        this[`__callback__${event}`](...args)
       },
     },
   })

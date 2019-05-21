@@ -31,7 +31,7 @@ import Settings from '@/components/room/Settings.vue'
 import { ROOMS_MOCK } from '@/api/mock'
 import { compile } from '@/logic/compiler'
 
-import Counter from '@/plugin_examples/counter'
+import { COUNTER_PLUGIN, COUNTER_META } from '@/plugin_examples/counter'
 
 @Component<RoomView>({
   components: { Desk, Status, Settings },
@@ -45,10 +45,10 @@ import Counter from '@/plugin_examples/counter'
     'room/exit-event' ({ members }: { members: User[] }) {
       this.room!!.members = members
     },
-    'plugin/info' (packages: Array<{ instance: Plugin, meta: PluginMeta, config: PluginConfig }>) {
+    'plugin/info' (packages: Array<{ plugin: Plugin, properties: PluginProperties }>) {
       this.room!!.plugins = []
-      for (const { instance, meta, config } of packages) {
-        this.addPlugin(instance, meta, config)
+      for (const { plugin, properties } of packages) {
+        this.addPlugin(plugin, properties)
       }
     },
   },
@@ -73,20 +73,29 @@ export default class RoomView extends Vue {
     }
   }
 
-  private responseEnterRoom (data: { room: Room }) {
+  private responseEnterRoom ({ room }: { room: Room }) {
     console.log(`[Room] entered`)
-    console.log(JSON.parse(JSON.stringify(data.room.plugins)))
-    this.room = data.room
+    this.room = room
     if (this.$store.getters.localOnly) {
-      // this.addPluginLocal('chat')
+      const properties: PluginProperties = {
+        record: {
+          count: 0
+        },
+        env: {
+          instanceId: 'xxxx-yyyy-zzzz',
+          room: this.room
+        },
+        meta: COUNTER_META
+      }
+      this.addPlugin(COUNTER_PLUGIN, properties)
     } else {
       this.$socket.emit('plugin/info', { room_id: this.room.id })
     }
   }
 
-  private async addPlugin (instance: Plugin, meta: PluginMeta, config: PluginConfig, server?: any) {
-    const component = await compile(instance, meta, config, server)
-    this.room!!.plugins.push({ component, meta, config })
+  private async addPlugin (plugin: Plugin, properties: PluginProperties) {
+    const component = await compile(plugin, properties)
+    this.room!!.plugins.push({ component, properties })
   }
 
   private requestExitRoom () {

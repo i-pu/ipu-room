@@ -27,14 +27,14 @@
                       label="設定1"
                     )
 
-                    h3 プラグイン
+                    //- h3 プラグイン
 
-                    template(v-for="{ config, meta } in room.plugins")
-                      v-switch(
-                        v-model="config.enabled"
-                        :label="meta.name"
-                        @change="onChangePluginSettings(meta.name)"
-                      )
+                    //- template(v-for="{ config, meta } in room.plugins")
+                    //-   v-switch(
+                    //-     v-model="config.enabled"
+                    //-     :label="meta.name"
+                    //-     @change="onChangePluginSettings(meta.name)"
+                    //-   )
 
                   v-flex(xs6 sm6)
                     v-select(
@@ -52,11 +52,7 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Prop } from 'vue-property-decorator'
 import { Room } from '@/model'
-import { Plugin, PluginConfig, PluginMeta } from '@/model'
-
-import Counter, { CounterServer } from '@/plugin_examples/counter'
-import YoutubePlayer, { YoutubePlayerServer } from '@/plugin_examples/youtubePlayer'
-import Chat, { ChatServer } from '@/plugin_examples/chat'
+import { Plugin, PluginProperties } from '@/model'
 
 @Component
 export default class Settings extends Vue {
@@ -77,25 +73,12 @@ export default class Settings extends Vue {
       // TODO
       return
     } else {
-      const meta: PluginMeta = {
-        plugin_id: '${this.selectedPlugin}001',
-        name: this.selectedPlugin,
-        description: '',
-        author: '',
-        content: '',
-        tags: '',
-      }
-      const config: PluginConfig = {
-        room_id: this.room.id,
-        id: Math.random().toString(36),
-        enabled: true
-      }
       if (this.selectedPlugin === 'counter') {
-        this.$emit('add-plugin', Counter, meta, config, new CounterServer())
+        // this.$emit('add-plugin', Counter, meta, config, new CounterServer())
       } else if (this.selectedPlugin === 'chat') {
-        this.$emit('add-plugin', Chat, meta, config, new ChatServer())
+        // this.$emit('add-plugin', Chat, meta, config, new ChatServer())
       } else if (this.selectedPlugin === 'player') {
-        this.$emit('add-plugin', YoutubePlayer, meta, config, new YoutubePlayerServer())
+        // this.$emit('add-plugin', YoutubePlayer, meta, config, new YoutubePlayerServer())
       }
     }
   }

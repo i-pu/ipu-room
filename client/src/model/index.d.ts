@@ -5,7 +5,7 @@ export interface Plugin {
   // html template
   template: string,
   // functions
-  functions: Record<string, (...args: any[]) => { functionName: string, args: any[], to?: string }>
+  functions: Record<string, (...args: any[]) => void>
 }
 
 // static plugin info
@@ -47,7 +47,6 @@ export interface Room {
   members: User[],
   plugins: Array<{
     component: Component,
-    meta: PluginMeta, 
     properties: PluginProperties
   }>
 }
