@@ -50,9 +50,10 @@ import { CHAT_PLUGIN, CHAT_RECORD, CHAT_META } from '@/plugin_examples/chat'
       // clone all plugin
       const plugins: Array<{ plugin: Plugin, properties: PluginProperties }> = []
       for (const { component, properties } of this.room!!.plugins) {
+        // @ts-ignore
         plugins.push(component.sealedOptions.methods.clone())
       }
-      this.$socket.emit('plugin/clone', { plugins: plugins })
+      this.$socket.emit('plugin/clone', { plugins })
     },
     'plugin/info' (packages: Array<{ plugin: Plugin, properties: PluginProperties }>) {
       this.room!!.plugins = []
@@ -87,12 +88,12 @@ export default class RoomView extends Vue {
     this.room = room
     if (this.$store.getters.localOnly) {
       const properties: PluginProperties = {
-        record: new Function(...COUNTER_PLUGIN.functions['initialize'])(),
+        record: new Function(...COUNTER_PLUGIN.functions.initialize)(),
         env: {
           instanceId: 'xxxx-yyyy-zzzz',
-          room: this.room
+          room: this.room,
         },
-        meta: COUNTER_META
+        meta: COUNTER_META,
       }
       this.addPlugin(COUNTER_PLUGIN, properties)
 

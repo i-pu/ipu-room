@@ -38,13 +38,13 @@ export const CHAT_PLUGIN: Plugin = {
         user_id: 'xxxx',
         text: this.record.chatInput
       })
-    `]
-  }
+    `],
+  },
 }
 
-export const CHAT_RECORD = { 
+export const CHAT_RECORD = {
   comments: [],
-  chatInput: ''
+  chatInput: '',
 }
 
 export const CHAT_META: PluginMeta = {
@@ -55,5 +55,5 @@ export const CHAT_META: PluginMeta = {
   description: 'aaa',
   author: 'a',
   tags: 'a,b,c',
-  content: '<html></html>'
+  content: '<html></html>',
 }
