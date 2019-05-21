@@ -72,8 +72,8 @@ cd server && docker-compose up --build
 export interface Plugin {
   // html template
   template: string,
-  // trigger methods' name
-  events: string[],
+  // trigger functions' name
+  funtions: string[],
   // variables in plugin
   record: Record<string, any>,
   // custom component that be used in
@@ -115,7 +115,7 @@ export interface PluginObject {
   name: string,
   description: string,
   author: string,
-  tags: string,
+  tags: string[],
   content: string,
 }
 ```
@@ -155,7 +155,7 @@ export interface PluginObject {
 {
   room_id: string,
   instance_id: string,
-  event_name: string,
+  function_name: string,
   args: any[]
 }
 ```
