@@ -2,24 +2,23 @@
 //  Example plugin counter
 // ========================
 
-import { Plugin } from '@/model'
+import { Plugin, PluginMeta } from '@/model'
 
-export class CounterServer {
-  public count: number = 0
-
-  public plus () {
-    this.count++
+export const COUNTER_PLUGIN: Plugin = {
+  template: `<div><h3> {{ record.count }} </h3><v-btn @click="plus"> Add </v-btn></div>`,
+  functions: {
+    'initialize': ['return { count: 0 }'],
+    'plus': ['this.record.count++']
   }
 }
 
-const counter: Plugin = {
-  template: `<div><h3> {{ v.count }} </h3><v-btn @click="plus"> Add </v-btn></div>`,
-  events: ['plus'],
-  record: { count: 0 },
-  addons: { VBtn: 'vuetify/lib/components/VBtn' },
-  room_id: '',
-  id: '',
-  enabled: true,
+export const COUNTER_META: PluginMeta = {
+  plugin_id: 'counter_xxx',
+  // plugin name
+  name: 'counter',
+  thumbnail_url: 'https://avatars3.githubusercontent.com/u/50242068?s=200&v=4',
+  description: 'aaa',
+  author: 'a',
+  tags: 'a,b,c',
+  content: '<html></html>'
 }
-
-export default counter

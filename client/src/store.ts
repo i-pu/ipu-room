@@ -10,7 +10,7 @@ export interface State {
 }
 
 const storeState: State = {
-  isLocalOnly: false,
+  isLocalOnly: true,
   userName: '',
   userId: '',
 }
