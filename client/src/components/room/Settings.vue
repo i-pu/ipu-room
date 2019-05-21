@@ -27,14 +27,13 @@
                       label="設定1"
                     )
 
-                    //- h3 プラグイン
+                    h3 プラグイン
 
-                    //- template(v-for="{ component } in room.plugins")
-                    //-   v-switch(
-                    //-     v-model="component.enabled"
-                    //-     :label="component.meta.name"
-                    //-     @change="onChangePluginSettings(component.meta.name)"
-                    //-   )
+                    template(v-for="{ plugin, properties } in room.plugins")
+                      v-switch(
+                        :label="properties.meta.name"
+                        @change="onChangePluginSettings(properties.name)"
+                      )
 
                   v-flex(xs6 sm6)
                     v-select(
@@ -52,11 +51,7 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Prop } from 'vue-property-decorator'
 import { Room } from '@/model'
-import { Plugin, PluginConfig } from '@/model'
-
-import Counter, { CounterServer } from '@/plugin_examples/counter'
-import YoutubePlayer, { YoutubePlayerServer } from '@/plugin_examples/youtubePlayer'
-import Chat, { ChatServer } from '@/plugin_examples/chat'
+import { Plugin, PluginProperties } from '@/model'
 
 @Component
 export default class Settings extends Vue {
@@ -73,36 +68,16 @@ export default class Settings extends Vue {
   }
 
   private onAddPlugin () {
-    if (this.$store.getters.localOnly) {
+    if (!this.$store.getters.localOnly) {
       // TODO
       return
     } else {
-      const meta: PluginConfig = {
-        plugin_id: '${this.selectedPlugin}001',
-        name: this.selectedPlugin,
-        description: '',
-        author: '',
-        content: '',
-        tags: '',
-      }
       if (this.selectedPlugin === 'counter') {
-        this.$emit('add-plugin', {
-          ...Counter,
-          room_id: this.room.id,
-          enabled: true,
-        }, meta, new CounterServer())
+        // this.$emit('add-plugin', Counter, meta, config, new CounterServer())
       } else if (this.selectedPlugin === 'chat') {
-        this.$emit('add-plugin', {
-          ...Chat,
-          room_id: this.room.id,
-          enabled: true,
-        }, new ChatServer())
+        // this.$emit('add-plugin', Chat, meta, config, new ChatServer())
       } else if (this.selectedPlugin === 'player') {
-        this.$emit('add-plugin', {
-          ...YoutubePlayer,
-          room_id: this.room.id,
-          enabled: true,
-        }, new YoutubePlayerServer())
+        // this.$emit('add-plugin', YoutubePlayer, meta, config, new YoutubePlayerServer())
       }
     }
   }

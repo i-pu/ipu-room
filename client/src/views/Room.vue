@@ -22,18 +22,17 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 
-import { Room, User, Plugin, PluginConfig } from '@/model'
+import { Room, User, Plugin, PluginProperties, PluginMeta } from '@/model'
 
 import Desk from '@/components/room/Desk.vue'
 import Status from '@/components/room/Status.vue'
 import Settings from '@/components/room/Settings.vue'
 
 import { ROOMS_MOCK } from '@/api/mock'
-import { compile, compileLocal } from '@/logic/compiler'
+import { compile } from '@/logic/compiler'
 
-import Counter, { CounterServer } from '@/plugin_examples/counter'
-import YoutubePlayer, { YoutubePlayerServer } from '@/plugin_examples/youtubePlayer'
-import Chat, { ChatServer } from '@/plugin_examples/chat'
+import { COUNTER_PLUGIN, COUNTER_META } from '@/plugin_examples/counter'
+import { CHAT_PLUGIN, CHAT_RECORD, CHAT_META } from '@/plugin_examples/chat'
 
 @Component<RoomView>({
   components: { Desk, Status, Settings },
@@ -47,10 +46,18 @@ import Chat, { ChatServer } from '@/plugin_examples/chat'
     'room/exit-event' ({ members }: { members: User[] }) {
       this.room!!.members = members
     },
-    'plugin/info' (packages: Array<{ instance: Plugin, meta: PluginConfig }>) {
+    'plugin/clone' () {
+      // clone all plugin
+      const packages: Array<{ plugin: Plugin, properties: PluginProperties }> = []
+      for (const { component, properties } of this.room!!.plugins) {
+        packages.push(component.sealedOptions.methods.clone())
+      }
+      this.$socket.emit('plugin/clone', {})
+    },
+    'plugin/info' (packages: Array<{ plugin: Plugin, properties: PluginProperties }>) {
       this.room!!.plugins = []
-      for (const { instance, meta } of packages) {
-        this.addPlugin(instance, meta)
+      for (const { plugin, properties } of packages) {
+        this.addPlugin(plugin, properties)
       }
     },
   },
@@ -75,25 +82,38 @@ export default class RoomView extends Vue {
     }
   }
 
-  private responseEnterRoom (data: { room: Room }) {
+  private responseEnterRoom ({ room }: { room: Room }) {
     console.log(`[Room] entered`)
-    console.log(JSON.parse(JSON.stringify(data.room.plugins)))
-    this.room = data.room
+    this.room = room
     if (this.$store.getters.localOnly) {
-      // this.addPluginLocal('chat')
+      const properties: PluginProperties = {
+        record: new Function(...COUNTER_PLUGIN.functions['initialize'])(),
+        env: {
+          instanceId: 'xxxx-yyyy-zzzz',
+          room: this.room
+        },
+        meta: COUNTER_META
+      }
+      this.addPlugin(COUNTER_PLUGIN, properties)
+
+      // const properties: PluginProperties = {
+      //   record: CHAT_RECORD,
+      //   env: {
+      //     instanceId: 'xxxx-yyyy-zzzz',
+      //     room: this.room
+      //   },
+      //   meta: CHAT_META
+      // }
+      // this.addPlugin(CHAT_PLUGIN, properties)
     } else {
       this.$socket.emit('plugin/info', { room_id: this.room.id })
     }
   }
 
-  private async addPlugin (instance: Plugin, meta: PluginConfig, server?: any) {
-    if (this.$store.getters.localOnly) {
-      const component = await compileLocal(instance, meta, server)
-      this.room!!.plugins.push({ component })
-    } else {
-      const component = await compile(instance, meta)
-      this.room!!.plugins.push({ component })
-    }
+  private async addPlugin (plugin: Plugin, properties: PluginProperties) {
+    const component = await compile(plugin, properties)
+    // component.sealedOptions.methods.clone()
+    this.room!!.plugins.push({ component, properties })
   }
 
   private requestExitRoom () {

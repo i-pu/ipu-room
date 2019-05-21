@@ -4,31 +4,31 @@ import { Component } from 'vue'
 export interface Plugin {
   // html template
   template: string,
-  // trigger methods' name
-  events: string[],
-  // variables in plugin
-  record: Record<string, any>,
-  // custom component that be used in
-  addons: Record<string, string>,
-  // === instanve infos ===
-  // unique instance
-  id: string,
-  // room id
-  room_id: string,
-  // instance's state
-  enabled: boolean
+  // functions
+  functions: Record<string, string[]>
 }
 
-// typeof plugin config
-export interface PluginConfig {
+// static plugin info
+interface PluginMeta {
   // plugin id
   plugin_id: string,
   // plugin name
+  thumbnail_url: string,
   name: string,
   description: string,
   author: string,
   tags: string,
   content: string
+}
+
+// instance info
+export interface PluginProperties {
+  record: Record<string, any>,
+  env: {
+    instanceId: string,
+    room: Room
+  },
+  meta: PluginMeta
 }
 
 export interface Comment {
@@ -46,7 +46,10 @@ export interface Room {
   id: string,
   thumbnail_url: string,
   members: User[],
-  plugins: Array<{ component: Component }>
+  plugins: Array<{
+    component: Component,
+    properties: PluginProperties
+  }>
 }
 
 export interface User {
