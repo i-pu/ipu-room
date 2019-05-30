@@ -1,22 +1,49 @@
-use actix_web::{App, Result, http, HttpRequest, HttpResponse, Responder,  FromRequest, web::{self, Json}, HttpServer};
-use serde::{Deserialize, Serialize};
+#[macro_use]
+extern crate failure;
+#[macro_use]
+extern crate diesel;
+
+mod v1;
+mod schema;
+mod model;
+
+use actix_web::{
+    App, Result, http, HttpRequest, HttpResponse, Responder, FromRequest,
+    web::{self, Json}, HttpServer, ResponseError
+};
+use diesel::{r2d2::{self, ConnectionManager, Pool}, pg::PgConnection, result::QueryResult};
 use futures::{Future, future};
+use dotenv;
+use uuid::Uuid;
+use diesel::query_dsl::RunQueryDsl;
+use crate::model::PluginInfo;
 
-#[derive(Serialize, Deserialize, Debug)]
-struct PluginPath {
-    id: String,
-}
 
-fn plugin_get(req: HttpRequest, ppjson: Json<PluginPath>) -> Json<Vec<PluginPath>> {
-    println!("{:?}", ppjson);
-    Json(vec![ppjson.0])
-}
+fn main() -> std::io::Result<()> {
+    dotenv::dotenv().ok();
+    let database_url = std::env::var("DATABASE_URL")
+        .expect("DATABASE_URL must be set");
+    let manager = ConnectionManager::<PgConnection>::new(database_url);
+    let pool = Pool::builder()
+        .build(manager).expect("Fail to create pool");
 
-fn main() -> std::io::Result<()>{
-    HttpServer::new(|| {
+
+    HttpServer::new(move || {
         App::new()
-        .service(web::resource("/").route(web::post().to(plugin_get)))
+            .data(pool.clone())
+            .service(web::resource("/api/v1/plugins")
+                .route(web::get().to(v1::get_all_plugins))
+                .route(web::post().to(v1::post_plugin)))
+
+            .service(web::resource("/api/v1/plugins/{id}")
+                .route(web::get().to(v1::get_plugin)))
+
+            .service(web::resource("/api/v1/plugins")
+                .route(web::put().to(v1::put_plugin)))
+
+            .service(web::resource("/api/v1/hello")
+                .route(web::get().to(v1::hello)))
     })
-        .bind("127.0.0.1:8888")?
+        .bind("localhost:8888")?
         .run()
 }
