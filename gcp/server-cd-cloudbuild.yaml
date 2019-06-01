@@ -49,7 +49,7 @@ steps:
   - 'container'
   - 'clusters'
   - 'get-credentials'
-  - 'ipu-cluster'
+  - 'ipu-project-cluster'
   - '--zone=${_ZONE}'
   - '--project=${PROJECT_ID}'
   waitFor: ['-']
