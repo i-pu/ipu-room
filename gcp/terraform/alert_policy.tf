@@ -1,41 +1,53 @@
 resource "google_monitoring_alert_policy" "test-alert-policy" {
-    display_name = "[Test alert policy]"
-    combiner = "OR"
-    documentation {
-        content = "hgoeajfaffa;fja"
+  display_name = "[Test alert policy]"
+  combiner = "OR"
+  documentation {
+    content = "hgoeajfaffa;fja"
+  }
+  conditions {
+    display_name = "test-alert-policy conditions"
+    condition_threshold {
+      comparison = "COMPARISON_GT"
+      filter = "metric.type=\"logging.googleapis.com/user/${google_logging_metric.server.name}\" AND resource.type=\"k8s_container\""
+
+      threshold_value = 0.01
+
+      trigger {
+        count = 1
+      }
+      duration = "60s"
     }
-    conditions {
-        display_name = "test-alert-policy conditions"
-        condition_threshold {
-          comparison = "COMPARISON_GT"
-          filter = "metric.type=\"logging.googleapis.com/user/${google_logging_metric.server.name}\" AND resource.type=\"k8s_container\""
+  }
 
-          threshold_value = 0.01
-
-          trigger {
-            count = 1
-          }
-          duration = "60s"
-        }
-    }
-
-    # notification_channels = [
-    #     "${google_monitoring_notification_channel.basic.id}",
-    # ]
-    enabled = true
+  # notification_channels = [
+  #     "${google_monitoring_notification_channel.slack.id}",
+  # ]
+  enabled = true
 }
 
 resource "google_logging_metric" "server" {
   name = "k8s_container/server"
   # filter = "resource.type=\"k8s_container\" AND textPayload:\"error\""
   filter = "resource.type=\"k8s_container\" AND resource.labels.container_name=\"server\""
+
+  # type: counter
   metric_descriptor {
     metric_kind = "DELTA"
     value_type = "INT64"
+
+    labels {
+      key = "my_label"
+      value_type = "STRING"
+      description = "This is my label"
+    }
   }
+  label_extractors = {
+    "my_label" = "REGEXP_EXTRACT(textPayload, \"(.*)\")"
+  }
+
 }
 
-# resource "google_monitoring_notification_channel" "basic" {
+# resource "google_monitoring_notification_channel" "slack" {
 #   display_name = "Test Notification Channel"
 #   type = "slack"
 #   labels = {

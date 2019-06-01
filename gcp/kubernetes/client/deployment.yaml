@@ -29,7 +29,7 @@ spec:
               cpu: 1m
           volumeMounts:
             - mountPath: /etc/nginx/conf.d
-              name: nginx-default.conf
+              name: nginx-config
           readinessProbe:
             httpGet:
               port: 8000
@@ -42,9 +42,9 @@ spec:
             timeoutSeconds: 3
 
       volumes:
-        - name: nginx-default.conf
+        - name: nginx-cofig
           configMap:
-            name: nginx-configmap
+            name: nginx-config
             items:
               - key: default.conf
                 path: default.conf
