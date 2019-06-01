@@ -34,7 +34,7 @@ spec:
             httpGet:
               port: 8000
               path: /
-              scheme: http
+              scheme: HTTP
               host: 0.0.0.0
             successThreshold: 1
             initialDelaySeconds: 5
