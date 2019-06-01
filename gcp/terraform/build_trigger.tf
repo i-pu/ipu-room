@@ -6,7 +6,7 @@ resource "google_cloudbuild_trigger" "server" {
     repo_name = "github_i-pu_ipu"
   }
 
-  substitutions {
+  substitutions = {
     _DOCKER_USERNAME = "${lookup(var.docker_secret, "username")}"
     _DOCKER_PASSWORD = "${lookup(var.docker_secret, "password")}"
     _ZONE = "${var.zone}"
@@ -21,7 +21,7 @@ resource "google_cloudbuild_trigger" "client" {
     repo_name = "github_i-pu_ipu"
   }
 
-  substitutions {
+  substitutions = {
     _DOCKER_USERNAME = "${lookup(var.docker_secret, "username")}"
     _DOCKER_PASSWORD = "${lookup(var.docker_secret, "password")}"
     _ZONE = "${var.zone}"
