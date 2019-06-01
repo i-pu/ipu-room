@@ -42,7 +42,7 @@ spec:
             timeoutSeconds: 3
 
       volumes:
-        - name: nginx-cofig
+        - name: nginx-config
           configMap:
             name: nginx-config
             items:
