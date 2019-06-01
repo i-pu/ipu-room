@@ -1,6 +1,7 @@
 .DS_Store
 
 # local env files
+.env
 .env.local
 .env.*.local
 
@@ -34,3 +35,7 @@ __pycache__/
 # terraform
 /gcp/terraform/*
 !/gcp/terraform/*.tf
+
+# rust
+/plugin_market/target
+/plugin_market/plugin_market.iml

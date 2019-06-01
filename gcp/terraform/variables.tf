@@ -1,3 +1,5 @@
+variable "project" {}
+
 variable "docker_secret" {
   type = "map"
 }

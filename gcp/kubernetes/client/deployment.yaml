@@ -26,14 +26,25 @@ spec:
           resources:
             requests:
               memory: 5Mi
-              cpu: 1m
+              cpu: 0m
           volumeMounts:
             - mountPath: /etc/nginx/conf.d
-              name: nginx-default.conf
+              name: nginx-config
+          readinessProbe:
+            httpGet:
+              port: 8000
+              path: /
+              scheme: HTTP
+              host: 0.0.0.0
+            successThreshold: 1
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+
       volumes:
-        - name: nginx-default.conf
+        - name: nginx-config
           configMap:
-            name: nginx-configmap
+            name: nginx-config
             items:
               - key: default.conf
                 path: default.conf

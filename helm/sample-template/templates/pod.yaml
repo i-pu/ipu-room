@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hoge
+spec:
+  containers:
+    - name: hoge-container
+      image: nginx:{{ .Values.tag }}
