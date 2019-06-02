@@ -5,4 +5,8 @@ metadata:
 spec:
   containers:
     - name: hoge-container
-      image: nginx:{{ .Values.tag }}
+      image: nginx:1.15
+      resources:
+        requests:
+          cpu: 1m
+          memory: 5Mi
