@@ -7,54 +7,63 @@ resource "google_monitoring_alert_policy" "test-alert-policy" {
   conditions {
     display_name = "test-alert-policy conditions"
     condition_threshold {
+      filter = <<EOF
+metric.type="logging.googleapis.com/user/${google_logging_metric.server.name}" AND
+resource.type="k8s_container"
+metric.label.textPayload: "error"
+EOF
+
+      duration = "0s"
       comparison = "COMPARISON_GT"
-      filter = "metric.type=\"logging.googleapis.com/user/${google_logging_metric.server.name}\" AND resource.type=\"k8s_container\""
-
       threshold_value = 0.01
-
       trigger {
         count = 1
       }
-      duration = "60s"
+
+      aggregations {
+        per_series_aligner = "ALIGN_DELTA"
+        cross_series_reducer = "REDUCE_NONE"
+        alignment_period = "60s"
+      }
     }
   }
 
-  # notification_channels = [
-  #     "${google_monitoring_notification_channel.slack.id}",
-  # ]
+  notification_channels = [
+    google_monitoring_notification_channel.email.id,
+  ]
   enabled = true
 }
 
 resource "google_logging_metric" "server" {
   name = "k8s_container/server"
-  # filter = "resource.type=\"k8s_container\" AND textPayload:\"error\""
-  filter = "resource.type=\"k8s_container\" AND resource.labels.container_name=\"server\""
+  filter = <<EOF
+resource.type="k8s_container" AND
+resource.labels.container_name="server"
+textPayload: "error"
+EOF
+  description = "catch error, then label"
 
-  # type: counter
   metric_descriptor {
     metric_kind = "DELTA"
     value_type = "INT64"
-
     labels {
-      key = "my_label"
-      value_type = "STRING"
-      description = "This is my label"
+      key         = "textPayload"
+      value_type  = "STRING"
+      description = "This label is textPayload that include \"error\" in textPayload"
     }
   }
   label_extractors = {
-    "my_label" = "REGEXP_EXTRACT(textPayload, \"(.*)\")"
+    textPayload = "REGEXP_EXTRACT(textPayload, \"(.*)\")"
   }
-
 }
 
-# resource "google_monitoring_notification_channel" "slack" {
-#   display_name = "Test Notification Channel"
-#   type = "slack"
-#   labels = {
-#     channel_name = "hoge"
-#     auth_token = "hoge"
-#   }
-# }
+resource "google_monitoring_notification_channel" "email" {
+  display_name = "Test Notification Channel"
+  type = "email"
+  labels = {
+    email_address = "kafu.h1998@gmail.com"
+  }
+}
 
 # terraform から stackdriver のログを読み取り，
 # 正規表現で特定のログを抽出し，
