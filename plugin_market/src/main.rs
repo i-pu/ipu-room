@@ -9,7 +9,7 @@ mod model;
 
 use actix_web::{
     App, Result, http, HttpRequest, HttpResponse, Responder, FromRequest,
-    web::{self, Json}, HttpServer, ResponseError
+    web::{self, Json}, HttpServer, ResponseError,
 };
 use diesel::{r2d2::{self, ConnectionManager, Pool}, pg::PgConnection, result::QueryResult};
 use futures::{Future, future};
@@ -32,14 +32,12 @@ fn main() -> std::io::Result<()> {
         App::new()
             .data(pool.clone())
             .service(web::resource("/api/v1/plugins")
-                .route(web::get().to(v1::get_all_plugins))
-                .route(web::post().to(v1::post_plugin)))
+                .route(web::get().to(v1::plugin::get_all_plugins))
+                .route(web::post().to(v1::plugin::post_plugin)))
 
             .service(web::resource("/api/v1/plugins/{id}")
-                .route(web::get().to(v1::get_plugin)))
-
-            .service(web::resource("/api/v1/plugins")
-                .route(web::put().to(v1::put_plugin)))
+                .route(web::get().to(v1::plugin::get_plugin))
+                .route(web::put().to(v1::plugin::put_plugin)))
 
             .service(web::resource("/api/v1/hello")
                 .route(web::get().to(v1::hello)))

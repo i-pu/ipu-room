@@ -5,7 +5,9 @@ use uuid::Uuid;
 
 use crate::schema::plugin_infos;
 
-#[derive(Debug, Clone, Eq, PartialEq, Hash, Insertable, Serialize, Deserialize, Queryable)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash,
+Serialize, Deserialize,
+Insertable, Queryable, AsChangeset)]
 #[table_name = "plugin_infos"]
 pub struct PluginInfo {
     #[serde(default = "uuid4_str", skip_deserializing)]
