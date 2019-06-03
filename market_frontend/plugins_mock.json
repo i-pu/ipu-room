@@ -1,0 +1,82 @@
+{
+  "plugins": [
+    {
+      "name": "カウンター",
+      "id": "cfb0b465-8e62-4b60-8120-a252e515521c",
+      "version": "0.0.1",
+      "thumbnail_url": "https://avatars3.githubusercontent.com/u/50242068?s=200&v=4",
+      "description": "説明",
+      "author": "wakame",
+      "tags": "A,B",
+      "requirements": "",
+      "last_updated": "",
+      "published": true,
+      "content": ""
+    },
+    {
+      "name": "Sample",
+      "id": "6968bdf9-ece6-4f48-b3ff-0d3c3cb52bff",
+      "version": "",
+      "thumbnail_url": "https://avatars3.githubusercontent.com/u/50242068?s=200&v=4",
+      "description": "",
+      "author": "",
+      "tags": "C, D",
+      "requirements": "",
+      "last_updated": "",
+      "published": true,
+      "content": ""
+    },
+    {
+      "name": "Sample",
+      "id": "183bba8f-5327-4207-9852-c666cffd1db9",
+      "version": "",
+      "thumbnail_url": "https://avatars3.githubusercontent.com/u/50242068?s=200&v=4",
+      "description": "",
+      "author": "",
+      "tags": "A,C",
+      "requirements": "",
+      "last_updated": "",
+      "published": true,
+      "content": ""
+    },
+    {
+      "name": "Sample2",
+      "id": "109cf367-8c62-4859-9143-2a3e69d7f52c",
+      "version": "",
+      "thumbnail_url": "https://avatars3.githubusercontent.com/u/50242068?s=200&v=4",
+      "description": "",
+      "author": "",
+      "tags": "A",
+      "requirements": "",
+      "last_updated": "",
+      "published": true,
+      "content": ""
+    },
+    {
+      "name": "Sample3",
+      "id": "5a403e89-5bdd-4557-ba03-affe06f91ecb",
+      "version": "",
+      "thumbnail_url": "https://avatars3.githubusercontent.com/u/50242068?s=200&v=4",
+      "description": "",
+      "author": "",
+      "tags": "",
+      "requirements": "",
+      "last_updated": "",
+      "published": true,
+      "content": ""
+    },
+    {
+      "name": "Sample4",
+      "id": "970e7271-db4b-45e7-bf57-f2e3f0177531",
+      "version": "",
+      "thumbnail_url": "https://avatars3.githubusercontent.com/u/50242068?s=200&v=4",
+      "description": "",
+      "author": "",
+      "tags": "A",
+      "requirements": "",
+      "last_updated": "",
+      "published": true,
+      "content": ""
+    }
+  ]
+}
