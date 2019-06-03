@@ -23,9 +23,29 @@ tag: web-socket-server-cd
 cd client && docker-compose up --build
 ```
 
-### run server
+### run web-socket-server
 ```
 cd server && docker-compose up --build
+```
+
+### run plugin_market
+あらかじめ `diesel_cli` をインストールする必要がある
+```bash
+// diesel cli インストール
+cargo install diesel_cli --no-default-features --features postgres
+
+```
+diesel_cliがインストールされている状態で
+```bash
+cd plugin_market
+./setup.local.sh
+```
+サーバ動かすときは `cargo run` 
+8888をバインドしてる
+`ctr-c`で止める
+```bash
+// 終わるときは
+./teardown.local.sh
 ```
 
 # 目次

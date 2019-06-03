@@ -1,17 +1,12 @@
-use std::collections::HashMap;
-use std::hash::Hash;
-
 use actix_web::{HttpRequest, web};
 use diesel::{
     r2d2::{self, ConnectionManager},
     pg::PgConnection,
-    query_dsl::RunQueryDsl,
-    QueryResult,
     QueryDsl,
+    RunQueryDsl,
 };
-use uuid::Uuid;
 
-use crate::model::{PluginInfo, uuid4_str};
+use crate::model::{PluginInfo};
 
 type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
@@ -21,8 +16,9 @@ pub fn get_all_plugins(pool: web::Data<Pool>) -> web::Json<Vec<PluginInfo>> {
     web::Json(plugin_infos.load(&pool.get().unwrap()).unwrap())
 }
 
-pub fn get_plugin(path: web::Path<String>) -> web::Json<PluginInfo> {
-    unimplemented!()
+pub fn get_plugin(path: web::Path<String>, pool: web::Data<Pool>) -> web::Json<PluginInfo> {
+    use crate::schema::plugin_infos::dsl::plugin_infos;
+    web::Json(plugin_infos.find(path.into_inner()).first(&pool.get().unwrap()).unwrap())
 }
 
 /// create plugin
@@ -52,6 +48,7 @@ pub fn put_plugin(path: web::Path<String>, json: web::Json<PluginInfo>, pool: we
             .set(pi)
             .get_result(&pool.get().unwrap())
             .unwrap();
+
     println!("{:#?}", p);
     web::Json(p)
 }

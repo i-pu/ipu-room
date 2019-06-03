@@ -8,7 +8,4 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - log:/var/lib/postgresql/plugin_market
-
-volumes:
-  log:
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
