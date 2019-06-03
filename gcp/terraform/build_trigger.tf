@@ -1,8 +1,8 @@
 # Repository must be created beforehand
 
-resource "google_cloudbuild_trigger" "server" {
+resource "google_cloudbuild_trigger" "web-socket-server" {
   trigger_template {
-    tag_name = "server-cd"
+    tag_name = "web-socket-server-cd"
     repo_name = "github_i-pu_ipu"
   }
 
@@ -12,7 +12,7 @@ resource "google_cloudbuild_trigger" "server" {
     _ZONE = "${var.zone}"
   }
 
-  filename = "gcp/server-cd-cloudbuild.yaml"
+  filename = "gcp/web-socket-server-cd-cloudbuild.yaml"
 }
 
 resource "google_cloudbuild_trigger" "client" {

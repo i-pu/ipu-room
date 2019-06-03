@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: server
+  name: web-socket-server
 spec:
   selector:
-    app: server
+    app: web-socket-server
   type: NodePort
   ports:
   - port: 8000

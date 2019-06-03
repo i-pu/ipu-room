@@ -13,9 +13,9 @@ http://35.247.18.78:31421
 #### push
 tag: client-cd
 
-### server
+### web-socket-server
 #### push
-tag: server-cd
+tag: web-socket-server-cd
 
 ## Development
 ### run client

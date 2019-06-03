@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: server
+  name: web-socket-server
   labels:
-    app: server
+    app: web-socket-server
 spec:
   strategy:
     type: RollingUpdate
@@ -13,14 +13,14 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: server
+      app: web-socket-server
   template:
     metadata:
       labels:
-        app: server
+        app: web-socket-server
     spec:
       containers:
-        - name: server
+        - name: web-socket-server
           image: docker.io/DOCKER_USERNAME/IMAGE:TAG
           imagePullPolicy: IfNotPresent
           env:

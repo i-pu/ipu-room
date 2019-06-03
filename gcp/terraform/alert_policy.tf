@@ -8,7 +8,7 @@ resource "google_monitoring_alert_policy" "test-alert-policy" {
     display_name = "test-alert-policy conditions"
     condition_threshold {
       filter = <<EOF
-metric.type="logging.googleapis.com/user/${google_logging_metric.server.name}" AND
+metric.type="logging.googleapis.com/user/${google_logging_metric.web-socket-server.name}" AND
 resource.type="k8s_container"
 metric.label.textPayload: "error"
 EOF
@@ -34,11 +34,11 @@ EOF
   enabled = true
 }
 
-resource "google_logging_metric" "server" {
-  name = "k8s_container/server"
+resource "google_logging_metric" "web-socket-server" {
+  name = "k8s_container/web-socket-server"
   filter = <<EOF
 resource.type="k8s_container" AND
-resource.labels.container_name="server"
+resource.labels.container_name="web-socket-server"
 textPayload: "error"
 EOF
   description = "catch error, then label"
