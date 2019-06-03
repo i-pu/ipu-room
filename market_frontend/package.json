@@ -7,6 +7,11 @@
     "elm": "^0.19.0-no-deps"
   },
   "scripts": {
-    "build": "elm make src/market.elm --output=elm.js"
+    "build": "elm make src/Main.elm --output=elm.bin.js",
+    "dev": "parcel index.html"
+  },
+  "devDependencies": {
+    "elm-hot": "^1.0.1",
+    "node-elm-compiler": "^5.0.3"
   }
 }

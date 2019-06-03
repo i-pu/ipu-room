@@ -1,6 +1,9 @@
-{-
-  ipu-room plugin market page
--}
+{-------------------------------
+  Market.elm
+  - plugin listing component
+
+  Copyright (c) 2019 i-pu
+---------------------------------}
 
 module Components.Market exposing (Model, Msg, defaultModel, update, view)
 
@@ -16,7 +19,7 @@ import Json.Decode.Extra exposing (andMap)
 import Material
 import Material.List as Lists
 import Material.Button as Button
-import Material.Options as Options
+import Material.Options as Options exposing (css, styled, when)
 import Material.Icon as Icon
 
 import Components.Page as Page exposing (Page)
@@ -68,17 +71,27 @@ view lift page model =
       ]
     ]
 
+demoIcon : List (Icon.Property m)
+demoIcon =
+  [ css "background" "rgba(0,0,0,.3)"
+  , css "border-radius" "50%"
+  , css "color" "#fff"
+  ]
+
 -- show packages list or error message
 viewPackages : (Msg m -> m) -> Model m -> Material.Index -> Html m
 viewPackages lift model index =
   Lists.ul (lift << Mdc) index model.mdc
-    (Lists.twoLine :: Lists.avatarList :: demoList lift model index)
-    [ Lists.divider [] []
+    [ Lists.twoLine, Lists.avatarList] 
+    [ Lists.li []
+      [ Lists.graphicIcon demoIcon "folder"
+      , Lists.text []
+        [ Lists.primaryText [] [ text "Dog Photos" ]
+        , Lists.secondaryText [] [ text "9 Jan 2018" ]
+        ]
+      , Lists.metaIcon [] "info"
+      ]
     ]
-
-demoList : (Msg m -> m) -> Model m -> Material.Index -> List (Lists.Property m)
-demoList lift model index = 
-  []
 
 -- returns repos list elements
 -- viewPackage : PluginPackage -> Lists.ListItem m

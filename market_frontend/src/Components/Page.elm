@@ -1,3 +1,10 @@
+{-------------------------------
+  Page.elm
+  - page layout component
+
+  Copyright (c) 2019 i-pu
+---------------------------------}
+
 module Components.Page exposing (Page, pages)
 
 import Html exposing (Html, div, h2, text)

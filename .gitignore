@@ -10,6 +10,9 @@ client/dist
 client/docs
 client/yarn-cache
 elm-stuff
+elm.bin.js
+.cache
+elm-mdc
 
 # Log files
 npm-debug.log*

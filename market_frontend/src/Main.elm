@@ -1,3 +1,12 @@
+{-------------------------------
+  Main.elm
+  - entry point
+
+  Copyright (c) 2019 i-pu
+---------------------------------}
+
+-- see <https://github.com/aforemny/elm-mdc/tree/master/demo/Demo>
+
 module Main exposing (main)
 
 import Browser
