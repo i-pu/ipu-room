@@ -9,6 +9,7 @@ node_modules
 client/dist
 client/docs
 client/yarn-cache
+elm-stuff
 
 # Log files
 npm-debug.log*
