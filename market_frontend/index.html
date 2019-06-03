@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <html lang="ja">
   <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Started</title>
+  
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css" rel="stylesheet">
+    <link href="elm-mdc/material-components-web.css" rel="stylesheet">
+  
   </head>
-  <body>
-    <div id="app"></div>
-    <!-- Your Elm application  -->
-    <script src="./elm.js"></script>
-    <script type="text/javascript">
-      Elm.Main.init({
-        node: document.getElementById('app')
-      });
-    </script>
+  <body class="mdc-typography">
+    <script src="elm-mdc/elm-mdc.js"></script>
+    <script src="elm.js"></script>
+    <div id="elm" />
+      <script type="text/javascript">
+        Elm.Main.init({ node: document.getElementById('elm') });
+      </script>
+    </div>
   </body>
 </html>
