@@ -19,7 +19,7 @@ steps:
   - 'docker.io/${_DOCKER_USERNAME}/${PROJECT_ID}-server:latest'
   - '--cache-from'
   - 'docker.io/${_DOCKER_USERNAME}/${PROJECT_ID}-server:latest'
-  - 'server/src'
+  - 'web-socket-server/src'
   waitFor: ['pull-latest-image']
 
 - name: 'gcr.io/cloud-builders/docker'
@@ -61,7 +61,7 @@ steps:
   args:
   - '-c'
   - |
-    gcp/kubernetes/server/sed.sh ${PROJECT_ID} ${_DOCKER_USERNAME} ${REVISION_ID}
+    gcp/kubernetes/web-socket-server/sed.sh ${PROJECT_ID} ${_DOCKER_USERNAME} ${REVISION_ID}
   waitFor: ['push-image']
 
 - name: 'gcr.io/cloud-builders/kubectl'
@@ -69,7 +69,7 @@ steps:
   args:
   - 'apply'
   - '-f'
-  - 'gcp/kubernetes/server'
+  - 'gcp/kubernetes/web-socket-server'
   waitFor: ['sed-file', 'get-cluster-credentials']
 
 timeout: 1800s

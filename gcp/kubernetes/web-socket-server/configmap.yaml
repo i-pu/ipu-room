@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: postgres-configmap
 data:
-  POSTGRES_USER: server
+  POSTGRES_USER: web-socket-server
   POSTGRES_PASSWORD: hogehogepassword
   POSTGRES_DB: ipu
   ENV: docker-compose

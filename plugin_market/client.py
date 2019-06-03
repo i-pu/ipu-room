@@ -16,7 +16,13 @@ print(res.headers)
 print(res.content)
 pprint.pprint(res.json())
 
-# res = requests.put('http://localhost:8888/api/v1/plugins', json={'': 'hgoe'})
-# print(res.headers)
-# print(res.content)
-# pprint.pprint(res.json())
+res = requests.get('http://localhost:8888/api/v1/plugins'+'/'+res.json()['id'])
+print(res.headers)
+print(res.content)
+pprint.pprint(res.json())
+
+
+res = requests.put('http://localhost:8888/api/v1/plugins'+'/'+res.json()['id'], json={'name': 'hooooo'})
+print(res.headers)
+print(res.content)
+pprint.pprint(res.json())
