@@ -48,20 +48,8 @@ import * as Package from '@/plugin_examples/paint'
     'room/exit-event' ({ members }: { members: User[] }) {
       this.room!!.members = members
     },
-    'plugin/clone' () {
-      // clone all plugin
-      const plugins: Array<{ plugin: Plugin, properties: PluginProperties }> = []
-      for (const { component, properties } of this.room!!.plugins) {
-        // @ts-ignore
-        plugins.push(component.sealedOptions.methods.clone())
-      }
-      this.$socket.emit('plugin/clone', { plugins })
-    },
-    'plugin/info' (packages: Array<{ plugin: Plugin, properties: PluginProperties }>) {
-      this.room!!.plugins = []
-      for (const { plugin, properties } of packages) {
-        this.addPlugin(plugin, properties)
-      }
+    'plugin/info' ({ plugin, properties }: { plugin: Plugin, properties: PluginProperties }) {
+      this.addPlugin(plugin, properties)
     },
   },
 })
@@ -101,7 +89,6 @@ export default class RoomView extends Vue {
         meta: Package.meta,
       }
       this.addPlugin(Package.plugin, properties)
-
       // const properties: PluginProperties = {
       //   record: new Function(...COUNTER_PLUGIN.functions.initialize)(),
       //   env: {

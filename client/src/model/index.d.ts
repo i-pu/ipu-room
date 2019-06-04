@@ -11,7 +11,7 @@ export interface Plugin {
 // static plugin info
 interface PluginMeta {
   // plugin id
-  plugin_id: string,
+  id: string,
   // plugin name
   thumbnail_url: string,
   name: string,

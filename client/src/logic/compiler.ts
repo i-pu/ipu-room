@@ -89,6 +89,16 @@ export const compile = async (
     components: addonComponents,
     sockets: {
       // from server
+      'plugin/sync' (this: Vue, { record }: { record: Record<string, any> }) {
+        // @ts-ignore
+        this.record = record
+        console.log('record synced')
+      },
+      'plugin/clone' (this: Vue) {
+        console.log('[Plugin] came clone request from server')
+        // @ts-ignore
+        this.$socket.emit('plugin/clone', { record: this.$cloneRecord() })
+      },
       'plugin/trigger' (payload: { event: string, args: [] }) {
         // @ts-ignore
         this.callbackFromServer(payload)
@@ -106,18 +116,20 @@ export const compile = async (
       }
     },
     mounted () {
+      this.$socket.emit('plugin/info', { room_id: this.env.room.id })
       console.log(`[${this.env.instanceId}] active`)
+
+      // if someone exist, sync records
+      if (1 < this.env.room.members.length) {
+        this.$socket.emit('plugin/sync', {
+          room_id: this.env.room.id,
+          instance_id: this.$attrs.env.instanceId
+        })
+      }
     },
     methods: {
-      clone (this: Vue & { record: Record<string, any> }): { plugin: Plugin, properties: PluginProperties } {
-        const currentRecord: Record<string, any> = Object.assign({}, this.record)
-        return {
-          plugin,
-          properties: {
-          ...properties,
-          record: currentRecord,
-          },
-        }
+      $cloneRecord (this: Vue & { record: Record<string, any> }): Record<string, any> {
+        return Object.assign({}, this.record)
       },
       $log (message: any) {
         console.log(message)
