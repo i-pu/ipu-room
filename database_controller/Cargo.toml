@@ -1,5 +1,5 @@
 [package]
-name = "plugin_market"
+name = "database_controller"
 version = "0.1.0"
 authors = ["hamadakafu <kafu.h1998@gmail.com>"]
 edition = "2018"

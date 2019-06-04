@@ -9,3 +9,8 @@ create table plugin_infos (
     tags varchar(100) not null,
     content text not null
 );
+
+create table users (
+    id varchar(40) primary key,
+    name varchar(20) not null
+);
