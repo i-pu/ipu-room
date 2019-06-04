@@ -105,8 +105,8 @@ export interface Plugin {
 ```ts
 // static plugin info
 export interface PluginMeta {
-  // plugin id
-  plugin_id: string,
+  // id
+  id: string,
   // plugin name
   thumbnail_url: string,
   name: string,
