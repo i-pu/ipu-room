@@ -21,7 +21,12 @@ mod model;
 
 
 fn main() -> std::io::Result<()> {
-    dotenv::dotenv().ok();
+    let env = std::env::var("ENV").unwrap_or(String::new());
+    if env != "prd" {
+        dotenv::dotenv().ok();
+    }
+
+    let port = std::env::var("PORT").expect("PORT must be set");
 
     let database_url = std::env::var("DATABASE_URL")
         .expect("DATABASE_URL must be set");
@@ -49,6 +54,6 @@ fn main() -> std::io::Result<()> {
             .service(web::resource("/api/v1/users/{id}"))
 
     })
-        .bind("localhost:8888")?
+        .bind("0.0.0.0:".to_owned()+&port)?
         .run()
 }

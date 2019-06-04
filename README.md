@@ -17,35 +17,49 @@ tag: client-cd
 #### push
 tag: web-socket-server-cd
 
-## Development
+## local development
 ### run client
 ```
 cd client && docker-compose up --build
 ```
 
-### run web-socket-server
-```
-cd server && docker-compose up --build
-```
-
-### run plugin_market
-あらかじめ `diesel_cli` をインストールする必要がある
-```bash
-// diesel cli インストール
-cargo install diesel_cli --no-default-features --features postgres
+### server-side
+### build
 
 ```
-diesel_cliがインストールされている状態で
-```bash
-cd plugin_market
-./setup.local.sh
+docker build -t kafuhamada/web-socket-server web-socket-server/src
+docker build -t kafuhamada/database-controller database-controller
 ```
-サーバ動かすときは `cargo run` 
-8888をバインドしてる
-`ctr-c`で止める
+### run
+kubernetes on `minikube`  
+not `docker for mac`
+
+### run server
+minikube をインストールする必要がある
 ```bash
-// 終わるときは
-./teardown.local.sh
+$ brew install minikube
+$ minikube start --cpus 2 --memory 4096 <- 3,4分かかる
+```
+localではminikubeとdockerを併用することになるので以下のコマンドを
+minikube start の後にすべての開いているpromptで実行する
+```bash
+$ eval $(minikube docker-env)
+```
+以下のコマンドでdocker build する．これ以外は許されない．
+```bash
+$ docker build -t kafuhamada/database_controller database_contoroller
+$ docker build -t kafuhamada/web-socket-server web-socket-server 
+```
+デプロイ
+```bash
+$ ./helm3-alpha init
+$ ./helm3-alpha install -f ./helm/server/values.yaml -f ./helm/server/values.local.yaml server ./helm/server
+```
+
+終了する際には，
+```bash
+$ ./helm3-alpha uninstall server
+$ minikube stop
 ```
 
 # 目次

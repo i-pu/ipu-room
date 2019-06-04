@@ -38,8 +38,6 @@ app = Flask(__name__)
 CORS(app)
 socketio = SocketIO(app)
 
-global_plugins = {}
-
 
 def create_app(env):
     if env == 'docker-compose':

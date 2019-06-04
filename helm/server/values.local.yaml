@@ -1,0 +1,8 @@
+isLocal: true
+webSocketServer:
+  image: web-socket-server
+  tag: latest
+
+databaseController:
+  image: database_controller
+  tag: latest

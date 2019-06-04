@@ -21,6 +21,6 @@ ENTRYPOINT [ "./entry.sh" ]
 
 # see issue https://github.com/miguelgrinberg/Flask-SocketIO/issues/909
 # CMD [ "uwsgi" , "--ini" , "uwsgi.ini" ]
-CMD ["python" , "server.py"]
-
 USER nobody
+
+CMD ["python" , "server.py"]

@@ -25,3 +25,8 @@ def get_plugins():
             'plugins': list(map(Plugin.__to_dict__, plugins)),
         }
     )
+
+
+@app.route('/hello')
+def hello():
+    return 'hello'

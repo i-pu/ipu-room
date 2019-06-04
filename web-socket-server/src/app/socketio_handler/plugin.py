@@ -12,51 +12,6 @@ mylogger = getLogger(__name__)
 mylogger.setLevel(DEBUG)
 
 
-@socketio.on('plugin/register')
-@utils.byte_data_to_dict
-@utils.check_user
-@utils.function_info_wrapper
-def plugin_register(data):
-    mylogger.debug('- - data: {}'.format(data))
-    plugin_name: str = data['name']
-    plugin_content = data['content']
-    plugin_description = data['description']
-    # name: string,
-    # description: string,
-    # author: string,
-    # tags: string,
-    # content: string,
-
-    try:
-        template, events, records, python, addons = plugin_compiler(plugin_content)
-        template = \
-            '''
-      <div>
-        <h3> {{ v.count }} </h3>
-        <v-btn @click="plus(1)"> Add </v-btn>
-      </div>
-    '''
-    except Exception as e:
-        mylogger.error(e)
-        raise e
-
-    plugin = Plugin(name=plugin_name,
-                    python=python,
-                    template=template,
-                    description=plugin_description)
-    try:
-        db.session.add(plugin)
-        db.session.commit()
-        ret = {'state': True}
-    except Exception as e:
-        mylogger.error(e)
-        ret = {'state': False}
-
-    mylogger.info('- - return')
-    mylogger.info('{}'.format(ret))
-    socketio.emit('plugin/register', data=ret)
-
-
 @socketio.on('plugin/info')
 @utils.byte_data_to_dict
 @utils.check_user
