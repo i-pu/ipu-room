@@ -1,1 +1,0 @@
-cargo:rustc-cfg=actix_impl_trait

@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["Blank","Empty service"],["BlankNewService","Empty service factory"]]});

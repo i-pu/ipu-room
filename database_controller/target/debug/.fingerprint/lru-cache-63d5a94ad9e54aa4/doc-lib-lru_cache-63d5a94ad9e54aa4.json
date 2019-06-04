@@ -1,1 +1,0 @@
-{"rustc":12964410163570521870,"features":"[]","target":7816801802411670454,"profile":11572084262108836195,"path":10027869943986786022,"deps":[["linked-hash-map v0.5.2","linked_hash_map",3762316767348602725],["linked-hash-map v0.5.2","linked_hash_map",12822865355201904545]],"local":[{"Precalculated":"0.1.2"}],"rustflags":[],"edition":"Edition2015"}
