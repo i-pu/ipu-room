@@ -31,15 +31,16 @@ import Settings from '@/components/room/Settings.vue'
 import { ROOMS_MOCK } from '@/api/mock'
 import { compile } from '@/logic/compiler'
 
-import { COUNTER_PLUGIN, COUNTER_META } from '@/plugin_examples/counter'
-import { CHAT_PLUGIN, CHAT_RECORD, CHAT_META } from '@/plugin_examples/chat'
-import { PAINT_PLUGIN, PAINT_META } from '@/plugin_examples/paint'
+// import * as Package from '@/plugin_examples/counter'
+// import * as Package from '@/plugin_examples/chat'
+import * as Package from '@/plugin_examples/paint'
 
 @Component<RoomView>({
   components: { Desk, Status, Settings },
   sockets: {
     'room/enter' (data: { room: Room }) {
-      this.responseEnterRoom(data)
+      // mock
+      this.responseEnterRoom({ room: ROOMS_MOCK[0] })
     },
     'room/exit' (data: {}) {
       this.responseExitRoom()
@@ -77,11 +78,13 @@ export default class RoomView extends Vue {
 
   private requestEnterRoom (data: { room_id: string }) {
     console.log(`[Room] request enter`)
-    if (this.$store.getters.localOnly) {
-      this.responseEnterRoom({ room: ROOMS_MOCK[0] })
-    } else {
-      this.$socket.emit('room/enter', { room_id: this.roomId })
-    }
+    this.$socket.emit('room/enter', { room_id: this.roomId })
+
+    // if (this.$store.getters.localOnly) {
+    //   this.responseEnterRoom({ room: ROOMS_MOCK[0] })
+    // } else {
+    //   this.$socket.emit('room/enter', { room_id: this.roomId })
+    // }
   }
 
   private responseEnterRoom ({ room }: { room: Room }) {
@@ -91,12 +94,13 @@ export default class RoomView extends Vue {
       plugins: []
     }
     if (this.$store.getters.localOnly) {
+      const initializeFn = new Function(...Package.plugin.functions['initialize'])
       const properties: PluginProperties = {
-        record: new Function(...PAINT_PLUGIN.functions['initialize'])(),
+        record: initializeFn(),
         env: { instanceId: 'xxxx-yyyy-zzzz', room: this.room },
-        meta: PAINT_META,
+        meta: Package.meta,
       }
-      this.addPlugin(PAINT_PLUGIN, properties)
+      this.addPlugin(Package.plugin, properties)
 
       // const properties: PluginProperties = {
       //   record: new Function(...COUNTER_PLUGIN.functions.initialize)(),

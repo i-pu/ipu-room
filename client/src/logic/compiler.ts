@@ -66,15 +66,14 @@ export const compile = async (
       },
       ...args: any[]) {
         // emit to server
-        // this.$socket.emit('plugin/trigger', {
-        //   room_id: this.$env.room.id,
-        //   instance_id: this.$env.instanceId,
-        //   event_name: event,
-        //   args,
-        // })
-        // console.log(`${this.env.instanceId} ${event} clicked with`)
-        // console.log(arguments)
-        this.callbackFromServer(event, args)
+        this.$socket.emit('plugin/trigger', {
+          room_id: this.env.room.id,
+          instance_id: this.env.instanceId,
+          event_name: event,
+          args: args,
+        })
+        console.log(`${this.env.instanceId} ${event}`)
+        // his.callbackFromServer(event, args)
       }
 
       hooks[`__callback__${event}`] = new Function(...fn) as (...args: any[]) => void
@@ -90,9 +89,9 @@ export const compile = async (
     components: addonComponents,
     sockets: {
       // from server
-      'plugin/trigger' ({ record }: { record: Record<string, any> }) {
+      'plugin/trigger' (payload: { event: string, args: [] }) {
         // @ts-ignore
-        this.callbackFromServer(record)
+        this.callbackFromServer(payload)
       },
     },
     data (): {
@@ -123,14 +122,22 @@ export const compile = async (
       $log (message: any) {
         console.log(message)
       },
+      $send (event: string, ...args: any[]) {
+        this.$socket.emit('plugin/trigger', {
+          room_id: this.env.room.id,
+          instance_id: this.env.instanceId,
+          event_name: event,
+          args: args,
+        })
+        console.log(`${this.env.instanceId} ${event}`)
+      },
       ...hooks,
       // callback from server
       callbackFromServer (this: Vue 
         & Record<string, (...args: any[]) => void> 
         & { env: { instanceId: string } }
-        , event: string, args: any[]
+        , { event, args }: { event: string, args: any[] }
       ) {
-        console.log('a')
         // console.log(`[plugin/trigger/${this.env.instanceId}] ${event}(${args})`)
         this[`__callback__${event}`](...args)
       },
