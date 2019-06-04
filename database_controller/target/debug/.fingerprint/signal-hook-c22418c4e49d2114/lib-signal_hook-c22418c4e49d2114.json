@@ -1,0 +1,1 @@
+{"rustc":12964410163570521870,"features":"[]","target":1268336290976461596,"profile":9935990280773120926,"path":9598456069841836437,"deps":[["libc v0.2.55","libc",12394811886155857219],["signal-hook-registry v1.0.1","signal_hook_registry",10102484588648456758]],"local":[{"Precalculated":"0.1.9"}],"rustflags":[],"edition":"Edition2015"}

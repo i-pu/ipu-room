@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["new_service","Create boxed new service"],["service","Create boxed service"]],"struct":[["BoxedNewService",""]],"type":[["BoxedService",""],["BoxedServiceResponse",""]]});

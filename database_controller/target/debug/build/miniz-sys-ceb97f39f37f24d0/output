@@ -1,0 +1,25 @@
+TARGET = Some("x86_64-apple-darwin")
+OPT_LEVEL = Some("0")
+HOST = Some("x86_64-apple-darwin")
+CC_x86_64-apple-darwin = None
+CC_x86_64_apple_darwin = None
+HOST_CC = None
+CC = None
+CFLAGS_x86_64-apple-darwin = None
+CFLAGS_x86_64_apple_darwin = None
+HOST_CFLAGS = None
+CFLAGS = None
+CRATE_CC_NO_DEFAULTS = None
+DEBUG = Some("true")
+CARGO_CFG_TARGET_FEATURE = Some("fxsr,sse,sse2,sse3,ssse3")
+running: "cc" "-O0" "-ffunction-sections" "-fdata-sections" "-fPIC" "-g" "-fno-omit-frame-pointer" "-m64" "-DMINIZ_NO_STDIO" "-DMINIZ_NO_ARCHIVE_APIS" "-DMINIZ_NO_ARCHIVE_WRITING_APIS" "-DMINIZ_NO_TIME" "-DMINIZ_NO_ZLIB_COMPATIBLE_NAMES" "-o" "/Users/kafuhamada/Documents/Study/Python/Flask/ipu/plugin_market/target/debug/build/miniz-sys-ceb97f39f37f24d0/out/miniz.o" "-c" "miniz.c"
+exit code: 0
+AR_x86_64-apple-darwin = None
+AR_x86_64_apple_darwin = None
+HOST_AR = None
+AR = None
+running: "ar" "crs" "/Users/kafuhamada/Documents/Study/Python/Flask/ipu/plugin_market/target/debug/build/miniz-sys-ceb97f39f37f24d0/out/libminiz.a" "/Users/kafuhamada/Documents/Study/Python/Flask/ipu/plugin_market/target/debug/build/miniz-sys-ceb97f39f37f24d0/out/miniz.o"
+exit code: 0
+cargo:rustc-link-lib=static=miniz
+cargo:rustc-link-search=native=/Users/kafuhamada/Documents/Study/Python/Flask/ipu/plugin_market/target/debug/build/miniz-sys-ceb97f39f37f24d0/out
+cargo:root=/Users/kafuhamada/Documents/Study/Python/Flask/ipu/plugin_market/target/debug/build/miniz-sys-ceb97f39f37f24d0/out

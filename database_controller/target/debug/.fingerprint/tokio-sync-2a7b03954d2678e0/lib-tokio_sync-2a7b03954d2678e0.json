@@ -1,0 +1,1 @@
+{"rustc":12964410163570521870,"features":"[]","target":3274719437017421523,"profile":9935990280773120926,"path":7690627049731154237,"deps":[["fnv v1.0.6","fnv",12705553154292217562],["futures v0.1.27","futures",2134665259378015383]],"local":[{"Precalculated":"0.1.5"}],"rustflags":[],"edition":"Edition2015"}

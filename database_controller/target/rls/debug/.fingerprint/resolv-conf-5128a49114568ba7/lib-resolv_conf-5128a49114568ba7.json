@@ -1,0 +1,1 @@
+{"rustc":12964410163570521870,"features":"[\"hostname\", \"system\"]","target":5858223239254367764,"profile":14672114853574311971,"path":583260409434210706,"deps":[["hostname v0.1.5","hostname",3828592888764678995],["quick-error v1.2.2","quick_error",13636408884858038341]],"local":[{"Precalculated":"0.6.2"}],"rustflags":[],"edition":"Edition2015"}

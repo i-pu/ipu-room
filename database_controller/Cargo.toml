@@ -1,0 +1,18 @@
+[package]
+name = "database_controller"
+version = "0.1.0"
+authors = ["hamadakafu <kafu.h1998@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+actix-web = "1.0.0-rc"
+actix-http = "*"
+http = "0.1.17"
+failure = "0.1.5"
+serde = { version = "1.0.91", features = ["derive"] }
+json = "0.11.13"
+futures = "0.1.27"
+diesel = { version = "1.0.0", features = ["postgres", "r2d2"] }
+dotenv = { version = "0.14.1" }
+uuid = { version = "0.7.4", features = ["v4"] }
+env_logger = "0.6.1"

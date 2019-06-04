@@ -1,0 +1,1 @@
+{"rustc":12964410163570521870,"features":"[]","target":1567680898738359097,"profile":14672114853574311971,"path":5655212411495363813,"deps":[["brotli-sys v0.3.2","brotli_sys",4923959884976621877],["libc v0.2.55","libc",18251588084537413110]],"local":[{"Precalculated":"0.3.2"}],"rustflags":[],"edition":"Edition2015"}
