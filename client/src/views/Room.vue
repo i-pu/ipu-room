@@ -31,9 +31,9 @@ import Settings from '@/components/room/Settings.vue'
 import { ROOMS_MOCK } from '@/api/mock'
 import { compile } from '@/logic/compiler'
 
-// import * as Package from '@/plugin_examples/counter'
+import * as Package from '@/plugin_examples/counter'
 // import * as Package from '@/plugin_examples/chat'
-import * as Package from '@/plugin_examples/paint'
+// import * as Package from '@/plugin_examples/paint'
 
 @Component<RoomView>({
   components: { Desk, Status, Settings },
@@ -81,6 +81,9 @@ export default class RoomView extends Vue {
       ...room,
       plugins: []
     }
+    // adhoc for room mock date
+    this.room.members[0].id = this.$socket.id
+    // TODO : room.plugin.each | addPlugin
     if (this.$store.getters.localOnly) {
       const initializeFn = new Function(...Package.plugin.functions['initialize'])
       const properties: PluginProperties = {
@@ -89,25 +92,6 @@ export default class RoomView extends Vue {
         meta: Package.meta,
       }
       this.addPlugin(Package.plugin, properties)
-      // const properties: PluginProperties = {
-      //   record: new Function(...COUNTER_PLUGIN.functions.initialize)(),
-      //   env: {
-      //     instanceId: 'xxxx-yyyy-zzzz',
-      //     room: this.room,
-      //   },
-      //   meta: COUNTER_META,
-      // }
-      // this.addPlugin(COUNTER_PLUGIN, properties)
-
-      // const properties: PluginProperties = {
-      //   record: CHAT_RECORD,
-      //   env: {
-      //     instanceId: 'xxxx-yyyy-zzzz',
-      //     room: this.room
-      //   },
-      //   meta: CHAT_META
-      // }
-      // this.addPlugin(CHAT_PLUGIN, properties)
     } else {
       this.$socket.emit('plugin/info', { room_id: this.room.id })
     }

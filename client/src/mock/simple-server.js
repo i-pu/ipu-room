@@ -24,11 +24,13 @@ io.on('connection', socket => {
 
   // another_id : workaround
   socket.on('plugin/sync', ({ room_id, instance_id, another_id }) => {
-    const list = io.to(another_id).emit('plugin/clone', { room_id, instance_id, my_id: socket.id })
+    console.log(`[Plugin] sync from ${another_id}`)
+    io.to(another_id).emit('plugin/clone', { room_id, instance_id, my_id: socket.id })
   })
 
   // my_id : workaround
   socket.on('plugin/clone', ({ record, my_id }) => {
+    console.log(`[Plugin] clone to ${my_id}`)
     io.to(my_id).emit('plugin/sync', { record })
   })
 

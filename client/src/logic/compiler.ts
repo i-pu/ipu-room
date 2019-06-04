@@ -94,10 +94,10 @@ export const compile = async (
         this.record = record
         console.log('record synced')
       },
-      'plugin/clone' (this: Vue) {
+      'plugin/clone' (this: Vue, { room_id, instance_id, my_id}: { room_id: string, instance_id: string, my_id: string }) {
         console.log('[Plugin] came clone request from server')
         // @ts-ignore
-        this.$socket.emit('plugin/clone', { record: this.$cloneRecord() })
+        this.$socket.emit('plugin/clone', { record: this.$cloneRecord(), my_id })
       },
       'plugin/trigger' (payload: { event: string, args: [] }) {
         // @ts-ignore
@@ -121,10 +121,15 @@ export const compile = async (
 
       // if someone exist, sync records
       if (1 < this.env.room.members.length) {
+        const random_another_id: string = [...new Set(this.env.room.members.map(m => m.id).filter(e => (!new Set([this.$socket.id]).has(e))))][0]
         this.$socket.emit('plugin/sync', {
           room_id: this.env.room.id,
-          instance_id: this.$attrs.env.instanceId
+          instance_id: this.env.instanceId,
+          another_id: random_another_id
         })
+        console.log(`[Plugin] send sync request to ${random_another_id}`)
+      } else {
+        console.log('[Plugin] I am a host.')
       }
     },
     methods: {
