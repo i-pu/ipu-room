@@ -52,7 +52,6 @@ fn main() -> std::io::Result<()> {
                 .route(web::put().to(v1::plugin::put_plugin)))
 
             .service(web::resource("/api/v1/users/{id}"))
-
     })
         .bind("0.0.0.0:".to_owned()+&port)?
         .run()

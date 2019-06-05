@@ -5,7 +5,7 @@ authors = ["hamadakafu <kafu.h1998@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-actix-web = "1.0.0-rc"
+actix-web = "1.0.0"
 actix-http = "*"
 http = "0.1.17"
 failure = "0.1.5"
