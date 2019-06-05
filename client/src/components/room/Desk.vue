@@ -2,10 +2,10 @@
 <template lang="pug">
   #desk
     v-container(fluid grid-list-md text-xs-center)
-      v-layout(row wrap)
+      v-layout(row wrap v-if="plugins")
         v-flex(
           d-flex xs12 sm12 md9
-          v-for="{ component, properties } in room.plugins"
+          v-for="{ component, properties } in plugins"
         )
           v-card(white fluid)
             component(:is="component")
@@ -19,6 +19,6 @@ import { Room } from '@/model'
 
 @Component
 export default class Desk extends Vue {
-  @Prop() public room!: Room
+  @Prop() public plugins!: Room['plugins']
 }
 </script>

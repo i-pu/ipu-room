@@ -1,6 +1,6 @@
 import { Plugin, PluginMeta } from '@/model'
 
-export const CHAT_PLUGIN: Plugin = {
+export const plugin: Plugin = {
   template: `<div>
     <v-list id="chat" two-line="two-line" height="50%">
       <v-subheader>チャット</v-subheader>
@@ -23,31 +23,32 @@ export const CHAT_PLUGIN: Plugin = {
           <v-text-field v-model="record.chatInput" label="コメント"></v-text-field>
         </v-flex>
         <v-flex d-flex="d-flex" xs4="xs4" sm4="sm4" md4="md4">
-          <v-btn color="info" @click="comment(); record.chatInput = ''">送信</v-btn>
+          <v-btn color="info" @click="comment(record.chatInput); record.chatInput = ''">送信</v-btn>
         </v-flex>
       </v-layout>
     </v-container>
   </div>`,
   functions: {
-    comment: [`
+    initialize: [`
+      return {
+        comments: [],
+        chatInput: ''
+      }
+    `],
+    comment: ['text', `
       this.record.comments.push({
         type: 'comment',
         avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-        comment_id: 'a',
+        comment_id: Math.random().toString(),
         user_name: 'John',
         user_id: 'xxxx',
-        text: this.record.chatInput
+        text: text
       })
     `],
   },
 }
 
-export const CHAT_RECORD = {
-  comments: [],
-  chatInput: '',
-}
-
-export const CHAT_META: PluginMeta = {
+export const meta: PluginMeta = {
   plugin_id: 'counter_xxx',
   // plugin name
   name: 'counter',

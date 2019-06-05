@@ -27,13 +27,13 @@
                       label="設定1"
                     )
 
-                    h3 プラグイン
+                    //- h3 プラグイン
 
-                    template(v-for="{ plugin, properties } in room.plugins")
-                      v-switch(
-                        :label="properties.meta.name"
-                        @change="onChangePluginSettings(properties.name)"
-                      )
+                    //- template(v-for="{ plugin, properties } in room.plugins")
+                    //-   v-switch(
+                    //-     :label="properties.meta.name"
+                    //-     @change="onChangePluginSettings(properties.name)"
+                    //-   )
 
                   v-flex(xs6 sm6)
                     v-select(
@@ -42,7 +42,7 @@
                       label="プラグイン"
                     )
                   v-flex(xs6 sm6)
-                    v-btn(color="success" block @click="onAddPlugin") を追加
+                    v-btn(color="success" block) を追加
           v-card-actions
 </template>
 
@@ -64,22 +64,7 @@ export default class Settings extends Vue {
   private selectedPlugin: string = ''
 
   public mounted () {
-    console.log(this.room.plugins)
-  }
-
-  private onAddPlugin () {
-    if (!this.$store.getters.localOnly) {
-      // TODO
-      return
-    } else {
-      if (this.selectedPlugin === 'counter') {
-        // this.$emit('add-plugin', Counter, meta, config, new CounterServer())
-      } else if (this.selectedPlugin === 'chat') {
-        // this.$emit('add-plugin', Chat, meta, config, new ChatServer())
-      } else if (this.selectedPlugin === 'player') {
-        // this.$emit('add-plugin', YoutubePlayer, meta, config, new YoutubePlayerServer())
-      }
-    }
+    // console.log(this.room.plugins)
   }
 
   private onChangePluginSettings (pluginName: string) {

@@ -5,13 +5,15 @@ export interface Plugin {
   // html template
   template: string,
   // functions
-  functions: Record<string, string[]>
+  functions: Record<string, string[]>,
+
+  instanceId: string
 }
 
 // static plugin info
 interface PluginMeta {
   // plugin id
-  plugin_id: string,
+  id: string,
   // plugin name
   thumbnail_url: string,
   name: string,
@@ -46,6 +48,10 @@ export interface Room {
   id: string,
   thumbnail_url: string,
   members: User[],
+  pluginPackages: Array<{
+    plugin: Plugin,
+    meta: PluginMeta
+  }>,
   plugins: Array<{
     component: Component,
     properties: PluginProperties,

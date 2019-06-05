@@ -1,4 +1,4 @@
-<html>
+<template>
   <div>
     <v-list id="chat" two-line="two-line" height="50%">
       <v-subheader>チャット</v-subheader>
@@ -27,6 +27,7 @@
     </v-container>
   </div>
 </html>
+<template>
 <script>
 comment () {
   this.record.comments.push({
