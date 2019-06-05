@@ -77,8 +77,8 @@ export default class RoomView extends Vue {
         meta: meta,
       }
       const component = await compile(plugin, properties)
-      // reactively
-      this.room.plugins.push({ component, properties })
+      // push reactively
+      this.$set(this.room, 'plugins', [...this.room.plugins, { component, properties }])
     }
   }
 
