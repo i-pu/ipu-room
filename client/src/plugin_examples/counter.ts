@@ -13,7 +13,7 @@ export const plugin: Plugin = {
 }
 
 export const meta: PluginMeta = {
-  plugin_id: 'counter_xxx',
+  id: 'counter_xxx',
   // plugin name
   name: 'counter',
   thumbnail_url: 'https://avatars3.githubusercontent.com/u/50242068?s=200&v=4',

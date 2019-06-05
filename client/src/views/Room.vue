@@ -6,7 +6,7 @@
           v-toolbar(dense)
             v-toolbar-title {{ room.name }}
             v-spacer
-            settings(:room="room" @add-plugin="addPlugin")
+            settings(:room="room")
             v-btn(color="error" @click="requestExitRoom") 退出
 
     desk#desk(:room="room")
@@ -39,18 +39,14 @@ import * as Package from '@/plugin_examples/counter'
   components: { Desk, Status, Settings },
   sockets: {
     'room/enter' (data: { room: Room }) {
-      // mock
-      this.responseEnterRoom({ room: ROOMS_MOCK[0] })
+      this.responseEnterRoom(data)
     },
     'room/exit' (data: {}) {
       this.responseExitRoom()
     },
     'room/exit-event' ({ members }: { members: User[] }) {
       this.room!!.members = members
-    },
-    'plugin/info' ({ plugin, properties }: { plugin: Plugin, properties: PluginProperties }) {
-      this.addPlugin(plugin, properties)
-    },
+    }
   },
 })
 export default class RoomView extends Vue {
@@ -61,54 +57,29 @@ export default class RoomView extends Vue {
   }
 
   private mounted () {
-    this.requestEnterRoom({ room_id: this.roomId })
-  }
-
-  private requestEnterRoom (data: { room_id: string }) {
     console.log(`[Room] request enter`)
     this.$socket.emit('room/enter', { room_id: this.roomId })
-
-    // if (this.$store.getters.localOnly) {
-    //   this.responseEnterRoom({ room: ROOMS_MOCK[0] })
-    // } else {
-    //   this.$socket.emit('room/enter', { room_id: this.roomId })
-    // }
   }
 
-  private responseEnterRoom ({ room }: { room: Room }) {
+  private async responseEnterRoom ({ room }: { room: Room }) {
     console.log(`[Room] entered`)
-    this.room = {
-      ...room,
-      plugins: []
-    }
-    // adhoc for room mock date
-    this.room.members[0].id = this.$socket.id
-    // TODO : room.plugin.each | addPlugin
-    if (this.$store.getters.localOnly) {
-      const initializeFn = new Function(...Package.plugin.functions['initialize'])
-      const properties: PluginProperties = {
-        record: initializeFn(),
-        env: { instanceId: 'xxxx-yyyy-zzzz', room: this.room },
-        meta: Package.meta,
-      }
-      this.addPlugin(Package.plugin, properties)
-    } else {
-      this.$socket.emit('plugin/info', { room_id: this.room.id })
-    }
-  }
+    this.room = room
+    this.room.plugins = []
 
-  private async addPlugin (plugin: Plugin, properties: PluginProperties) {
-    const component = await compile(plugin, properties)
-    // component.sealedOptions.methods.clone()
-    this.room!!.plugins.push({ component, properties })
+    for (const { plugin, meta } of this.room.pluginPackages) {
+      const initializer = new Function(...plugin.functions['initialize'])
+      const properties: PluginProperties = {
+        record: initializer(),
+        env: { instanceId: plugin.instanceId, room: this.room },
+        meta: meta,
+      }
+      const component = await compile(plugin, properties)
+      this.room.plugins.push({ component, properties })
+    }
   }
 
   private requestExitRoom () {
-    if (this.$store.getters.localOnly) {
-      this.responseExitRoom()
-    } else {
-      this.$socket.emit('room/exit', {})
-    }
+    this.$socket.emit('room/exit', { room_id: this.roomId})
   }
 
   private responseExitRoom () {

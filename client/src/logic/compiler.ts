@@ -41,13 +41,8 @@ const fetchPreinstalledModules = async () => {
 export const compile = async (
   plugin: Plugin,
   properties: PluginProperties,
-  isLocal: boolean = true,
 ): Promise<Component> => {
-  if (isLocal) {
-    console.log(`[Compiler] ${properties.env.instanceId} try to compile with local mode`)
-  } else {
-    console.log(`[Compiler] ${properties.env.instanceId} try to compile`)
-  }
+  // console.log(`[Compiler] ${properties.env.instanceId} try to compile`)
 
   // addons
   const addonComponents: Record<string, Component> = await fetchPreinstalledModules()
@@ -56,10 +51,10 @@ export const compile = async (
   for (const [event, fn] of Object.entries(plugin.functions)) {
     if (event[0] === '_') {
       // direct
-      console.log(`[Compiler] ${properties.env.instanceId} directry ${event}`)
+      // console.log(`[Compiler] ${properties.env.instanceId} directry ${event}`)
       hooks[event] = new Function(...fn) as (...args: any[]) => void
     } else {
-      console.log(`[Compiler] ${properties.env.instanceId} register hooks ${event}`)
+      // console.log(`[Compiler] ${properties.env.instanceId} register hooks ${event}`)
       hooks[event] = function (this: Vue & {
         callbackFromServer: (functionName: string, args: any[]) => void,
         env: PluginProperties['env'],
@@ -80,8 +75,6 @@ export const compile = async (
     }
   }
 
-  console.log(properties.env)
-
   console.log(`[Compiler] compiled ${properties.env.instanceId} successfully`)
 
   return Vue.extend({
@@ -89,17 +82,24 @@ export const compile = async (
     components: addonComponents,
     sockets: {
       // from server
-      'plugin/sync' (this: Vue, { record }: { record: Record<string, any> }) {
+      [`plugin/${plugin.instanceId}/sync`] (this: Vue, { record }: { record: Record<string, any> }) {
         // @ts-ignore
         this.record = record
         console.log('record synced')
       },
-      'plugin/clone' (this: Vue, { room_id, instance_id, my_id}: { room_id: string, instance_id: string, my_id: string }) {
-        console.log('[Plugin] came clone request from server')
-        // @ts-ignore
-        this.$socket.emit('plugin/clone', { record: this.$cloneRecord(), my_id })
+      [`plugin/${plugin.instanceId}/clone`] (this: Vue, { room_id, instance_id, from }: { room_id: string, instance_id: string, from: string }) {
+        console.log(`[Plugin] came clone request from ${from}`)
+        this.$socket.emit('plugin/clone', {
+          // @ts-ignore
+          room_id: this.env.room.id,
+          // @ts-ignore
+          instance_id: this.env.instanceId,
+          // @ts-ignore
+          record: this.$cloneRecord(),
+          from: from
+        })
       },
-      'plugin/trigger' (payload: { event: string, args: [] }) {
+      [`plugin/${plugin.instanceId}/trigger`] (payload: { event: string, args: [] }) {
         // @ts-ignore
         this.callbackFromServer(payload)
       },
@@ -115,21 +115,19 @@ export const compile = async (
         env: properties.env,
       }
     },
+
     mounted () {
-      this.$socket.emit('plugin/info', { room_id: this.env.room.id })
       console.log(`[${this.env.instanceId}] active`)
 
       // if someone exist, sync records
       if (1 < this.env.room.members.length) {
-        const random_another_id: string = [...new Set(this.env.room.members.map(m => m.id).filter(e => (!new Set([this.$socket.id]).has(e))))][0]
         this.$socket.emit('plugin/sync', {
           room_id: this.env.room.id,
-          instance_id: this.env.instanceId,
-          another_id: random_another_id
+          instance_id: this.env.instanceId
         })
-        console.log(`[Plugin] send sync request to ${random_another_id}`)
+        console.log(`[Plugin] send sync request`)
       } else {
-        console.log('[Plugin] I am a host.')
+        console.log('[Plugin] initialized record')
       }
     },
     methods: {
