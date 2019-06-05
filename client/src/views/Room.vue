@@ -9,7 +9,7 @@
             settings(:room="room")
             v-btn(color="error" @click="requestExitRoom") 退出
 
-    desk#desk(:room="room")
+    desk#desk(:plugins="room.plugins")
 
     v-container(fluid grid-list-md text-xs-center)
       v-layout(row wrap)
@@ -40,6 +40,9 @@ import * as Package from '@/plugin_examples/counter'
   sockets: {
     'room/enter' (data: { room: Room }) {
       this.responseEnterRoom(data)
+    },
+    'room/update' (data: { room: Room }) {
+      this.room!!.members = data.room.members
     },
     'room/exit' (data: {}) {
       this.responseExitRoom()
@@ -74,6 +77,7 @@ export default class RoomView extends Vue {
         meta: meta,
       }
       const component = await compile(plugin, properties)
+      // reactively
       this.room.plugins.push({ component, properties })
     }
   }

@@ -42,7 +42,7 @@ const roomList = {
 const sessions = {}
 
 io.on('connection', socket => {
-  console.log(`${socket.id} connected`)
+  console.log(`+ ${socket.id}`)
 
   socket.on('room/enter', ({ room_id }) => {
     console.log(`ROOM ${room_id}: join ${socket.id}`)
@@ -56,6 +56,7 @@ io.on('connection', socket => {
       console.log(roomList[room_id].members.map(m => m.id))
     }
     socket.emit('room/enter', { room: roomList[room_id] })
+    io.in(room_id).emit('room/update', { room: roomList[room_id] })
   })
 
   socket.on('plugin/trigger', ({ room_id, instance_id, event_name, args}) => {
@@ -80,7 +81,7 @@ io.on('connection', socket => {
   })
 
   socket.on('disconnect', () => {
-    console.log(`disconnect ${socket.id}`)
+    console.log(`- ${socket.id}`)
     if (sessions[socket.id])
       leaveRoom(sessions[socket.id])
   })
@@ -89,6 +90,7 @@ io.on('connection', socket => {
     console.log(`[Room] ${socket.id} left from ${roomId}`)
     roomList[roomId].members = roomList[roomId].members.filter(m => m.id !== socket.id)
     delete sessions[socket.id]
+    io.in(roomId).emit('room/update', { room: roomList[roomId] })
   }
 })
 
