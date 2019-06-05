@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-postgres
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres
+          envFrom:
+            - configMapRef:
+                name: {{ .Chart.Name }}-postgres-config
+          ports:
+            - containerPort: 5432
+          resources:
+            requests:
+              memory: 5Mi
+              cpu: 1m
+          volumeMounts:
+            - mountPath: /docker-entrypoint-initdb.d
+              name: docker-entrypoint-initdb
+      volumes:
+        - name: docker-entrypoint-initdb
+          configMap:
+            name: {{ .Chart.Name }}-postgres-config
+            items:
+              - key: init.sql
+                path: init.sql
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.postgres.hostname }}
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432

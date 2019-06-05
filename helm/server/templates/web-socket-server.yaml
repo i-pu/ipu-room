@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-web-socket-server
+  labels:
+    app: web-socket-server
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-socket-server
+  template:
+    metadata:
+      labels:
+        app: web-socket-server
+    spec:
+      containers:
+        - name: web-socket-server
+          image: {{ .Values.docker.username }}/{{ .Values.webSocketServer.image }}:{{ .Values.webSocketServer.tag }}
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: {{ .Chart.Name }}-postgres-config
+            - configMapRef:
+                name: {{ .Chart.Name }}-web-socket-server-configmap
+          ports:
+            - containerPort: {{ .Values.webSocketServer.port }}
+          resources:
+            requests:
+              memory: 5Mi
+              cpu: 1m
+          readinessProbe:
+            httpGet:
+              path: /hello
+              port: {{ .Values.webSocketServer.port }}
+            successThreshold: 1
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-socket-server
+spec:
+  selector:
+    app: web-socket-server
+  type: NodePort
+  ports:
+    - port: {{ .Values.webSocketServer.port }}
+      nodePort: {{ .Values.webSocketServer.nodePort }}
+      targetPort: {{ .Values.webSocketServer.port }}
+

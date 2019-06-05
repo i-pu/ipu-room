@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-web-socket-client
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-socket-client
+  template:
+    metadata:
+      labels:
+        app: web-socket-client
+    spec:
+      containers:
+        - name: web-socket-client
+          image: {{ .Values.docker.username }}/ipu-client:{{ .Values.client.imageTag }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {{ .Values.client.port }}
+          resources:
+            requests:
+              memory: 5Mi
+              cpu: 0m
+          volumeMounts:
+            - mountPath: /etc/nginx/conf.d
+              name: nginx-config
+          readinessProbe:
+            httpGet:
+              port: {{ .Values.client.port }}
+              path: /
+            successThreshold: 1
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: nginx-config
+            items:
+              - key: default.conf
+                path: default.conf
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+data:
+  default.conf: |
+    server {
+        listen       {{ .Values.client.port }};
+        server_name  0.0.0.0;
+        location / {
+            root   /usr/share/nginx/html;
+            index  index.html index.htm;
+        }
+        # redirect server error pages to the static page /50x.html
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   /usr/share/nginx/html;
+        }
+    }
+

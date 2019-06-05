@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-postgres-config
+data:
+  POSTGRES_HOST: {{ .Values.postgres.hostname }}
+  POSTGRES_USER: {{ .Values.postgres.user }}
+  POSTGRES_PASSWORD: {{ .Values.postgres.password }}
+  POSTGRES_DB: {{ .Values.postgres.db }}
+  init.sql: |
+    CREATE OR REPLACE FUNCTION diesel_manage_updated_at(_tbl regclass) RETURNS VOID AS $$
+    BEGIN
+        EXECUTE format('CREATE TRIGGER set_updated_at BEFORE UPDATE ON %s
+                        FOR EACH ROW EXECUTE PROCEDURE diesel_set_updated_at()', _tbl);
+    END;
+    $$ LANGUAGE plpgsql;
+
+    CREATE OR REPLACE FUNCTION diesel_set_updated_at() RETURNS trigger AS $$
+    BEGIN
+        IF (
+            NEW IS DISTINCT FROM OLD AND
+            NEW.updated_at IS NOT DISTINCT FROM OLD.updated_at
+        ) THEN
+            NEW.updated_at := current_timestamp;
+        END IF;
+        RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+    -- Your SQL goes here
+    create table plugin_infos (
+    id varchar(40) primary key,
+    name varchar(20) not null,
+    description varchar(140) not null,
+    thumbnail_url varchar(4096) not null,
+    author varchar(40) not null,
+    tags varchar(100) not null,
+    content text not null
+    );
+
+    create table users (
+    id varchar(40) primary key,
+    name varchar(20) not null
+    );

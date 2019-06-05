@@ -17,7 +17,6 @@ mylogger.setLevel(DEBUG)
 def sample(data):
 
     mylogger.debug('- - socket id: {}'.format(request.sid))
-    mylogger.debug('- - global plugins: {}'.format(config.global_plugins))
 
 
 @socketio.on('visit')
