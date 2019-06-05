@@ -41,13 +41,8 @@ const fetchPreinstalledModules = async () => {
 export const compile = async (
   plugin: Plugin,
   properties: PluginProperties,
-  isLocal: boolean = true,
 ): Promise<Component> => {
-  if (isLocal) {
-    console.log(`[Compiler] ${properties.env.instanceId} try to compile with local mode`)
-  } else {
-    console.log(`[Compiler] ${properties.env.instanceId} try to compile`)
-  }
+  // console.log(`[Compiler] ${properties.env.instanceId} try to compile`)
 
   // addons
   const addonComponents: Record<string, Component> = await fetchPreinstalledModules()
@@ -56,32 +51,29 @@ export const compile = async (
   for (const [event, fn] of Object.entries(plugin.functions)) {
     if (event[0] === '_') {
       // direct
-      console.log(`[Compiler] ${properties.env.instanceId} directry ${event}`)
+      // console.log(`[Compiler] ${properties.env.instanceId} directry ${event}`)
       hooks[event] = new Function(...fn) as (...args: any[]) => void
     } else {
-      console.log(`[Compiler] ${properties.env.instanceId} register hooks ${event}`)
+      // console.log(`[Compiler] ${properties.env.instanceId} register hooks ${event}`)
       hooks[event] = function (this: Vue & {
         callbackFromServer: (functionName: string, args: any[]) => void,
         env: PluginProperties['env'],
       },
       ...args: any[]) {
         // emit to server
-        // this.$socket.emit('plugin/trigger', {
-        //   room_id: this.$env.room.id,
-        //   instance_id: this.$env.instanceId,
-        //   event_name: event,
-        //   args,
-        // })
-        // console.log(`${this.env.instanceId} ${event} clicked with`)
-        // console.log(arguments)
-        this.callbackFromServer(event, args)
+        this.$socket.emit('plugin/trigger', {
+          room_id: this.env.room.id,
+          instance_id: this.env.instanceId,
+          event_name: event,
+          args: args,
+        })
+        console.log(`${this.env.instanceId} ${event}`)
+        // his.callbackFromServer(event, args)
       }
 
       hooks[`__callback__${event}`] = new Function(...fn) as (...args: any[]) => void
     }
   }
-
-  console.log(properties.env)
 
   console.log(`[Compiler] compiled ${properties.env.instanceId} successfully`)
 
@@ -90,9 +82,26 @@ export const compile = async (
     components: addonComponents,
     sockets: {
       // from server
-      'plugin/trigger' ({ record }: { record: Record<string, any> }) {
+      [`plugin/${plugin.instanceId}/sync`] (this: Vue, { record }: { record: Record<string, any> }) {
         // @ts-ignore
-        this.callbackFromServer(record)
+        this.record = record
+        console.log('record synced')
+      },
+      [`plugin/${plugin.instanceId}/clone`] (this: Vue, { room_id, instance_id, from }: { room_id: string, instance_id: string, from: string }) {
+        console.log(`[Plugin] came clone request from ${from}`)
+        this.$socket.emit('plugin/clone', {
+          // @ts-ignore
+          room_id: this.env.room.id,
+          // @ts-ignore
+          instance_id: this.env.instanceId,
+          // @ts-ignore
+          record: this.$cloneRecord(),
+          from: from
+        })
+      },
+      [`plugin/${plugin.instanceId}/trigger`] (payload: { event: string, args: [] }) {
+        // @ts-ignore
+        this.callbackFromServer(payload)
       },
     },
     data (): {
@@ -106,31 +115,44 @@ export const compile = async (
         env: properties.env,
       }
     },
+
     mounted () {
       console.log(`[${this.env.instanceId}] active`)
+
+      // if someone exist, sync records
+      if (1 < this.env.room.members.length) {
+        this.$socket.emit('plugin/sync', {
+          room_id: this.env.room.id,
+          instance_id: this.env.instanceId
+        })
+        console.log(`[Plugin] send sync request`)
+      } else {
+        console.log('[Plugin] initialized record')
+      }
     },
     methods: {
-      clone (this: Vue & { record: Record<string, any> }): { plugin: Plugin, properties: PluginProperties } {
-        const currentRecord: Record<string, any> = Object.assign({}, this.record)
-        return {
-          plugin,
-          properties: {
-          ...properties,
-          record: currentRecord,
-          },
-        }
+      $cloneRecord (this: Vue & { record: Record<string, any> }): Record<string, any> {
+        return Object.assign({}, this.record)
       },
       $log (message: any) {
         console.log(message)
+      },
+      $send (event: string, ...args: any[]) {
+        this.$socket.emit('plugin/trigger', {
+          room_id: this.env.room.id,
+          instance_id: this.env.instanceId,
+          event_name: event,
+          args: args,
+        })
+        console.log(`${this.env.instanceId} ${event}`)
       },
       ...hooks,
       // callback from server
       callbackFromServer (this: Vue 
         & Record<string, (...args: any[]) => void> 
         & { env: { instanceId: string } }
-        , event: string, args: any[]
+        , { event, args }: { event: string, args: any[] }
       ) {
-        console.log('a')
         // console.log(`[plugin/trigger/${this.env.instanceId}] ${event}(${args})`)
         this[`__callback__${event}`](...args)
       },

@@ -4,7 +4,7 @@
 
 import { Plugin, PluginMeta } from '@/model'
 
-export const COUNTER_PLUGIN: Plugin = {
+export const plugin: Plugin = {
   template: `<div><h3> {{ record.count }} </h3><v-btn @click="plus"> Add </v-btn></div>`,
   functions: {
     initialize: ['return { count: 0 }'],
@@ -12,8 +12,8 @@ export const COUNTER_PLUGIN: Plugin = {
   },
 }
 
-export const COUNTER_META: PluginMeta = {
-  plugin_id: 'counter_xxx',
+export const meta: PluginMeta = {
+  id: 'counter_xxx',
   // plugin name
   name: 'counter',
   thumbnail_url: 'https://avatars3.githubusercontent.com/u/50242068?s=200&v=4',
