@@ -5,7 +5,7 @@
 👉 [Client docs](client/index.html)
 
 ### プラグインの仕様
-👉 [I-Plugin Specs](plugin-spec.md)
+👉 [I-Plugin Specs](other/plugin-spec.md)
 
 ## サーバー
 (準備中)

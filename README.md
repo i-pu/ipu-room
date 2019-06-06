@@ -4,7 +4,9 @@
 ## Change Logs
 
 ## Document
-(準備中)
+Docs deployed at [here](https://i-pu.github.io/ipu/index.html) 🎉🎉🎉 
+
+way to routing of github-pages, see <https://github.blog/2016-12-05-relative-links-for-github-pages/>
 
 ## Deploy
 http://35.247.18.78:31421  
