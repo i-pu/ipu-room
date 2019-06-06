@@ -10,7 +10,7 @@
     "test:e2e": "vue-cli-service test:e2e",
     "test:unit": "jest",
     "cypress": "cypress run --browser chrome",
-    "doc": "typedoc --out docs src --name Ipu-space",
+    "doc": "typedoc --out ../docs/client src --name Ipu-space",
     "deploy": "scp -r dist/ ubuntu@ec2-18-224-235-29.us-east-2.compute.amazonaws.com:~"
   },
   "dependencies": {

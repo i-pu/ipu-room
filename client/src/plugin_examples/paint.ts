@@ -24,12 +24,12 @@ export const plugin: Plugin = {
     onDraw: ['p', `
       this.record.lines.push({ x: p.x, y: p.y, px: p.px, py: p.py })
     `],
-
   },
+  instanceId: 'a'
 }
 
 export const meta: PluginMeta = {
-  plugin_id: 'counter_xxx',
+  id: 'counter_xxx',
   // plugin name
   name: 'counter',
   thumbnail_url: 'https://avatars3.githubusercontent.com/u/50242068?s=200&v=4',

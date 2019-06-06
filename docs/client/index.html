@@ -64,16 +64,42 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
-				<h1 id="client-ts">client-ts</h1>
-				<h2 id="project-setup">Project setup</h2>
-				<pre><code>yarn <span class="hljs-keyword">install</span></code></pre><h3 id="compiles-and-hot-reloads-for-development">Compiles and hot-reloads for development</h3>
-				<pre><code>yarn <span class="hljs-keyword">run</span><span class="bash"> serve</span></code></pre><h3 id="compiles-and-minifies-for-production">Compiles and minifies for production</h3>
-				<pre><code>yarn <span class="hljs-keyword">run</span><span class="bash"> build</span></code></pre><h3 id="run-your-tests">Run your tests</h3>
-				<pre><code>yarn <span class="hljs-keyword">run</span><span class="bash"> <span class="hljs-built_in">test</span></span></code></pre><h3 id="lints-and-fixes-files">Lints and fixes files</h3>
-				<pre><code>yarn <span class="hljs-keyword">run</span><span class="bash"> lint</span></code></pre><h3 id="run-your-end-to-end-tests">Run your end-to-end tests</h3>
-				<pre><code>yarn <span class="hljs-keyword">run</span><span class="bash"> <span class="hljs-built_in">test</span>:e2e</span></code></pre><h3 id="run-your-unit-tests">Run your unit tests</h3>
-				<pre><code>yarn <span class="hljs-keyword">run</span><span class="bash"> <span class="hljs-built_in">test</span>:unit</span></code></pre><h3 id="customize-configuration">Customize configuration</h3>
-				<p>See <a href="https://cli.vuejs.org/config/">Configuration Reference</a>.</p>
+				<h1 id="ipu-room-">IPU-ROOM (仮称)</h1>
+				<p><a href="https://travis-ci.org/i-pu/ipu"><img src="https://travis-ci.org/i-pu/ipu.svg?branch=master" alt="Build Status"></a> (大嘘)</p>
+				<h2 id="change-logs">Change Logs</h2>
+				<h2 id="document">Document</h2>
+				<p>(準備中)</p>
+				<h2 id="deploy">Deploy</h2>
+				<p><a href="http://35.247.18.78:31421">http://35.247.18.78:31421</a><br><a href="https://cloud.google.com/kubernetes-engine/">google kubernetes engine</a></p>
+				<h3 id="client">client</h3>
+				<h4 id="push">push</h4>
+				<p>tag: client-cd</p>
+				<h3 id="web-socket-server">web-socket-server</h3>
+				<h4 id="push">push</h4>
+				<p>tag: web-socket-server-cd</p>
+				<h2 id="local-development">local development</h2>
+				<h3 id="run-client">run client</h3>
+				<pre><code>cd<span class="hljs-built_in"> client </span>&amp;&amp; docker-compose up --build</code></pre><h3 id="server-side">server-side</h3>
+				<h3 id="build">build</h3>
+				<pre><code>docker <span class="hljs-keyword">build</span> -t kafuhamada/web-socket-server web-socket-server/src
+docker <span class="hljs-keyword">build</span> -t kafuhamada/<span class="hljs-keyword">database</span>-controller <span class="hljs-keyword">database</span>-controller</code></pre><h3 id="run">run</h3>
+				<p>kubernetes on <code>minikube</code><br>not <code>docker for mac</code></p>
+				<h3 id="run-server">run server</h3>
+				<p>minikube をインストールする必要がある</p>
+				<pre><code class="language-bash">$ brew install minikube
+$ minikube start --cpus 2 --memory 4096 &lt;- 3,4分かかる</code></pre>
+				<p>localではminikubeとdockerを併用することになるので以下のコマンドを
+				minikube start の後にすべての開いているpromptで実行する</p>
+				<pre><code class="language-bash">$ <span class="hljs-built_in">eval</span> $(minikube docker-env)</code></pre>
+				<p>以下のコマンドでdocker build する．これ以外は許されない．</p>
+				<pre><code class="language-bash">$ docker build -t kafuhamada/database_controller database_contoroller
+$ docker build -t kafuhamada/web-socket-server web-socket-server </code></pre>
+				<p>デプロイ</p>
+				<pre><code class="language-bash">$ ./helm3-alpha init
+$ ./helm3-alpha install -f ./helm/server/values.yaml -f ./helm/server/values.local.yaml server ./helm/server</code></pre>
+				<p>終了する際には，</p>
+				<pre><code class="language-bash">$ ./helm3-alpha uninstall server
+$ minikube stop</code></pre>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -98,7 +124,7 @@
 						<a href="modules/_plugin_examples_counter_.html">"plugin_<wbr>examples/counter"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_plugin_examples_youtubeplayer_.html">"plugin_<wbr>examples/youtube<wbr>Player"</a>
+						<a href="modules/_plugin_examples_paint_.html">"plugin_<wbr>examples/paint"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_plugins_vuetify_.html">"plugins/vuetify"</a>

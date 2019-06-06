@@ -11,7 +11,8 @@ export const ROOMS_MOCK: Room[] = [
       // { id: '456', name: 'John', avatar_url: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460' },
       // { id: '789', name: 'Alice', avatar_url: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460' },
     ],
-    plugins: [],
+    pluginPackages: [],
+    plugins: []
   },
 ]
 

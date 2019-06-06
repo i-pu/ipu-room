@@ -10,6 +10,7 @@ export const plugin: Plugin = {
     initialize: ['return { count: 0 }'],
     plus: ['this.record.count++'],
   },
+  instanceId: 'a'
 }
 
 export const meta: PluginMeta = {
