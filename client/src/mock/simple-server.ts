@@ -67,6 +67,11 @@ const roomList: Record<string, Room> = {
 const sessions: Record<string, string> = {}
 
 io.on('connection', socket => {
+  socket.on('lobby', ({ user_id }) => {
+    console.log(`${color.black.bgWhite('lobby')} Lobby ${color.yellow(Object.keys(roomList).length)} rooms`)
+    socket.emit('lobby', { rooms: [ roomList['xxxx-yyyy-zzzz'] ] })
+  })
+
   socket.on('room/enter', ({ room_id }) => {
     console.log(`${color.black.bgWhite('room/enter')} ROOM ${color.gray(room_id)} ${color.green.bold('+')} ${socket.id}`)
     socket.join(room_id)

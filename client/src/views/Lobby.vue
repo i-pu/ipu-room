@@ -19,8 +19,6 @@ import RoomList from '@/components/lobby/RoomList.vue'
 import RoomCreateForm from '@/components/lobby/RoomCreateForm.vue'
 import PluginCreateForm from '@/components/PluginCreateForm.vue'
 
-import { ROOMS_MOCK } from '@/api/mock'
-
 @Component<Lobby>({
   components: { RoomList, RoomCreateForm, PluginCreateForm },
   sockets: {
@@ -37,22 +35,16 @@ export default class Lobby extends Vue {
   }
 
   private mounted () {
-    if (this.$store.getters.localOnly) {
-      this.responseLobby({ rooms: ROOMS_MOCK })
-    } else {
-      this.$socket.emit('lobby', {
-        user_id: this.$store.getters.userId,
-      })
-    }
+    this.$socket.emit('lobby', {
+      user_id: this.$store.getters.userId,
+    })
   }
 
   private responseLobby (data: { rooms: Room[] }) {
-    console.log(JSON.parse(JSON.stringify(data.rooms)))
     this.rooms = data.rooms
   }
 
   private responseCreateRoom (data: { room: Room }) {
-    console.log(data)
     this.rooms.push(data.room)
   }
 }
