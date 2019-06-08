@@ -1,24 +1,43 @@
 import { Component } from 'vue'
+import { compile } from '@/logic/compiler'
+import { Socket } from 'socket.io';
 
-// typeof plugin
+/**
+* PluginComponent
+*/
+type ThenArg<T> = T extends Promise<infer U> ? U : T
+export type PluginComponent = ThenArg<ReturnType<typeof compile>> & {
+  record: Record<string, any>,
+  $send: (event: string, ...args: any[]) => void,
+  $socket: Socket
+}
+
+/**
+* Expresses Data that will be send from the server.
+* @param template HTML template
+* @param functions functions
+* @param instanceId instanceId
+* @param config config
+*/
 export interface Plugin {
-  // html template
   template: string,
-  // functions
-  functions: Record<string, string[]>,
-
+  functions: { 
+    initialize: string[] | string | ((...args: any) => Record<string, any>) } &
+    (Record<string, string[] | string | ((this: PluginComponent, ...args: any) => void)>),
   instanceId: string,
-
   config: {
     enabled: boolean
   }
 }
 
-// static plugin info
+/**
+* Expresses Data of static infomation about a plugin.
+* @param id HTML template
+* @param thumbnail_url
+* @param content raw script of a plugin
+*/
 interface PluginMeta {
-  // plugin id
   id: string,
-  // plugin name
   thumbnail_url: string,
   name: string,
   description: string,
@@ -27,7 +46,9 @@ interface PluginMeta {
   content: string
 }
 
-// instance info
+/**
+* PluginProperties
+*/
 export interface PluginProperties {
   record: Record<string, any>,
   env: {
@@ -37,16 +58,9 @@ export interface PluginProperties {
   meta: PluginMeta
 }
 
-export interface Comment {
-  type: string,
-  avatar: string,
-  comment_id: string,
-  user_name: string,
-  user_id: string,
-  text: string,
-  commented_at: Date
-}
-
+/**
+* Room
+*/
 export interface Room {
   name: string,
   id: string,
@@ -62,6 +76,9 @@ export interface Room {
   }>
 }
 
+/**
+* User
+*/
 export interface User {
   name: string,
   id: string,

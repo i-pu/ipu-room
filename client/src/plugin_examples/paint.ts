@@ -4,26 +4,37 @@
 import { Plugin, PluginMeta } from '@/model'
 
 module.exports = {
-  plugin:  {
-    template: `<div><vue-p5 @setup="_setup" @draw="_draw" @mousedragged="_addLine"></vue-p5></div>`,
+  plugin: {
+    template: `<div><vue-p5 @setup="_setup" @draw="_draw" @mousedragged="_dragged" @mousereleased="_released"></vue-p5></div>`,
     functions: {
-      initialize: ['return { lines: [], line: {} }'],
-      _setup: ['sketch', `
-        console.log('set up')
+      initialize () {
+        return { lines: [], buffer: [] }
+      },
+      _setup (sketch) {
         sketch.createCanvas(600, 600)
-      `],
-      _draw: ['sketch', `
+      },
+      _draw (sketch) {
         for (let line of this.record.lines) {
           sketch.line(line.px, line.py, line.x, line.y);
         }
-      `],
-      _addLine: ['p', `
-        this.record.line = { x: p.mouseX, y: p.mouseY, px: p.pmouseX, py: p.pmouseY }
-        this.$send('onDraw', this.record.line)
-      `],
-      onDraw: ['p', `
-        this.record.lines.push({ x: p.x, y: p.y, px: p.px, py: p.py })
-      `],
+      },
+      _dragged (p) {
+        const l = { x: p.mouseX, y: p.mouseY, px: p.pmouseX, py: p.pmouseY }
+        this.record.lines.push(l)
+        this.record.buffer.push(l)
+        if (this.record.buffer.length > 10) {
+          this.$send('onDraw', this.record.buffer, this.$socket.id)
+          this.record.buffer = []
+        }
+      },
+      _released (p) {
+        this.$send('onDraw', this.record.buffer, this.$socket.id)
+        this.record.buffer = []
+      },
+      onDraw (buffer, id) {
+        if (this.$socket.id !== id)
+          this.record.lines.push(...buffer)
+      }
     },
     instanceId: 'a',
     config: {
@@ -43,4 +54,3 @@ module.exports = {
 } as {
   plugin: Plugin, meta: PluginMeta
 }
-

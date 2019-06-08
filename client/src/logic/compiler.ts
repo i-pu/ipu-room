@@ -4,6 +4,9 @@ import { Plugin, PluginProperties } from '@/model'
 // @ts-ignore
 import VueP5 from 'vue-p5'
 
+/**
+* [TODO] Import dynamically additional components are used in a plugin.
+*/
 const fetchPreinstalledModules = async () => {
   // addons
   const modules: Record<string, Component> = {}
@@ -38,23 +41,30 @@ const fetchPreinstalledModules = async () => {
   return modules
 }
 
+/**
+* Compiles a plugin-package, and converts Vue component.
+*
+* ### Hook type
+* - (without prefix, ex: add): send me, recieve all members in room.
+* - (with '_' prefix ex: _add): call the function directly.
+* - (with 'bc_' ex: bc_add): broadcast to room, recieve all members excepts me in room.
+*
+* @param plugin hoge
+* @param properties hoge
+*/
 export const compile = async (
   plugin: Plugin,
   properties: PluginProperties,
-): Promise<Component> => {
-  // console.log(`[Compiler] ${properties.env.instanceId} try to compile`)
-
+) => {
   // addons
   const addonComponents: Record<string, Component> = await fetchPreinstalledModules()
 
   const hooks: Record<string, (...args: any) => void> = {}
-  for (const [event, fn] of Object.entries(plugin.functions)) {
-    if (event[0] === '_') {
-      // direct
-      // console.log(`[Compiler] ${properties.env.instanceId} directry ${event}`)
-      hooks[event] = new Function(...fn) as (...args: any[]) => void
-    } else {
-      // console.log(`[Compiler] ${properties.env.instanceId} register hooks ${event}`)
+  for (const [event, fnlike] of Object.entries<string[] | string | ((...args: any[]) => void)>(plugin.functions)) {
+    if (event.startsWith('_')) {
+      hooks[event] = typeof(fnlike) === 'string' ? eval(`(function ${fnlike})`) : new Function(...<string[]>fnlike) as (...args: any[]) => void
+    }
+    else {
       hooks[event] = function (this: Vue & {
         callbackFromServer: (functionName: string, args: any[]) => void,
         env: PluginProperties['env'],
@@ -71,7 +81,7 @@ export const compile = async (
         // his.callbackFromServer(event, args)
       }
 
-      hooks[`__callback__${event}`] = new Function(...fn) as (...args: any[]) => void
+      hooks[`__callback__${event}`] = typeof(fnlike) === 'string' ? eval(`(function ${fnlike})`) : new Function(...<string[]>fnlike) as (...args: any[]) => void
     }
   }
 
@@ -133,9 +143,6 @@ export const compile = async (
     methods: {
       $cloneRecord (this: Vue & { record: Record<string, any> }): Record<string, any> {
         return Object.assign({}, this.record)
-      },
-      $log (message: any) {
-        console.log(message)
       },
       $send (event: string, ...args: any[]) {
         this.$socket.emit('plugin/trigger', {

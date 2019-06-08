@@ -59,28 +59,49 @@ export default class RoomView extends Vue {
     this.$socket.emit('room/enter', { room_id: this.roomId })
   }
 
+  /**
+  * Room
+  */
   private async responseEnterRoom ({ room }: { room: Room }) {
     console.log(`[Room] entered`)
     this.room = room
     this.room.plugins = []
 
     for (const { plugin, meta } of this.room.pluginPackages) {
-      const initializer = new Function(...plugin.functions['initialize'])
-      const properties: PluginProperties = {
-        record: initializer(),
-        env: { instanceId: plugin.instanceId, room: this.room },
-        meta: meta,
+      try {
+        const fnlike = plugin.functions.initialize
+
+        if (!fnlike) {
+          throw new Error()
+        }
+
+        const initializer = typeof(fnlike) === 'string' ? eval(`(function ${fnlike})`) : new Function(...<string[]>fnlike) as (...args: any) => Record<string, any>
+        console.log(initializer())
+        const properties: PluginProperties = {
+          record: initializer(),
+          env: { instanceId: plugin.instanceId, room: this.room },
+          meta: meta,
+        }
+        const component = await compile(plugin, properties)
+        // push reactively
+        this.$set(this.room, 'plugins', [...this.room.plugins, { component, properties }])
+      } catch (e) {
+        console.log('Plugin initializer not found')
+        continue
       }
-      const component = await compile(plugin, properties)
-      // push reactively
-      this.$set(this.room, 'plugins', [...this.room.plugins, { component, properties }])
     }
   }
 
+  /**
+  * Room
+  */
   private requestExitRoom () {
     this.$socket.emit('room/exit', { room_id: this.roomId})
   }
 
+  /**
+  * Room
+  */
   private responseExitRoom () {
     this.$router.push('/lobby')
   }
