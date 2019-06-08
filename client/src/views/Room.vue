@@ -28,12 +28,7 @@ import Desk from '@/components/room/Desk.vue'
 import Status from '@/components/room/Status.vue'
 import Settings from '@/components/room/Settings.vue'
 
-import { ROOMS_MOCK } from '@/api/mock'
 import { compile } from '@/logic/compiler'
-
-import * as Package from '@/plugin_examples/counter'
-// import * as Package from '@/plugin_examples/chat'
-// import * as Package from '@/plugin_examples/paint'
 
 @Component<RoomView>({
   components: { Desk, Status, Settings },
