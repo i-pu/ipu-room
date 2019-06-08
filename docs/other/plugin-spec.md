@@ -4,6 +4,41 @@ v2019.6.5
 # 構成
 * 単一ファイルに記述、拡張子は`*.ipl`
 
+## Plugin Sequence
+
+![Plugin Sequence](https://i.imgur.com/EA0WOuu.png)
+
+```:sequence
+Title: Plugin Sequence
+
+participant User1
+participant User2 
+participant Server
+User1 ->> Server : room/enter
+Server ->> User1 : room/enter
+User1 -> User1 : Compile Plugins
+User1 -> User1 : Initialize Record
+User1 ->> Server : plugin/trigger
+Server ->> User1 : plugin/trigger
+User2 ->> Server : room/enter
+Server ->> User2 : room/enter
+Server ->> User1 : room/update
+User2 -> User2 : Compile Plugins
+User2 ->> Server : plugin/sync
+Server ->> User1 : plugin/clone
+User1 ->> Server : plugin/clone
+Server ->> User2 : plugin/sync
+User2 -> User2 : Synchronize Record
+User2 ->> Server : plugin/trigger
+Server ->> User1 : plugin/trigger
+Server ->> User2 : plugin/trigger
+```
+
+## Plugin Lifecycle
+→ [Vue instance lifecycle](https://jp.vuejs.org/v2/guide/instance.html)
+
+![LifeCycle Diagram](https://jp.vuejs.org/images/lifecycle.png?_sw-precache=6f2c97f045ba988851b02056c01c8d62)
+
 ## `<template>` 部
 * Vueテンプレート
 * Vuetifyのコンポーネントが使用可能
