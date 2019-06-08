@@ -11,7 +11,8 @@
     "test:unit": "jest",
     "cypress": "cypress run --browser chrome",
     "doc": "rm -r ../docs/client && typedoc --out ../docs/client src --name Ipu-space --theme markdown",
-    "deploy": "scp -r dist/ ubuntu@ec2-18-224-235-29.us-east-2.compute.amazonaws.com:~"
+    "deploy": "scp -r dist/ ubuntu@ec2-18-224-235-29.us-east-2.compute.amazonaws.com:~",
+    "simple": "npx ts-node --project tsconfig.json src/mock/simple-server.ts"
   },
   "dependencies": {
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
@@ -20,6 +21,7 @@
     "core-js": "^2.6.5",
     "socket.io": "^2.2.0",
     "socket.io-client": "^2.2.0",
+    "uuid": "^3.3.2",
     "vue": "^2.6.10",
     "vue-class-component": "^7.0.2",
     "vue-mixin-decorator": "^1.1.1",
@@ -35,6 +37,7 @@
     "@babel/polyfill": "^7.4.4",
     "@types/jest": "^23.1.4",
     "@types/socket.io": "^2.1.2",
+    "@types/uuid": "^3.4.4",
     "@vue/cli-plugin-babel": "^3.7.0",
     "@vue/cli-plugin-e2e-cypress": "^3.7.0",
     "@vue/cli-plugin-typescript": "^3.7.0",

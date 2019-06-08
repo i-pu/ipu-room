@@ -7,7 +7,11 @@ export interface Plugin {
   // functions
   functions: Record<string, string[]>,
 
-  instanceId: string
+  instanceId: string,
+
+  config: {
+    enabled: boolean
+  }
 }
 
 // static plugin info

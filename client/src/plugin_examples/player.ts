@@ -28,7 +28,10 @@ module.exports = {
         this.$refs.youtube.player.pauseVideo()
       `]
     },
-    instanceId: 'a'
+    instanceId: 'a',
+    config: {
+      enabled: true
+    }
   },
   meta: {
     id: 'counter_xxx',
@@ -36,7 +39,7 @@ module.exports = {
     name: 'counter',
     thumbnail_url: 'https://avatars3.githubusercontent.com/u/50242068?s=200&v=4',
     description: 'aaa',
-    author: 'a',
+    author: 'wakame-tech',
     tags: 'a,b,c',
     content: '<html></html>',
   }

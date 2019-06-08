@@ -29,11 +29,11 @@
 
                     //- h3 プラグイン
 
-                    //- template(v-for="{ plugin, properties } in room.plugins")
-                    //-   v-switch(
-                    //-     :label="properties.meta.name"
-                    //-     @change="onChangePluginSettings(properties.name)"
-                    //-   )
+                    template(v-for="{ plugin, meta } in room.pluginPackages")
+                      v-switch(
+                        :label="`${meta.name} (${plugin.instanceId})`"
+                        @change="onChangePluginSettings(meta)"
+                      )
 
                   v-flex(xs6 sm6)
                     v-select(
@@ -50,8 +50,7 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Prop } from 'vue-property-decorator'
-import { Room } from '@/model'
-import { Plugin, PluginProperties } from '@/model'
+import { Room, Plugin, PluginProperties, PluginMeta } from '@/model'
 
 @Component
 export default class Settings extends Vue {
@@ -67,7 +66,8 @@ export default class Settings extends Vue {
     // console.log(this.room.plugins)
   }
 
-  private onChangePluginSettings (pluginName: string) {
+  private onChangePluginSettings (meta: PluginMeta) {
+    console.log(meta)
     return {}
   }
 }
