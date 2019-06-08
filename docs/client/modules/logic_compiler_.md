@@ -17,18 +17,26 @@
 
 ### `<Const>` compile
 
-▸ **compile**(plugin: *`Plugin`*, properties: *`PluginProperties`*): `Promise`<`Component`>
+▸ **compile**(plugin: *`Plugin`*, properties: *`PluginProperties`*): `Promise`<`VueConstructor`<`object` & `object` & `object` & `Vue`>>
 
-*Defined in [logic/compiler.ts:41](https://github.com/i-pu/ipu/blob/102e976/client/src/logic/compiler.ts#L41)*
+*Defined in [logic/compiler.ts:55](https://github.com/i-pu/ipu/blob/ce338ba/client/src/logic/compiler.ts#L55)*
+
+Compiles a plugin-package, and converts Vue component.
+
+### Hook type
+
+*   (without prefix, ex: add): send me, recieve all members in room.
+*   (with '\_' prefix ex: \_add): call the function directly.
+*   (with 'bc\_' ex: bc\_add): broadcast to room, recieve all members excepts me in room.
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| plugin | `Plugin` |
-| properties | `PluginProperties` |
+| Name | Type | Description |
+| ------ | ------ | ------ |
+| plugin | `Plugin` |  hoge |
+| properties | `PluginProperties` |  hoge |
 
-**Returns:** `Promise`<`Component`>
+**Returns:** `Promise`<`VueConstructor`<`object` & `object` & `object` & `Vue`>>
 
 ___
 <a id="fetchpreinstalledmodules"></a>
@@ -37,7 +45,9 @@ ___
 
 ▸ **fetchPreinstalledModules**(): `Promise`<`object`>
 
-*Defined in [logic/compiler.ts:7](https://github.com/i-pu/ipu/blob/102e976/client/src/logic/compiler.ts#L7)*
+*Defined in [logic/compiler.ts:10](https://github.com/i-pu/ipu/blob/ce338ba/client/src/logic/compiler.ts#L10)*
+
+\[TODO\] Import dynamically additional components are used in a plugin.
 
 **Returns:** `Promise`<`object`>
 

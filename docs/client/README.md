@@ -97,7 +97,7 @@ using modified `typedoc-markdown-plugin` to generate client document because jek
 
 ### client/node\_modules/typedoc-plugin-markdown/dist/theme/index.js#L51
 
-```
+```js
 - return [mapping.directory, DefaultTheme_1.DefaultTheme.getUrl(reflection) + '.md'].join('/');
 + return [mapping.directory, DefaultTheme_1.DefaultTheme.getUrl(reflection).slice(1) + '.md'].join('/');
 ```
@@ -106,12 +106,13 @@ using modified `typedoc-markdown-plugin` to generate client document because jek
 
 ### External modules
 
-* ["api/mock"](modules/api_mock_.md)
 * ["logic/compiler"](modules/logic_compiler_.md)
 * ["main"](modules/main_.md)
+* ["mock/simple-server"](modules/mock_simple_server_.md)
 * ["plugin_examples/chat"](modules/plugin_examples_chat_.md)
 * ["plugin_examples/counter"](modules/plugin_examples_counter_.md)
 * ["plugin_examples/paint"](modules/plugin_examples_paint_.md)
+* ["plugin_examples/player"](modules/plugin_examples_player_.md)
 * ["plugins/vuetify"](modules/plugins_vuetify_.md)
 * ["router"](modules/router_.md)
 * ["store"](modules/store_.md)

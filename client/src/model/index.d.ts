@@ -1,6 +1,6 @@
 import { Component } from 'vue'
 import { compile } from '@/logic/compiler'
-import { Socket } from 'socket.io';
+import { Socket } from 'socket.io'
 
 /**
 * PluginComponent

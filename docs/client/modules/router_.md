@@ -38,7 +38,7 @@
   ],
 })
 
-*Defined in [router.ts:13](https://github.com/i-pu/ipu/blob/102e976/client/src/router.ts#L13)*
+*Defined in [router.ts:13](https://github.com/i-pu/ipu/blob/ce338ba/client/src/router.ts#L13)*
 
 ___
 

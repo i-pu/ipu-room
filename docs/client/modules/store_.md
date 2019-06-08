@@ -25,7 +25,7 @@
 
 **actions**: *`object`*
 
-*Defined in [store.ts:39](https://github.com/i-pu/ipu/blob/102e976/client/src/store.ts#L39)*
+*Defined in [store.ts:39](https://github.com/i-pu/ipu/blob/ce338ba/client/src/store.ts#L39)*
 
 <a id="actions.setuserid"></a>
 
@@ -33,7 +33,7 @@
 
 ▸ **setUserId**(__namedParameters: *`object`*, payload: *`string`*): `void`
 
-*Defined in [store.ts:43](https://github.com/i-pu/ipu/blob/102e976/client/src/store.ts#L43)*
+*Defined in [store.ts:43](https://github.com/i-pu/ipu/blob/ce338ba/client/src/store.ts#L43)*
 
 **Parameters:**
 
@@ -54,7 +54,7 @@ ___
 
 ▸ **setUserName**(__namedParameters: *`object`*, payload: *`string`*): `void`
 
-*Defined in [store.ts:40](https://github.com/i-pu/ipu/blob/102e976/client/src/store.ts#L40)*
+*Defined in [store.ts:40](https://github.com/i-pu/ipu/blob/ce338ba/client/src/store.ts#L40)*
 
 **Parameters:**
 
@@ -77,7 +77,7 @@ ___
 
 **getters**: *`object`*
 
-*Defined in [store.ts:18](https://github.com/i-pu/ipu/blob/102e976/client/src/store.ts#L18)*
+*Defined in [store.ts:18](https://github.com/i-pu/ipu/blob/ce338ba/client/src/store.ts#L18)*
 
 <a id="getters.localonly"></a>
 
@@ -85,7 +85,7 @@ ___
 
 ▸ **localOnly**(state: *[State](../interfaces/store_.state.md)*): `boolean`
 
-*Defined in [store.ts:19](https://github.com/i-pu/ipu/blob/102e976/client/src/store.ts#L19)*
+*Defined in [store.ts:19](https://github.com/i-pu/ipu/blob/ce338ba/client/src/store.ts#L19)*
 
 **Parameters:**
 
@@ -102,7 +102,7 @@ ___
 
 ▸ **userId**(state: *[State](../interfaces/store_.state.md)*): `string`
 
-*Defined in [store.ts:25](https://github.com/i-pu/ipu/blob/102e976/client/src/store.ts#L25)*
+*Defined in [store.ts:25](https://github.com/i-pu/ipu/blob/ce338ba/client/src/store.ts#L25)*
 
 **Parameters:**
 
@@ -119,7 +119,7 @@ ___
 
 ▸ **userName**(state: *[State](../interfaces/store_.state.md)*): `string`
 
-*Defined in [store.ts:22](https://github.com/i-pu/ipu/blob/102e976/client/src/store.ts#L22)*
+*Defined in [store.ts:22](https://github.com/i-pu/ipu/blob/ce338ba/client/src/store.ts#L22)*
 
 **Parameters:**
 
@@ -138,7 +138,7 @@ ___
 
 **mutations**: *`object`*
 
-*Defined in [store.ts:30](https://github.com/i-pu/ipu/blob/102e976/client/src/store.ts#L30)*
+*Defined in [store.ts:30](https://github.com/i-pu/ipu/blob/ce338ba/client/src/store.ts#L30)*
 
 <a id="mutations.userid-1"></a>
 
@@ -146,7 +146,7 @@ ___
 
 ▸ **userId**(state: *[State](../interfaces/store_.state.md)*, payload: *`string`*): `void`
 
-*Defined in [store.ts:34](https://github.com/i-pu/ipu/blob/102e976/client/src/store.ts#L34)*
+*Defined in [store.ts:34](https://github.com/i-pu/ipu/blob/ce338ba/client/src/store.ts#L34)*
 
 **Parameters:**
 
@@ -164,7 +164,7 @@ ___
 
 ▸ **userName**(state: *[State](../interfaces/store_.state.md)*, payload: *`string`*): `void`
 
-*Defined in [store.ts:31](https://github.com/i-pu/ipu/blob/102e976/client/src/store.ts#L31)*
+*Defined in [store.ts:31](https://github.com/i-pu/ipu/blob/ce338ba/client/src/store.ts#L31)*
 
 **Parameters:**
 
@@ -184,7 +184,7 @@ ___
 
 **storeState**: *`object`*
 
-*Defined in [store.ts:12](https://github.com/i-pu/ipu/blob/102e976/client/src/store.ts#L12)*
+*Defined in [store.ts:12](https://github.com/i-pu/ipu/blob/ce338ba/client/src/store.ts#L12)*
 
 <a id="storestate.islocalonly"></a>
 
@@ -192,7 +192,7 @@ ___
 
 **● isLocalOnly**: *`true`* = true
 
-*Defined in [store.ts:13](https://github.com/i-pu/ipu/blob/102e976/client/src/store.ts#L13)*
+*Defined in [store.ts:13](https://github.com/i-pu/ipu/blob/ce338ba/client/src/store.ts#L13)*
 
 ___
 <a id="storestate.userid-2"></a>
@@ -201,7 +201,7 @@ ___
 
 **● userId**: *`string`* = ""
 
-*Defined in [store.ts:15](https://github.com/i-pu/ipu/blob/102e976/client/src/store.ts#L15)*
+*Defined in [store.ts:15](https://github.com/i-pu/ipu/blob/ce338ba/client/src/store.ts#L15)*
 
 ___
 <a id="storestate.username-2"></a>
@@ -210,7 +210,7 @@ ___
 
 **● userName**: *`string`* = ""
 
-*Defined in [store.ts:14](https://github.com/i-pu/ipu/blob/102e976/client/src/store.ts#L14)*
+*Defined in [store.ts:14](https://github.com/i-pu/ipu/blob/ce338ba/client/src/store.ts#L14)*
 
 ___
 

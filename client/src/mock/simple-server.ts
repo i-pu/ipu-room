@@ -29,7 +29,7 @@ const parseWithFunctions = <T>(data: string): T => {
     data,
     function (k, v) { 
       return typeof v === 'string' && v.match(/^function/)
-        ? Function.call(this, `return ${v}`)()
+        ? Function.call(null, `return ${v}`)()
         : v
     }
   )

@@ -24,7 +24,7 @@
 
 **● isLocalOnly**: *`boolean`*
 
-*Defined in [store.ts:7](https://github.com/i-pu/ipu/blob/102e976/client/src/store.ts#L7)*
+*Defined in [store.ts:7](https://github.com/i-pu/ipu/blob/ce338ba/client/src/store.ts#L7)*
 
 ___
 <a id="userid"></a>
@@ -33,7 +33,7 @@ ___
 
 **● userId**: *`string`*
 
-*Defined in [store.ts:9](https://github.com/i-pu/ipu/blob/102e976/client/src/store.ts#L9)*
+*Defined in [store.ts:9](https://github.com/i-pu/ipu/blob/ce338ba/client/src/store.ts#L9)*
 
 ___
 <a id="username"></a>
@@ -42,7 +42,7 @@ ___
 
 **● userName**: *`string`*
 
-*Defined in [store.ts:8](https://github.com/i-pu/ipu/blob/102e976/client/src/store.ts#L8)*
+*Defined in [store.ts:8](https://github.com/i-pu/ipu/blob/ce338ba/client/src/store.ts#L8)*
 
 ___
 
