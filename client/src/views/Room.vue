@@ -21,14 +21,12 @@
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component'
-
-import { Room, User, Plugin, PluginProperties, PluginMeta } from '@/model'
+import { Room, User } from '@/model'
+import { boot } from '@/logic/loader'
 
 import Desk from '@/components/room/Desk.vue'
 import Status from '@/components/room/Status.vue'
 import Settings from '@/components/room/Settings.vue'
-
-import { compile } from '@/logic/compiler'
 
 @Component<RoomView>({
   components: { Desk, Status, Settings },
@@ -67,28 +65,15 @@ export default class RoomView extends Vue {
     this.room = room
     this.room.plugins = []
 
-    for (const { plugin, meta } of this.room.pluginPackages) {
-      try {
-        const fnlike = plugin.functions.initialize
-
-        if (!fnlike) {
-          throw new Error()
-        }
-
-        const initializer = typeof(fnlike) === 'string' ? eval(`(function ${fnlike})`) : new Function(...<string[]>fnlike) as (...args: any) => Record<string, any>
-        console.log(initializer())
-        const properties: PluginProperties = {
-          record: initializer(),
-          env: { instanceId: plugin.instanceId, room: this.room },
-          meta: meta,
-        }
-        const component = await compile(plugin, properties)
-        // push reactively
-        this.$set(this.room, 'plugins', [...this.room.plugins, { component, properties }])
-      } catch (e) {
-        console.log('Plugin initializer not found')
-        continue
-      }
+    for (const pluginPackage of this.room.pluginPackages) {
+      const instance = await boot(pluginPackage, { room: this.room })
+        .catch(error => {
+          console.error(error)
+        })
+        .then(instance => {
+          // push reactively
+          this.$set(this.room!!, 'plugins', [...this.room!!.plugins, instance])
+        })
     }
   }
 

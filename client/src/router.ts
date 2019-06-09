@@ -5,6 +5,7 @@ import store from '@/store'
 import Top from '@/views/Top.vue'
 import Lobby from '@/views/Lobby.vue'
 import Room from '@/views/Room.vue'
+import PluginDetail from '@/views/PluginDetail.vue'
 
 import 'vuetify/dist/vuetify.min'
 
@@ -17,7 +18,8 @@ const router = new Router({
     {
       path: '/',
       name: 'Top',
-      component: Top,
+      component: PluginDetail,
+      // component: Top,
     },
     {
       path: '/lobby',
@@ -29,6 +31,11 @@ const router = new Router({
       name: 'Room',
       component: Room,
     },
+    {
+      path: '/editor',
+      name: 'Editor',
+      component: PluginDetail,
+    }
   ],
 })
 
