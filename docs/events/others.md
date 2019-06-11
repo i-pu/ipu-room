@@ -51,19 +51,19 @@ same to [room/create](#roomcreate)
 部屋から出る
 ### client to server
 {}
-### server to client who is leaving
+### server to client
 {}
-### server to client who is staying
-- members: 
-  - id: `string`  
-  user id
-  - name: `string`  
-  user name
-  - roomId: `string`  
+## room/update
+部屋から誰か出たときに発生
+### server to clinet
+same to [room/create](#roomcreate)
   
 ## visit
 ### client to server
 - userName: `string`
+### client to server
+発生しない
+None
 ### server to client 
 - user:
   - name: `string`
