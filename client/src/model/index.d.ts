@@ -58,6 +58,16 @@ export interface PluginProperties {
   meta: PluginMeta
 }
 
+export type PluginInstance = {
+  component: Component,
+  properties: PluginProperties,
+}
+
+export type PluginPackage = {
+  plugin: Plugin,
+  meta: PluginMeta,
+}
+
 /**
 * Room
 */
@@ -66,14 +76,8 @@ export interface Room {
   id: string,
   thumbnail_url: string,
   members: User[],
-  pluginPackages: Array<{
-    plugin: Plugin,
-    meta: PluginMeta
-  }>,
-  plugins: Array<{
-    component: Component,
-    properties: PluginProperties,
-  }>
+  pluginPackages: Array<PluginPackage>,
+  plugins: Array<PluginInstance>,
 }
 
 /**

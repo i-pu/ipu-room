@@ -11,7 +11,7 @@ const uuidv4 = require('uuid')
 const io: SocketIO.Server = require('socket.io')(app)
 const color = require('colors')
 
-import { Room, Plugin, PluginMeta } from '@/model'
+import { Room, Plugin, PluginMeta, PluginPackage } from '@/model'
 
 app.listen(1234, () => {
   console.log(`simple server running on ${color.green.bold('localhost:1234')}`)
@@ -39,10 +39,10 @@ const deepCloneWithFunctions = <T>(data: object): T => {
   return parseWithFunctions<T>(stringifyWithFunctions(data))
 }
 
-const activatePlugin = (pluginData: { plugin: Plugin, meta: PluginMeta }): { plugin: Plugin, meta: PluginMeta } => {
-  const pluginPackage: { plugin: Plugin, meta: PluginMeta } = deepCloneWithFunctions<{ plugin: Plugin, meta: PluginMeta }>(pluginData)
-  pluginPackage.plugin.instanceId = uuidv4()
-  return pluginPackage
+const activatePlugin = (pluginPackage: PluginPackage): PluginPackage => {
+  const newPackage: PluginPackage = deepCloneWithFunctions<PluginPackage>(pluginPackage)
+  newPackage.plugin.instanceId = uuidv4()
+  return newPackage
 }
 
 // room_id -> room
@@ -68,26 +68,44 @@ const sessions: Record<string, string> = {}
 
 io.on('connection', socket => {
   socket.on('lobby', ({ user_id }) => {
-    console.log(`${color.black.bgWhite('lobby')} Lobby ${color.yellow(Object.keys(roomList).length)} rooms`)
+    console.log(`${color.black.bgWhite('[lobby]')} Lobby ${color.yellow(Object.keys(roomList).length)} rooms`)
     socket.emit('lobby', { rooms: [ roomList['xxxx-yyyy-zzzz'] ] })
   })
 
+  socket.on('room/make', ({ name, pluginPackages }) => {
+    const room_id = uuidv4()
+    console.log(`${color.black.bgWhite('[room/make]')} ${color.green.bold('+')} ${color.yellow(name)} (${color.gray(room_id)})`)
+    roomList[room_id] = {
+      name,
+      id: room_id,
+      thumbnail_url: '',
+      members: [],
+      pluginPackages: pluginPackages.map((p: PluginPackage) => activatePlugin(p)),
+      plugins: []
+    }
+    socket.emit('room/make', { room: roomList[room_id] })
+  })
+
   socket.on('room/enter', ({ room_id }) => {
-    console.log(`${color.black.bgWhite('room/enter')} ROOM ${color.gray(room_id)} ${color.green.bold('+')} ${socket.id}`)
+    console.log(`${color.black.bgWhite('[room/enter]')} ROOM ${color.gray(room_id)} ${color.green.bold('+')} ${socket.id}`)
+
+    if (!roomList[room_id]) {
+      throw `Room ${room_id} does not exist`
+    }
+    const room = roomList[room_id]
+
     socket.join(room_id)
     sessions[socket.id] = room_id
 
-    if (roomList[room_id] && !roomList[room_id].members.map(m => m.id).includes(socket.id)) {
-      roomList[room_id].members.push({
+    if (!room.members.map(m => m.id).includes(socket.id)) {
+      room.members.push({
         id: socket.id, name: '名無し', avatar_url: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460'
       })
     }
 
-    const room = roomList[room_id]
-
-    console.log(`${color.black.bgWhite('room/enter')} Total ${color.yellow(room.pluginPackages.length)} Plugins applied!!`)
+    console.log(`${color.black.bgWhite('[room/enter]')} Total ${color.yellow(room.pluginPackages.length)} Plugins applied!!`)
     for (const { plugin, meta } of room.pluginPackages) {
-      console.log(`${color.black.bgWhite('room/enter')}   - ${color.gray(meta.author + '/' + meta.name)} (${plugin.instanceId})`)
+      console.log(`${color.black.bgWhite('[room/enter]')}   - ${color.gray(meta.author + '/' + meta.name)} (${plugin.instanceId})`)
     }
 
     socket.emit('room/enter', { room })
@@ -124,6 +142,11 @@ io.on('connection', socket => {
     console.log(`${color.black.bgWhite('[room/exit]')} ${color.gray(roomId)} ${color.red.bold('-')} ${color.gray(socket.id)}`)
     roomList[roomId].members = roomList[roomId].members.filter(m => m.id !== socket.id)
     delete sessions[socket.id]
+
+    if (roomList[roomId].members.length === 0) {
+      delete roomList[roomId]
+    }
+
     io.in(roomId).emit('room/update', { room: roomList[roomId] })
   }
 })
