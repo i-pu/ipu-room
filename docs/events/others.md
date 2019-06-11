@@ -3,7 +3,7 @@
 ## room/create
 部屋を作る
 ### client to server
-- room_name: `string`  
+- roomName: `string`  
 部屋の名前
 - plugins: `[string]`  
 プラグイン
@@ -18,7 +18,7 @@
     user id
     - name: `string`  
     user name
-    - room_id: `string`  
+    - roomId: `string`  
   - plugins: `[]`
     - plugin:
       - template: `string`,
@@ -43,7 +43,7 @@
 ## room/enter
 部屋に入る
 ### client to server
-- room_id: `string`
+- roomId: `string`
 ### server to client 
 same to [room/create](#roomcreate)
 
@@ -59,16 +59,16 @@ same to [room/create](#roomcreate)
   user id
   - name: `string`  
   user name
-  - room_id: `string`  
+  - roomId: `string`  
   
 ## visit
 ### client to server
-- user_name: `string`
+- userName: `string`
 ### server to client 
 - user:
   - name: `string`
   - id: `string`
-  - room_id: `string`
+  - roomId: `string`
 
 ## lobby
 ### client to server
