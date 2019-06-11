@@ -1,5 +1,9 @@
 <template lang="pug">
   div
+    v-toolbar(app)
+      v-toolbar-title.headline.text-uppercase
+        span.pr-3 {{ pluginPackage.meta.name }} TEST
+      v-spacer
     v-container(fluid grid-list-md text-xs-center)
       v-layout(row wrap)
         v-flex(d-flex xs12 sm12 md9)
