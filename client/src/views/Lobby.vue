@@ -35,6 +35,11 @@ export default class Lobby extends Vue {
   }
 
   private mounted () {
+    /**
+    *  request lobby event
+    *  @event lobby
+    *  @param user_id: string
+    */
     this.$socket.emit('lobby', {
       user_id: this.$store.getters.userId,
     })

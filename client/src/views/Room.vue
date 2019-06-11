@@ -54,6 +54,11 @@ export default class RoomView extends Vue {
 
   private mounted () {
     console.log(`[Room] request enter`)
+    /**
+    *  request room/enter event
+    *  @event room/enter
+    *  @param room_id: string
+    */
     this.$socket.emit('room/enter', { room_id: this.roomId })
   }
 
@@ -81,6 +86,11 @@ export default class RoomView extends Vue {
   * Room
   */
   private requestExitRoom () {
+    /**
+    *  request room/exit event
+    *  @event room/exit
+    *  @param room_id: string
+    */
     this.$socket.emit('room/exit', { room_id: this.roomId})
   }
 

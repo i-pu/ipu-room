@@ -74,6 +74,7 @@ export default class PluginEditor extends Vue {
     this.editableTempate = _.clone(this.innerPluginPackage.plugin.template)
     this.editableFunctions = this.prettifiedFunctions
 
+    
     this.$socket.emit('room/make', { name: '部屋', pluginPackages: [ this.innerPluginPackage ] }) 
   }
 

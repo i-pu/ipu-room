@@ -1,5 +1,5 @@
 import Vue, { Component } from 'vue'
-import { Plugin, PluginProperties } from '@/model'
+import { Plugin, PluginProperties, PluginComponent } from '@/model'
 
 // @ts-ignore
 import VueP5 from 'vue-p5'
@@ -52,10 +52,11 @@ const fetchPreinstalledModules = async () => {
 * @param plugin hoge
 * @param properties hoge
 */
+// @ts-ignore
 export const compile = async (
   plugin: Plugin,
   properties: PluginProperties,
-) => {
+): Promise<any> => {
   // addons
   const addonComponents: Record<string, Component> = await fetchPreinstalledModules()
 
@@ -65,11 +66,7 @@ export const compile = async (
       hooks[event] = typeof(fnlike) === 'string' ? eval(`(function ${fnlike})`) : new Function(...<string[]>fnlike) as (...args: any[]) => void
     }
     else {
-      hooks[event] = function (this: Vue & {
-        callbackFromServer: (functionName: string, args: any[]) => void,
-        env: PluginProperties['env'],
-      },
-      ...args: any[]) {
+      hooks[event] = function (this: any, ...args: any[]) {
         // emit to server
         this.$socket.emit('plugin/trigger', {
           room_id: this.env.room.id,
@@ -87,18 +84,40 @@ export const compile = async (
 
   console.log(`[Compiler] compiled ${properties.env.instanceId} successfully`)
 
+  // @ts-ignore
   return Vue.extend({
     template: plugin.template,
     components: addonComponents,
+    // @ts-ignore
     sockets: {
-      // from server
-      [`plugin/${plugin.instanceId}/sync`] (this: Vue, { record }: { record: Record<string, any> }) {
+      /**
+      *  reponse plugin/sync event
+      *  @event plugin/sync
+      *  @param record: Record<string, any>
+      */
+      [`plugin/${plugin.instanceId}/sync`] (this: PluginComponent, { record }: { record: Record<string, any> }) {
         // @ts-ignore
         this.record = record
         console.log('record synced')
       },
-      [`plugin/${plugin.instanceId}/clone`] (this: Vue, { room_id, instance_id, from }: { room_id: string, instance_id: string, from: string }) {
+      /**
+      *  response plugin/clone event
+      *  @event plugin/clone
+      *  @param room_id: string
+      *  @param instance_id: string
+      *  @param from: string
+      */
+      [`plugin/${plugin.instanceId}/clone`] ({ room_id, instance_id, from }: { room_id: string, instance_id: string, from: string }) {
         console.log(`[Plugin] came clone request from ${from}`)
+        /**
+        *  request plugin/clone event
+        *  @event plugin/clone
+        *  @param room_id: string
+        *  @param instance_id: string
+        *  @param record: Record<string, any>
+        *  @param from: string
+        */
+        // @ts-ignore
         this.$socket.emit('plugin/clone', {
           // @ts-ignore
           room_id: this.env.room.id,
@@ -131,6 +150,12 @@ export const compile = async (
 
       // if someone exist, sync records
       if (1 < this.env.room.members.length) {
+        /**
+        *  request plugin/sync event
+        *  @event plugin/sync
+        *  @param room_id: string
+        *  @param instance_id: string
+        */
         this.$socket.emit('plugin/sync', {
           room_id: this.env.room.id,
           instance_id: this.env.instanceId
@@ -141,26 +166,37 @@ export const compile = async (
       }
     },
     methods: {
-      $cloneRecord (this: Vue & { record: Record<string, any> }): Record<string, any> {
+      $cloneRecord (): Record<string, any> {
+        // @ts-ignore
         return Object.assign({}, this.record)
       },
       $send (event: string, ...args: any[]) {
+        /**
+        *  request plugin/trigger event
+        *  @event plugin/trigger
+        *  @param room_id: string
+        *  @param instance_id: string
+        *  @param event_name: string
+        *  @param args: any[]
+        */
+       // @ts-ignore
         this.$socket.emit('plugin/trigger', {
+          // @ts-ignore
           room_id: this.env.room.id,
+          // @ts-ignore
           instance_id: this.env.instanceId,
           event_name: event,
           args: args,
         })
+        // @ts-ignore
         console.log(`${this.env.instanceId} ${event}`)
       },
       ...hooks,
       // callback from server
-      callbackFromServer (this: Vue 
-        & Record<string, (...args: any[]) => void> 
-        & { env: { instanceId: string } }
-        , { event, args }: { event: string, args: any[] }
+      callbackFromServer ({ event, args }: { event: string, args: any[] }
       ) {
         // console.log(`[plugin/trigger/${this.env.instanceId}] ${event}(${args})`)
+        // @ts-ignore
         this[`__callback__${event}`](...args)
       },
     }

@@ -47,6 +47,10 @@ import Component from 'vue-class-component'
 
 @Component<Top>({
   sockets: {
+    /**
+    *  response visit event
+    *  @param user_id: string
+    */
     visit (data: { user_id: string }) {
       this.toLobby(data)
     },
@@ -63,6 +67,10 @@ export default class Top extends Vue {
     if (this.$store.getters.localOnly) {
       this.toLobby({ user_id: 'random-uuid' })
     } else {
+      /**
+       *  request visit event
+       *  @param user_name: string
+       */
       this.$socket.emit('visit', { user_name: this.userName })
     }
   }
