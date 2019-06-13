@@ -1,14 +1,16 @@
 from logging import basicConfig, DEBUG, getLogger
 from flask import request, g
-import requests
 
 from ..config import socketio, app
 from .. import utils
+from .. import model
 
 basicConfig()
 mylogger = getLogger(__name__)
 mylogger.setLevel(DEBUG)
 
+
+# todo: 特定の人に送る
 
 @socketio.on('sample')
 @utils.byte_data_to_dict
@@ -21,20 +23,10 @@ def sample(data):
 @utils.byte_data_to_dict
 @utils.function_info_wrapper
 def visit(data):
+    json = {'user': model.User.post({'name': data['userName']})}
+    mylogger.info(json)
 
-    mylogger.debug('- - socket id: {}'.format(request.sid))
-    res = requests.post(
-        'http://'
-        + app.config['DC_URL'] + ':' + app.config['DC_PORT']
-        + '/api/v1/users',
-        json={'name': data['user_name']})
-    res.close()
-
-    if res.status_code >= 400:
-        raise Exception("status code is {}".format(res.status_code))
-
-    mylogger.info(res.json())
-    socketio.emit('visit', data=res.json())
+    socketio.emit('visit', data=json)
 
 
 @socketio.on('lobby')
@@ -42,14 +34,9 @@ def visit(data):
 @utils.check_user
 @utils.function_info_wrapper
 def lobby(data):
-
-    mylogger.debug('- - socket id: {}'.format(request.sid))
-    # all_room = Room.query.all()
-
-    # ret = {'rooms': list(map(Room.__to_dict__, all_room))}
-    # mylogger.info('- - return')
-    # mylogger.info('{}'.format(ret))
-    # socketio.emit('lobby', data=ret)
+    json = model.Room.get()
+    mylogger.info(json)
+    socketio.emit('lobby', data=json)
 
 
 @socketio.on('disconnect')

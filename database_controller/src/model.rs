@@ -16,6 +16,7 @@ pub fn uuid4_str() -> String {
     Insertable, Queryable, AsChangeset
 )]
 #[table_name = "plugin_metas"]
+#[serde(rename_all = "camelCase")]
 pub struct PluginMeta {
     #[serde(default = "uuid4_str", skip_deserializing)]
     pub id: String,
@@ -32,6 +33,7 @@ pub struct PluginMeta {
     Insertable, Queryable, AsChangeset
 )]
 #[table_name = "users"]
+#[serde(rename_all = "camelCase")]
 pub struct User {
     #[serde(default = "uuid4_str", skip_deserializing)]
     pub id: String,
@@ -40,11 +42,12 @@ pub struct User {
 }
 
 #[derive(
-Debug, Clone, Eq, PartialEq, Hash,
-Serialize, Deserialize,
-Insertable, Queryable, AsChangeset
+    Debug, Clone, Eq, PartialEq, Hash,
+    Serialize, Deserialize,
+    Insertable, Queryable, AsChangeset
 )]
 #[table_name = "rooms"]
+#[serde(rename_all = "camelCase")]
 pub struct Room {
     #[serde(default = "uuid4_str", skip_deserializing)]
     pub id: String,
@@ -52,11 +55,12 @@ pub struct Room {
 }
 
 #[derive(
-Debug, Clone, Eq, PartialEq, Hash,
-Serialize, Deserialize,
-Insertable, Queryable, AsChangeset
+    Debug, Clone, Eq, PartialEq, Hash,
+    Serialize, Deserialize,
+    Insertable, Queryable, AsChangeset
 )]
 #[table_name = "active_plugins"]
+#[serde(rename_all = "camelCase")]
 pub struct ActivePlugin {
     #[serde(default = "uuid4_str", skip_deserializing)]
     pub id: String,
