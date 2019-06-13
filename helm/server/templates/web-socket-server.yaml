@@ -36,7 +36,7 @@ spec:
               cpu: 1m
           readinessProbe:
             httpGet:
-              path: /hello
+              path: /healthz
               port: {{ .Values.webSocketServer.port }}
             successThreshold: 1
             initialDelaySeconds: 5
