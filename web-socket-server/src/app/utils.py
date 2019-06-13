@@ -8,8 +8,6 @@ from logging import basicConfig, getLogger, DEBUG
 from flask_socketio import SocketIO
 from flask import request
 
-from .models import User
-
 basicConfig()
 mylogger = getLogger(__name__)
 mylogger.setLevel(DEBUG)
@@ -37,11 +35,12 @@ def check_user(handler: FunctionType):
     def already_registered(*args, **kwargs):
         mylogger.info('-------- check user -----------')
 
-        user = User.query.filter_by(id=request.sid).one_or_none()
-        if user is None:
-            raise RuntimeError("user.id: {} is not defined.".format(request.sid))
+        # todo: check
+        # user = User.query.filter_by(id=request.sid).one_or_none()
+        # if user is None:
+        #     raise RuntimeError("user.id: {} is not defined.".format(request.sid))
 
-        mylogger.debug('- - user is {}'.format(user))
+        # mylogger.debug('- - user is {}'.format(user))
         return handler(*args, **kwargs)
 
     return already_registered
