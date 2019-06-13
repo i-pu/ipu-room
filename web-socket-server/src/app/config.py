@@ -4,17 +4,19 @@ from flask_socketio import SocketIO
 from flask import Flask
 from flask_cors import CORS
 
-from .models import init_db
 
-
-class Development(object):
+class Dev(object):
     DEBUG = True
     SECRET_KEY = 'dev'
+    DC_PORT = os.getenv('DC_PORT')
+    DC_URL = os.getenv('DC_URL')
 
 
-class Staging(object):
-    DEBUG = True
-    SECRET_KEY = 'stage'
+class Prd(object):
+    DEBUG = False
+    SECRET_KEY = 'prd'
+    DC_PORT = os.getenv('DC_PORT')
+    DC_URL = os.getenv('DC_URL')
 
 
 app = Flask(__name__)
@@ -23,10 +25,12 @@ socketio = SocketIO(app)
 
 
 def create_app(env):
-    if env == 'docker-compose':
-        app.config.from_object(Staging)
+    if env == 'prd':
+        app.config.from_object(Prd)
+    elif env == 'dev':
+        app.config.from_object(Dev)
     else:
-        app.config.from_object(Development)
+        raise Exception("env must be set!")
 
     # init
     # with app.app_context():

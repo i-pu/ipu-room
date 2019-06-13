@@ -6,6 +6,7 @@ webSocketServer:
   nodePort: 30008
 
 databaseController:
+  serviceName: dc
   port: 8888
   nodePort: 30888
   configMapName: dc-config

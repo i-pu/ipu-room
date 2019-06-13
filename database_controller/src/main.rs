@@ -21,7 +21,7 @@ mod model;
 
 
 fn main() -> std::io::Result<()> {
-    let env = std::env::var("ENV").unwrap_or(String::new());
+    let env = std::env::var("IPU_ENV").unwrap_or(String::new());
     if env != "prd" {
         dotenv::dotenv().ok();
     }

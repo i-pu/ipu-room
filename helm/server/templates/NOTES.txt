@@ -3,4 +3,8 @@ You run server in local!
 web socket server is running [http://localhost:{{ .Values.webSocketServer.nodePort }}].
 It'll take some time!
 You can check server state by `kubectl get pod -w`.
+
+You should set "isLocal".
+When isLocal: true, you run app in dev.
+When isLocal: false, you run app in prd.
 {{ end }}
