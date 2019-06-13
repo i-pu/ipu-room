@@ -56,10 +56,24 @@ def plugin_trigger(data):
     event_name = data['event_name']
     event_args: List[Any] = data['args']
 
-    user_plugin = config.global_plugins[room_id + '-' + instance_id]
-    event_func = eval('user_plugin.{}'.format(event_name))
-    result = {'record': event_func(*event_args)}
-
     mylogger.info('- - return')
-    mylogger.info('{}'.format(result))
     socketio.emit('plugin/trigger', data=result, room=room_id)
+
+
+@socketio.on('plugin/sync')
+@utils.byte_data_to_dict
+@utils.check_user
+@utils.function_info_wrapper
+def plugin_sync(data):
+    # sync要求が
+    @socketio.on('plugin/clone')
+    @utils.byte_data_to_dict
+    @utils.check_user
+    @utils.function_info_wrapper
+    def plugin_clone(data):
+        # todo: 今いる部屋にいるユーザをランダムに一人選びクローンする
+        # todo: tokenを利用して，有効な相手からクローンが来たかドウかを確認するのもいいかも
+        # todo: clone がsyncのとき以外からアクセスできるようになってしまっているのか
+        socketio.emit('plugin/sync')
+
+    socketio.emit('plugin/clone')

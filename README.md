@@ -26,12 +26,6 @@ cd client && docker-compose up --build
 ```
 
 ### server-side
-### build
-
-```
-docker build -t kafuhamada/web-socket-server web-socket-server/src
-docker build -t kafuhamada/database-controller database-controller
-```
 ### run
 kubernetes on `minikube`  
 not `docker for mac`
@@ -49,10 +43,13 @@ $ eval $(minikube docker-env)
 ```
 以下のコマンドでdocker build する．これ以外は許されない．
 ```bash
-$ docker build -t kafuhamada/database_controller database_contoroller
-$ docker build -t kafuhamada/web-socket-server web-socket-server 
+$ docker build -t kafuhamada/database_controller database_controller
+$ docker build -t kafuhamada/web-socket-server web-socket-server/src 
 ```
+デプロイする前にデータベースのConfigMapを更新する必要がある(煩雑)  
+`database-config.yaml`  
 デプロイ
+
 ```bash
 $ ./helm3-alpha init
 $ ./helm3-alpha install -f ./helm/server/values.yaml -f ./helm/server/values.local.yaml server ./helm/server

@@ -18,12 +18,33 @@ mylogger.setLevel(DEBUG)
 @utils.check_user
 @utils.function_info_wrapper
 def room_create(data):
+    """
+    args:\n
+    room_name: string\n
+    plugins: string\n
+    return:\n
+    room: {
+        id: string\n
+        name: string\n
+        members: [
+            {
+                id: string\n
+                name: string\n
+                room_id: string\n
+            }
+        ]\n
+        plugins: [
+            
+        ]
+
+    }
+    """
     room_name = data['room_name']
+    plugins = data['plugins']
+
     room = Room(name=room_name)
     db.session.add(room)
     db.session.commit()
-
-    plugins = data['plugins']
 
     for plugin_id in plugins:
 
@@ -70,23 +91,6 @@ def room_enter(data):
     mylogger.info('- - return')
     mylogger.info('{}'.format(ret))
     socketio.emit('room/enter', data=ret, room=room_id)
-
-
-@socketio.on('chat')
-@utils.byte_data_to_dict
-@utils.check_user
-@utils.function_info_wrapper
-def chat(data):
-    room_id = data['room_id']
-    user_id = request.sid
-    content = data['content']
-    created_at = data['created_at']
-
-    comment = Comment(room_id, user_id, content, created_at)
-    db.session.add(comment)
-    db.session.commit()
-
-    socketio.emit('chat', data={'comment': comment.__to_dict()}, room=room_id)
 
 
 @socketio.on('room/exit')

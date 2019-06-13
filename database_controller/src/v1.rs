@@ -1,7 +1,20 @@
-use actix_web::{HttpRequest, web};
+use actix_web::{HttpRequest, web, error};
+use failure;
 
 pub mod plugin;
+pub mod user;
+pub mod room;
+pub mod active_plugin;
 
-pub fn hello() -> &'static str {
-    "hello"
+
+pub fn healthz() -> &'static str {
+    "healthz"
 }
+
+// #[derive()]
+// struct MyError {
+//
+// }
+//
+// pub fn sample() -> impl error::ResponseError {
+// }

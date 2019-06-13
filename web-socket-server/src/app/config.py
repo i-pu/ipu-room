@@ -9,28 +9,11 @@ from .models import init_db
 
 class Development(object):
     DEBUG = True
-    SQLITE_PATH = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        'models',
-        'test.db',
-    )
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + SQLITE_PATH
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-
     SECRET_KEY = 'dev'
 
 
 class Staging(object):
     DEBUG = True
-
-    SQLALCHEMY_DATABASE_URI = 'postgresql://{user}:{password}@{host}/{database}'.format(**{
-        'user': os.getenv('POSTGRES_USER'),
-        'password': os.getenv('POSTGRES_PASSWORD'),
-        'host': os.getenv('POSTGRES_HOST'),
-        'database': os.getenv('POSTGRES_DB'),
-    })
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-
     SECRET_KEY = 'stage'
 
 
@@ -46,8 +29,8 @@ def create_app(env):
         app.config.from_object(Development)
 
     # init
-    with app.app_context():
-        init_db(app)
+    # with app.app_context():
+    #     init_db(app)
 
     from . import socketio_handler
     from . import handler
