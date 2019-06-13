@@ -22,7 +22,9 @@ spec:
           image: postgres
           envFrom:
             - configMapRef:
-                name: {{ .Chart.Name }}-postgres-config
+                name: {{ .Chart.Name }}-postgres-env-config
+            - configMapRef:
+                name: {{ .Chart.Name }}-global-env-config
           ports:
             - containerPort: 5432
           resources:
@@ -35,7 +37,7 @@ spec:
       volumes:
         - name: docker-entrypoint-initdb
           configMap:
-            name: {{ .Chart.Name }}-postgres-config
+            name: {{ .Chart.Name }}-postgres-file-config
             items:
               - key: init.sql
                 path: init.sql

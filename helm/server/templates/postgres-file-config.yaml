@@ -1,12 +1,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Chart.Name }}-postgres-config
+  name: {{ .Chart.Name }}-postgres-file-config
 data:
-  POSTGRES_HOST: {{ .Values.postgres.hostname }}
-  POSTGRES_USER: {{ .Values.postgres.user }}
-  POSTGRES_PASSWORD: {{ .Values.postgres.password }}
-  POSTGRES_DB: {{ .Values.postgres.db }}
   init.sql: |
     CREATE OR REPLACE FUNCTION diesel_manage_updated_at(_tbl regclass) RETURNS VOID AS $$
     BEGIN
@@ -34,18 +30,18 @@ data:
         tags varchar(100) not null,
         content text not null
     );
-    
+
     create table users (
         id varchar(40) primary key,
         name varchar(20) not null,
         room_id varchar(40)
     );
-    
+
     create table rooms (
         id varchar(40) primary key,
         name varchar(20) not null
     );
-    
+
     create table active_plugins (
         id varchar(40) primary key,
         plugin_name varchar(20) not null,

@@ -1,9 +1,12 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Chart.Name }}-{{ .Values.databaseController.configMapName }}
+  name: {{ .Chart.Name }}-dc-env-config
 data:
-  ENV: prd
   DATABASE_URL: postgresql://{{ .Values.postgres.user }}:{{ .Values.postgres.password }}@{{ .Values.postgres.hostname }}:5432/{{ .Values.postgres.db }}
+  {{ if .Values.isLocal }}
   RUST_LOG: actix_web=debug
+  {{ else }}
+  RUST_LOG: actix_web=info
+  {{ end }}
   PORT: "{{ .Values.databaseController.port }}"

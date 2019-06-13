@@ -25,9 +25,9 @@ spec:
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
-                name: {{ .Chart.Name }}-postgres-config
+                name: {{ .Chart.Name }}-web-socket-server-env-config
             - configMapRef:
-                name: {{ .Chart.Name }}-web-socket-server-configmap
+                name: {{ .Chart.Name }}-global-env-config
           ports:
             - containerPort: {{ .Values.webSocketServer.port }}
           resources:

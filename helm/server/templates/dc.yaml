@@ -25,9 +25,11 @@ spec:
             - containerPort: {{ .Values.databaseController.port }}
           envFrom:
             - configMapRef:
-                name: {{ .Chart.Name }}-postgres-config
+                name: {{ .Chart.Name }}-postgres-env-config
             - configMapRef:
-                name: {{ .Chart.Name }}-{{ .Values.databaseController.configMapName }}
+                name: {{ .Chart.Name }}-dc-env-config
+            - configMapRef:
+                name: {{ .Chart.Name }}-global-env-config
           readinessProbe:
             initialDelaySeconds: 10
             failureThreshold: 1
@@ -41,7 +43,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: database-controller
+  name: {{ .Values.databaseController.serviceName }}
 spec:
   type: NodePort
   selector:

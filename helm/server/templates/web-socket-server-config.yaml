@@ -1,6 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ .Chart.Name }}-web-socket-server-configmap
-data:
-  PORT: "{{ .Values.webSocketServer.port }}"
