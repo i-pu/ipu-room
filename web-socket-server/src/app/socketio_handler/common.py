@@ -2,7 +2,7 @@ from logging import basicConfig, DEBUG, getLogger
 from flask import request, g
 import requests
 
-from ..config import socketio
+from ..config import socketio, app
 from .. import utils
 
 basicConfig()
@@ -23,17 +23,18 @@ def sample(data):
 def visit(data):
 
     mylogger.debug('- - socket id: {}'.format(request.sid))
-    # user = User(name=data['user_name'], id=request.sid)
-    # requests.get()
-    # db.session.add(user)
-    # db.session.commit()
+    res = requests.post(
+        'http://'
+        + app.config['DC_URL'] + ':' + app.config['DC_PORT']
+        + '/api/v1/users',
+        json={'name': data['user_name']})
+    res.close()
 
-    # mylogger.debug('- - user: {}'.format(user))
+    if res.status_code >= 400:
+        raise Exception("status code is {}".format(res.status_code))
 
-    # ret = {'user': user.__to_dict__()}
-    # mylogger.info('- - return')
-    # mylogger.info('{}'.format(ret))
-    # socketio.emit('visit', data=ret)
+    mylogger.info(res.json())
+    socketio.emit('visit', data=res.json())
 
 
 @socketio.on('lobby')
