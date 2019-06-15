@@ -69,12 +69,12 @@ export const compile = async (
       hooks[event] = function (this: any, ...args: any[]) {
         // emit to server
         this.$socket.emit('plugin/trigger', {
-          room_id: this.env.room.id,
-          instance_id: this.env.instanceId,
-          event_name: event,
+          roomId: this.env.room.id,
+          instanceId: this.env.instanceId,
+          eventName: event,
           args: args,
         })
-        console.log(`${this.env.instanceId} ${event}`)
+        // console.log(`${this.env.instanceId} ${event}`)
         // his.callbackFromServer(event, args)
       }
 
@@ -103,26 +103,26 @@ export const compile = async (
       /**
       *  response plugin/clone event
       *  @event plugin/clone
-      *  @param room_id: string
-      *  @param instance_id: string
+      *  @param roomId: string
+      *  @param instanceId: string
       *  @param from: string
       */
-      [`plugin/${plugin.instanceId}/clone`] ({ room_id, instance_id, from }: { room_id: string, instance_id: string, from: string }) {
+      [`plugin/${plugin.instanceId}/clone`] ({ roomId, instanceId, from }: { roomId: string, instanceId: string, from: string }) {
         console.log(`[Plugin] came clone request from ${from}`)
         /**
         *  request plugin/clone event
         *  @event plugin/clone
-        *  @param room_id: string
-        *  @param instance_id: string
+        *  @param roomId: string
+        *  @param instanceId: string
         *  @param record: Record<string, any>
         *  @param from: string
         */
         // @ts-ignore
         this.$socket.emit('plugin/clone', {
           // @ts-ignore
-          room_id: this.env.room.id,
+          roomId: this.env.room.id,
           // @ts-ignore
-          instance_id: this.env.instanceId,
+          instanceId: this.env.instanceId,
           // @ts-ignore
           record: this.$cloneRecord(),
           from: from
@@ -153,12 +153,12 @@ export const compile = async (
         /**
         *  request plugin/sync event
         *  @event plugin/sync
-        *  @param room_id: string
-        *  @param instance_id: string
+        *  @param roomId: string
+        *  @param instanceId: string
         */
         this.$socket.emit('plugin/sync', {
-          room_id: this.env.room.id,
-          instance_id: this.env.instanceId
+          roomId: this.env.room.id,
+          instanceId: this.env.instanceId
         })
         console.log(`[Plugin] send sync request`)
       } else {
@@ -174,18 +174,18 @@ export const compile = async (
         /**
         *  request plugin/trigger event
         *  @event plugin/trigger
-        *  @param room_id: string
-        *  @param instance_id: string
-        *  @param event_name: string
+        *  @param roomId: string
+        *  @param instanceId: string
+        *  @param eventName: string
         *  @param args: any[]
         */
        // @ts-ignore
         this.$socket.emit('plugin/trigger', {
           // @ts-ignore
-          room_id: this.env.room.id,
+          roomId: this.env.room.id,
           // @ts-ignore
-          instance_id: this.env.instanceId,
-          event_name: event,
+          instanceId: this.env.instanceId,
+          eventName: event,
           args: args,
         })
         // @ts-ignore

@@ -8,7 +8,7 @@ import { Socket } from 'socket.io'
 type ThenArg<T> = T extends Promise<infer U> ? U : T
 export type PluginComponent = ThenArg<ReturnType<typeof compile>> & {
   record: Record<string, any>,
-  $send: (event: string, ...args: any[]) => void,
+  $send: (event: string, options?: { to: string, broadcast: boolean }, ...args: any[]) => void,
   $socket: Socket,
   env: PluginProperties['env']
 }
@@ -34,12 +34,12 @@ export interface Plugin {
 /**
 * Expresses Data of static infomation about a plugin.
 * @param id HTML template
-* @param thumbnail_url
+* @param thumbnailUrls
 * @param content raw script of a plugin
 */
 interface PluginMeta {
   id: string,
-  thumbnail_url: string,
+  thumbnailUrls: string[],
   name: string,
   description: string,
   author: string,
@@ -75,7 +75,7 @@ export type PluginPackage = {
 export interface Room {
   name: string,
   id: string,
-  thumbnail_url: string,
+  thumbnailUrl: string,
   members: User[],
   pluginPackages: Array<PluginPackage>,
   plugins: Array<PluginInstance>,
@@ -87,6 +87,6 @@ export interface Room {
 export interface User {
   name: string,
   id: string,
-  avatar_url: string
+  avatarUrl: string
 }
 

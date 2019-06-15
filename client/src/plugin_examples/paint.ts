@@ -42,10 +42,10 @@ module.exports = {
     }
   },
   meta: {
-    id: 'counter_xxx',
+    id: 'paint-xxxx-12345678',
     // plugin name
     name: 'counter',
-    thumbnail_url: 'https://avatars3.githubusercontent.com/u/50242068?s=200&v=4',
+    thumbnailUrls: ['https://avatars3.githubusercontent.com/u/50242068?s=200&v=4'],
     description: 'aaa',
     author: 'wakame-tech',
     tags: 'a,b,c',

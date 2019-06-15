@@ -6,13 +6,13 @@ module.exports = {
       <v-list id="chat" two-line="two-line" height="50%">
         <v-subheader>チャット</v-subheader>
         <template v-for="comment, i in record.comments">
-          <v-list-tile v-if="comment.type === 'comment'" :key="comment.comment_id" avatar="avatar">
+          <v-list-tile v-if="comment.type === 'comment'" :key="comment.commentId" avatar="avatar">
             <v-list-tile-avatar>
               <img :src="comment.avatar"/>
             </v-list-tile-avatar>
             <v-list-tile-content>
               <v-list-tile-title>{{ comment.text }}</v-list-tile-title>
-              <v-list-tile-sub-title>{{ comment.user_name }}</v-list-tile-sub-title>
+              <v-list-tile-sub-title>{{ comment.userName }}</v-list-tile-sub-title>
             </v-list-tile-content>
           </v-list-tile>
         </template>
@@ -40,9 +40,9 @@ module.exports = {
         this.record.comments.push({
           type: 'comment',
           avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-          comment_id: Math.random().toString(),
-          user_name: 'John',
-          user_id: 'xxxx',
+          commentId: Math.random().toString(),
+          userName: 'John',
+          userId: 'xxxx',
           text: text
         })
       `],
@@ -56,7 +56,7 @@ module.exports = {
     id: 'chat',
     // plugin name
     name: 'chat',
-    thumbnail_url: 'https://avatars3.githubusercontent.com/u/50242068?s=200&v=4',
+    thumbnailUrls: ['https://avatars3.githubusercontent.com/u/50242068?s=200&v=4'],
     description: 'aaa',
     author: 'wakame-tech',
     tags: 'a,b,c',
