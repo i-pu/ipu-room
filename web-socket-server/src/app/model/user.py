@@ -49,10 +49,14 @@ class User:
 
     @classmethod
     def enter(cls, room_id, user_id):
-        import sys
-        print(room_id, user_id, file=sys.stderr, flush=True)
         json = cls.get(user_id)
-        print(json, file=sys.stderr, flush=True)
         json['roomId'] = room_id
         json = cls.update(json['id'], json['name'], json['roomId'])
         return json
+
+    @classmethod
+    def delete(cls, user_id):
+        res = requests.delete(cls.url + '/' + user_id)
+        res.close()
+        if not res.json()['state']:
+            raise Exception('delete user: {} is not success'.format(user_id))

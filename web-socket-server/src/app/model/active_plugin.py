@@ -41,7 +41,6 @@ class ActivePlugin:
 
     @classmethod
     def update(cls, active_plugin_id, name, room_id=None):
-        # todo: fix me
         json = {'id': active_plugin_id, 'name': name, 'roomId': room_id}
         res = requests.put(cls.url, json=json)
         res.close()

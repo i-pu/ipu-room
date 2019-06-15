@@ -1,14 +1,9 @@
 use serde::{Serialize, Deserialize};
-use uuid::Uuid;
 
 use crate::schema::plugins;
 use crate::schema::users;
 use crate::schema::rooms;
 use crate::schema::active_plugins;
-
-pub fn uuid4_str() -> String {
-    Uuid::new_v4().to_string()
-}
 
 #[derive(
     Debug, Clone, Eq, PartialEq, Hash,
@@ -63,4 +58,12 @@ pub struct ActivePlugin {
     pub plugin_id: String,
     pub room_id: String,
     pub enabled: bool,
+}
+
+#[derive(
+    Debug, Clone, Eq, PartialEq, Hash,
+    Serialize, Deserialize,
+)]
+pub struct State {
+    pub state: String,
 }

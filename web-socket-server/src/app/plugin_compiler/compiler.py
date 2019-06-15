@@ -5,17 +5,17 @@
 # =========================
 
 import re
-from textwrap import dedent
 
-def compile(ipl):
+
+def compiler(ipl):
     """
-    extract template and functions from the ipl file, 
+    extract template and functions from the ipl file,
 
     Parameters
     ----------
-    ipl : string
+    ipl : str
         A content of a plugin (*.ipl)
-    
+
     Returns
     -------
     template : string

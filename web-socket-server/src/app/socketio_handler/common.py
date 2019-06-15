@@ -1,7 +1,6 @@
 from logging import basicConfig, DEBUG, getLogger
-from uuid import uuid4
 from flask import request
-from flask_socketio import join_room, leave_room
+from flask_socketio import leave_room
 
 from ..config import socketio
 from .. import utils
@@ -25,8 +24,7 @@ def sample(data):
 def visit(data):
     json = model.User.create(request.sid, data['userName'])
     mylogger.info(json)
-    join_room('user' + request.sid)
-    socketio.emit('visit', data={'user': json}, room='user' + request.sid)
+    socketio.emit('visit', data={'user': json}, room=request.sid)
 
 
 @socketio.on('lobby')
@@ -36,7 +34,7 @@ def visit(data):
 def lobby(data):
     json = model.Room.get()
     mylogger.info(json)
-    socketio.emit('lobby', data={'rooms': json}, room='user' + request.sid)
+    socketio.emit('lobby', data={'rooms': json}, room=request.sid)
 
 
 @socketio.on('disconnect')
@@ -44,14 +42,23 @@ def lobby(data):
 @utils.check_user
 @utils.function_info_wrapper
 def disconnect(data):
-    mylogger.debug('- - socket id: {}'.format(request.sid))
-    leave_room('user' + request.sid)
-    # todo: delete from database
-    # mylogger.debug('- - data: {}'.format(data))
-
-    # user = User.query.filter_by(id=request.sid).one()
-    # db.session.delete(user)
-    # db.session.commit()
+    """
+    データベースから削除して部屋を更新して通知する
+    """
+    room_id = model.User.get(request.sid, None)['roomId']
+    if room_id is not None:
+        leave_room(room_id)
+        model.User.delete(request.sid)
+        room = model.Room.get(room_id)
+        active_plugins = model.ActivePlugin.get(None, room_id)
+        members, plugins = model.Room.make_json_elem(room_id,
+                                                     None,
+                                                     active_plugins)
+        socketio.emit('room/update',
+                      data={'room': {**room,
+                                     'members': members,
+                                     'plugins': plugins}},
+                      room=room_id)
 
 
 @socketio.on_error()
