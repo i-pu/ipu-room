@@ -10,7 +10,7 @@ export type PluginComponent = ThenArg<ReturnType<typeof compile>> & {
   record: Record<string, any>,
   $send: (event: string, options?: { to: string, broadcast: boolean }, ...args: any[]) => void,
   $socket: Socket,
-  env: PluginProperties['env']
+  env: PluginProperties['env'],
 }
 
 /**
@@ -22,12 +22,12 @@ export type PluginComponent = ThenArg<ReturnType<typeof compile>> & {
 */
 export interface Plugin {
   template: string,
-  functions: { 
+  functions: {
     initialize: string[] | string | ((...args: any) => Record<string, any>) } &
     (Record<string, string[] | string | ((this: PluginComponent, ...args: any) => void)>),
   instanceId: string,
   config: {
-    enabled: boolean
+    enabled: boolean,
   }
 }
 
@@ -59,12 +59,12 @@ export interface PluginProperties {
   meta: PluginMeta
 }
 
-export type PluginInstance = {
+export interface PluginInstance {
   component: Component,
   properties: PluginProperties,
 }
 
-export type PluginPackage = {
+export interface PluginPackage {
   plugin: Plugin,
   meta: PluginMeta,
 }
@@ -77,8 +77,8 @@ export interface Room {
   id: string,
   thumbnailUrl: string,
   members: User[],
-  pluginPackages: Array<PluginPackage>,
-  plugins: Array<PluginInstance>,
+  pluginPackages: PluginPackage[],
+  plugins: PluginInstance[],
 }
 
 /**

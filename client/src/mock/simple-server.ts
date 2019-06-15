@@ -19,19 +19,19 @@ app.listen(1234, () => {
 
 const stringifyWithFunctions = (data: object): string => {
   return JSON.stringify(data, (k, v) => typeof v === 'function'
-    ? v.toString() 
-    : v
+    ? v.toString()
+    : v,
   )
 }
 
 const parseWithFunctions = <T>(data: string): T => {
   return JSON.parse(
     data,
-    function (k, v) { 
+    (k, v) => {
       return typeof v === 'string' && v.match(/^function/)
         ? Function.call(null, `return ${v}`)()
         : v
-    }
+    },
   )
 }
 
@@ -54,35 +54,35 @@ const roomList: Record<string, Room> = {
     thumbnailUrl: 'https://public.potaufeu.asahi.com/686b-p/picture/12463073/5c4a362cea9cb2f5d90b60e2f2a6c85f.jpg',
     members: [],
     pluginPackages: [
-      activatePlugin(Counter), 
+      activatePlugin(Counter),
       // activatePlugin(Counter),
       // activatePlugin(Chat),
       // activatePlugin(Player),
-      activatePlugin(Paint)
+      activatePlugin(Paint),
     ],
-    plugins: []
-  }
+    plugins: [],
+  },
 }
 
 // plugin-id -> pluginPackage
 const pluginMarket: Record<string, PluginPackage> = {
   'counter-0123-abcdef-4567': Counter,
-  'paint-xxxx-12345678': Paint
+  'paint-xxxx-12345678': Paint,
 }
 
 // socketId -> roomId
 const sessions: Record<string, {
   name: string,
   id: string,
-  roomId: string | null
+  roomId: string | null,
 }> = {}
 
-io.on('connection', socket => {
+io.on('connection', (socket) => {
   socket.on('visit', ({ userName }) => {
     sessions[socket.id] = {
       name: userName,
       id: socket.id,
-      roomId: ''
+      roomId: '',
     }
     socket.emit('visit', { userId: socket.id })
   })
@@ -98,8 +98,8 @@ io.on('connection', socket => {
 
     const pluginPackages = pluginIds
       .filter((id: string) => Object.keys(pluginMarket).includes(id))
-      .map(id => pluginMarket[id])
-      .map(pluginPackage => activatePlugin(pluginPackage))
+      .map((id) => pluginMarket[id])
+      .map((pluginPackage) => activatePlugin(pluginPackage))
 
     roomList[roomId] = {
       name: roomName,
@@ -107,7 +107,7 @@ io.on('connection', socket => {
       thumbnailUrl: '',
       members: [],
       pluginPackages,
-      plugins: []
+      plugins: [],
     }
     socket.emit('room/make', { room: roomList[roomId] })
   })
@@ -116,7 +116,7 @@ io.on('connection', socket => {
     console.log(`${color.black.bgWhite('[room/enter]')} ROOM ${color.gray(roomId)} ${color.green.bold('+')} ${socket.id}`)
 
     if (!roomList[roomId]) {
-      throw `Room ${roomId} does not exist`
+      throw new Error(`Room ${roomId} does not exist`)
     }
 
     const room = roomList[roomId]
@@ -128,9 +128,9 @@ io.on('connection', socket => {
     socket.join(roomId)
     sessions[socket.id].roomId = roomId
 
-    if (!room.members.map(m => m.id).includes(socket.id)) {
+    if (!room.members.map((m) => m.id).includes(socket.id)) {
       room.members.push({
-        id: socket.id, name: sessions[socket.id].name, avatarUrl: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460'
+        id: socket.id, name: sessions[socket.id].name, avatarUrl: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460',
       })
     }
 
@@ -156,7 +156,7 @@ io.on('connection', socket => {
   })
 
   socket.on('plugin/sync', ({ roomId, instanceId }) => {
-    const randomId = roomList[roomId].members.map(m => m.id).filter(id => id !== socket.id)[0]
+    const randomId = roomList[roomId].members.map((m) => m.id).filter((id) => id !== socket.id)[0]
     console.log(`${color.black.bgWhite('[plugin/sync]')} sync request ${color.gray(socket.id)} -> ${color.gray(randomId)}`)
     io.to(randomId).emit(`plugin/${instanceId}/clone`, { roomId, instanceId, from: socket.id })
   })
@@ -180,7 +180,7 @@ io.on('connection', socket => {
 
   const leaveRoom = (roomId: string) => {
     console.log(`${color.black.bgWhite('[room/exit]')} ${color.gray(roomId)} ${color.red.bold('-')} ${color.gray(socket.id)}`)
-    roomList[roomId].members = roomList[roomId].members.filter(m => m.id !== socket.id)
+    roomList[roomId].members = roomList[roomId].members.filter((m) => m.id !== socket.id)
 
     sessions[socket.id].roomId = ''
 

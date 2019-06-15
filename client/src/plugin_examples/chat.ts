@@ -49,8 +49,8 @@ module.exports = {
     },
     instanceId: '',
     config: {
-      enabled: true
-    }
+      enabled: true,
+    },
   },
   meta: {
     id: 'chat',
@@ -61,7 +61,7 @@ module.exports = {
     author: 'wakame-tech',
     tags: 'a,b,c',
     content: '<html></html>',
-  }
+  },
 } as {
-  plugin: Plugin, meta: PluginMeta
+  plugin: Plugin, meta: PluginMeta,
 }

@@ -93,7 +93,7 @@ export default class PluginUploadForm extends Vue {
     description: '',
     author: '',
     tags: '',
-    content: ''
+    content: '',
   }
 
   public onFileSelected (event: Event) {

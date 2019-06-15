@@ -35,7 +35,7 @@ import { boot } from '@/logic/loader'
       this.room = room
       await this.refresh()
       this.$socket.emit('room/enter', { roomId: this.room.id })
-    }
+    },
   },
   watch: {
     async 'innerPluginPackage.plugin.functions' () {
@@ -43,10 +43,14 @@ import { boot } from '@/logic/loader'
     },
     async 'innerPluginPackage.plugin.template' () {
       await this.refresh()
-    }
-  }
+    },
+  },
 })
 export default class PluginEditor extends Vue {
+
+  private get prettifiedFunctions (): string {
+    return JSON.stringify(this.innerPluginPackage.plugin.functions, null, '\t')
+  }
   @Prop() public pluginPackage!: PluginPackage
   private snackbar: boolean = false
   private snackbarMessage: string = ''
@@ -57,14 +61,6 @@ export default class PluginEditor extends Vue {
 
   private editableFunctions: string = this.prettifiedFunctions
   private editableTempate: string = _.clone(this.innerPluginPackage.plugin.template)
-
-  async mounted () {
-    this.$socket.emit('room/make', { roomName: '部屋', pluginIds: [ this.innerPluginPackage.meta.id ] }) 
-  }
-
-  private get prettifiedFunctions (): string {
-    return JSON.stringify(this.innerPluginPackage.plugin.functions, null, "\t")
-  }
 
   private syncFunctions = _.debounce(async (e: Event) => {
     try {
@@ -78,6 +74,10 @@ export default class PluginEditor extends Vue {
   private syncTemplate = _.debounce(async (e: Event) => {
     this.innerPluginPackage.plugin.template = (e.target as HTMLInputElement).innerText
   }, 1000)
+
+  public async mounted () {
+    this.$socket.emit('room/make', { roomName: '部屋', pluginIds: [ this.innerPluginPackage.meta.id ] })
+  }
 
   private async refresh () {
     try {

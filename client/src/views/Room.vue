@@ -1,21 +1,17 @@
 <template lang="pug">
-  div(v-if="room")
-    v-container(fluid grid-list-md text-xs-center)
-      v-layout(row wrap)
-        v-flex(d-flex xs12 sm12 md12)
-          v-toolbar(dense)
-            v-toolbar-title {{ room.name }}
-            v-spacer
-            settings(:room="room")
-            v-btn(color="error" @click="requestExitRoom") 退出
+  v-layout(row wrap v-if="room")
+    v-flex(d-flex xs12 sm12 md12)
+      v-toolbar(dense)
+        v-toolbar-title {{ room.name }}
+        v-spacer
+        settings(:room="room")
+        v-btn(color="error" @click="requestExitRoom") 退出
 
     desk#desk(:plugins="room.plugins")
 
-    v-container(fluid grid-list-md text-xs-center)
-      v-layout(row wrap)
-        v-flex(d-flex xs12 sm12 md12)
-          v-card(white)
-            status#status(:members="room.members")
+    v-flex(d-flex xs12 sm12 md12)
+      v-card(white)
+        status#status(:members="room.members")
 </template>
 
 <script lang="ts">
@@ -60,14 +56,13 @@ export default class RoomView extends Vue {
     this.room.plugins = []
 
     for (const pluginPackage of this.room.pluginPackages) {
-      const instance = await boot(pluginPackage, { room: this.room })
-        .catch(error => {
-          console.error(error)
-        })
-        .then(instance => {
-          // push reactively
-          this.$set(this.room!!, 'plugins', [...this.room!!.plugins, instance])
-        })
+      try {
+        const instance = await boot(pluginPackage, { room: this.room })
+        // push reactively
+        this.$set(this.room, 'plugins', [...this.room.plugins, instance])
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 
