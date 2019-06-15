@@ -24,15 +24,17 @@
 部屋ID
 - instanceId: string
 プラグインインスタンスID
-- eventName: string
-イベント名
-- args: any[]
-引数
+- data: クライアント同士で用いるデータ
+    - event: string
+    イベント名
+    - args: any[]
+    引数
 ## server to client
-- event: string
-イベント名
-- args: any[]
-引数
+- data: クライアント同士で用いるデータ
+    - event: string
+    イベント名
+    - args: any[]
+    引数
 
 # `plugin/sync`
 ## client to server
