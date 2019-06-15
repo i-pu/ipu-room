@@ -26,12 +26,12 @@ module.exports = {
       `],
       pause: [`
         this.$refs.youtube.player.pauseVideo()
-      `]
+      `],
     },
     instanceId: 'a',
     config: {
-      enabled: true
-    }
+      enabled: true,
+    },
   },
   meta: {
     id: 'counter_xxx',
@@ -42,7 +42,7 @@ module.exports = {
     author: 'wakame-tech',
     tags: 'a,b,c',
     content: '<html></html>',
-  }
+  },
 } as {
-  plugin: Plugin, meta: PluginMeta
+  plugin: Plugin, meta: PluginMeta,
 }

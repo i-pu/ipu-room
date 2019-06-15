@@ -37,8 +37,8 @@ const router = new Router({
     {
       path: '/market/:pluginId',
       name: 'PluginDetail',
-      component: PluginDetail
-    }
+      component: PluginDetail,
+    },
   ],
 })
 

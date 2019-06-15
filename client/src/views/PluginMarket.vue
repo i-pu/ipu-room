@@ -83,13 +83,13 @@ interface MarketSortKey { name: string, icon: string, query: string }
   watch: {
     searchText: _.debounce((v: string) => {
       console.log(v)
-    }, 1500)
+    }, 1500),
   },
   filters: {
     less (s: string): string {
       return s.slice(0, 14) + '...'
-    }
-  }
+    },
+  },
 })
 export default class PluginMarket extends Vue {
   private drawer: boolean = false
@@ -99,11 +99,11 @@ export default class PluginMarket extends Vue {
     { name: 'A', icon: 'home' },
     { name: 'B', icon: 'home' },
     { name: 'C', icon: 'home' },
-    { name: 'D', icon: 'home' }
+    { name: 'D', icon: 'home' },
   ]
   private sortKeys: MarketSortKey[] = [
     { name: '人気順', icon: 'sort_by_alpha', query: '' },
-    { name: '新着順', icon: 'sort_by_alpha', query: '' }
+    { name: '新着順', icon: 'sort_by_alpha', query: '' },
   ]
 
   private category: MarketCategory = this.categories[0]

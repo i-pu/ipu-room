@@ -51,7 +51,7 @@ export default class RoomCreateForm extends Vue {
   private fetchPluginData () {
     this.pluginIds = [
       'counter-0123-abcdef-4567',
-      'paint-xxxx-12345678'
+      'paint-xxxx-12345678',
     ]
     // TODO
     // fetch(`${process.env.VUE_APP_API_ORIGIN}/plugin`)

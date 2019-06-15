@@ -44,7 +44,7 @@ import { PluginPackage } from '../model'
 const Counter = require('@/plugin_examples/counter')
 
 @Component({
-  components: { PluginEditor }
+  components: { PluginEditor },
 })
 export default class PluginDetail extends Vue {
   private pluginPackage: PluginPackage = _.clone(Counter)

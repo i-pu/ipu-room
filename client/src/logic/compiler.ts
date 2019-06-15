@@ -36,7 +36,7 @@ const fetchPreinstalledModules = async () => {
   // @ts-ignore
   modules.player = (await import('vue-youtube')).Youtube
 
-  modules['VueP5'] = VueP5
+  modules.VueP5 = VueP5
 
   return modules
 }
@@ -61,24 +61,29 @@ export const compile = async (
   const addonComponents: Record<string, Component> = await fetchPreinstalledModules()
 
   const hooks: Record<string, (...args: any) => void> = {}
-  for (const [event, fnlike] of Object.entries<string[] | string | ((...args: any[]) => void)>(plugin.functions)) {
+  for (const [event, fnlike] of Object.entries<
+    string[] | string | ((...args: any[]) => void)
+  >(plugin.functions)) {
     if (event.startsWith('_')) {
-      hooks[event] = typeof(fnlike) === 'string' ? eval(`(function ${fnlike})`) : new Function(...<string[]>fnlike) as (...args: any[]) => void
-    }
-    else {
+      hooks[event] = typeof(fnlike) === 'string'
+        ? eval(`(function ${fnlike})`)
+        : new Function(...fnlike as string[]) as (...args: any[]) => void
+    } else {
       hooks[event] = function (this: any, ...args: any[]) {
         // emit to server
         this.$socket.emit('plugin/trigger', {
           roomId: this.env.room.id,
           instanceId: this.env.instanceId,
           eventName: event,
-          args: args,
+          args,
         })
         // console.log(`${this.env.instanceId} ${event}`)
         // his.callbackFromServer(event, args)
       }
 
-      hooks[`__callback__${event}`] = typeof(fnlike) === 'string' ? eval(`(function ${fnlike})`) : new Function(...<string[]>fnlike) as (...args: any[]) => void
+      hooks[`__callback__${event}`] = typeof(fnlike) === 'string'
+        ? eval(`(function ${fnlike})`)
+        : new Function(...fnlike as string[]) as (...args: any[]) => void
     }
   }
 
@@ -107,7 +112,9 @@ export const compile = async (
       *  @param instanceId: string
       *  @param from: string
       */
-      [`plugin/${plugin.instanceId}/clone`] ({ roomId, instanceId, from }: { roomId: string, instanceId: string, from: string }) {
+      [`plugin/${plugin.instanceId}/clone`] ({ roomId, instanceId, from }: {
+        roomId: string, instanceId: string, from: string,
+      }) {
         console.log(`[Plugin] came clone request from ${from}`)
         /**
         *  request plugin/clone event
@@ -125,7 +132,7 @@ export const compile = async (
           instanceId: this.env.instanceId,
           // @ts-ignore
           record: this.$cloneRecord(),
-          from: from
+          from,
         })
       },
       [`plugin/${plugin.instanceId}/trigger`] (payload: { event: string, args: [] }) {
@@ -158,7 +165,7 @@ export const compile = async (
         */
         this.$socket.emit('plugin/sync', {
           roomId: this.env.room.id,
-          instanceId: this.env.instanceId
+          instanceId: this.env.instanceId,
         })
         console.log(`[Plugin] send sync request`)
       } else {
@@ -186,19 +193,19 @@ export const compile = async (
           // @ts-ignore
           instanceId: this.env.instanceId,
           eventName: event,
-          args: args,
+          args,
         })
         // @ts-ignore
         console.log(`${this.env.instanceId} ${event}`)
       },
       ...hooks,
       // callback from server
-      callbackFromServer ({ event, args }: { event: string, args: any[] }
+      callbackFromServer ({ event, args }: { event: string, args: any[] },
       ) {
         // console.log(`[plugin/trigger/${this.env.instanceId}] ${event}(${args})`)
         // @ts-ignore
         this[`__callback__${event}`](...args)
       },
-    }
+    },
   })
 }
