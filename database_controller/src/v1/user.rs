@@ -17,7 +17,11 @@ pub fn get_all_users(pool: web::Data<Pool>) -> web::Json<Vec<User>> {
 
 pub fn get_user(path: web::Path<String>, pool: web::Data<Pool>) -> web::Json<User> {
     use crate::schema::users::dsl::users;
-    web::Json(users.find(path.into_inner()).first(&pool.get().unwrap()).unwrap())
+    let id = path.into_inner();
+    let user = users.find(&id).first(&pool.get().unwrap())
+        .expect(&format!("not found user: {:?}", id));
+    println!("{:#?}", user);
+    web::Json(user)
 }
 
 /// create user
@@ -26,28 +30,28 @@ pub fn post_user(json: web::Json<User>, pool: web::Data<Pool>)
 {
     /// todo: 返り値をResult にする
     use crate::schema::users::dsl::users;
-    let p: User =
+    let user: User =
         diesel::insert_into(users)
             .values(&json.0)
             .get_result(&pool.get().unwrap())
             .unwrap();
 
-    println!("{:#?}", p);
-    web::Json(p)
+    println!("{:#?}", user);
+    web::Json(user)
 }
 
 /// update user
-pub fn put_user(path: web::Path<String>, json: web::Json<User>, pool: web::Data<Pool>)
+pub fn put_user(json: web::Json<User>, pool: web::Data<Pool>)
                   -> web::Json<User>
 {
     use crate::schema::users::{dsl::*};
-    let pi: User = User { id: path.into_inner(), .. json.0};
-    let p: User =
-        diesel::update(users.find(pi.id.clone()))
-            .set(pi)
+    let mut new_user: User = json.0;
+    new_user =
+        diesel::update(users.find(new_user.id.clone()))
+            .set(new_user)
             .get_result(&pool.get().unwrap())
             .unwrap();
 
-    println!("{:#?}", p);
-    web::Json(p)
+    println!("{:#?}", new_user);
+    web::Json(new_user)
 }

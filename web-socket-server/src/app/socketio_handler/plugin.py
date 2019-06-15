@@ -1,13 +1,31 @@
 from logging import basicConfig, DEBUG, getLogger
+from uuid import uuid4
 
-from .. import config
 from ..config import socketio
 from .. import utils
-
+from .. import model
 
 basicConfig()
 mylogger = getLogger(__name__)
 mylogger.setLevel(DEBUG)
+
+
+@socketio.on('plugin/register')
+@utils.byte_data_to_dict
+@utils.check_user
+@utils.function_info_wrapper
+def plugin_register(data):
+    json = model.Plugin.create(str(uuid4()),
+                               data['name'],
+                               data['description'],
+                               data['author'],
+                               data['tags'],
+                               data['content'])
+    print(json, flush=True)
+    if 'id' in json:
+        socketio.emit('plugin/register', data={'state': True})
+    else:
+        socketio.emit('plugin/register', data={'state': False})
 
 
 @socketio.on('plugin/info')

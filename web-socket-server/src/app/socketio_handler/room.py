@@ -1,11 +1,12 @@
 from logging import basicConfig, DEBUG, getLogger
+from uuid import uuid4
 
 from flask_socketio import join_room, leave_room
-from flask import request, g
+from flask import request
 
-from .. import config
 from ..config import socketio
 from .. import utils
+from .. import model
 
 basicConfig()
 mylogger = getLogger(__name__)
@@ -17,36 +18,17 @@ mylogger.setLevel(DEBUG)
 @utils.check_user
 @utils.function_info_wrapper
 def room_create(data):
-    basicConfig()
-    # room_name = data['room_name']
-    # plugins = data['plugins']
+    room_name = data['roomName']
+    plugins = data['plugins']
 
-    # room = Room(name=room_name)
-    # db.session.add(room)
-    # db.session.commit()
+    json = model.Room.create(str(uuid4()), room_name, plugins)
 
-    # for plugin_id in plugins:
-
-    #     try:
-    #         plugin = Plugin.query.filter_by(id=plugin_id).one()
-    #     except Exception as e:
-    #         mylogger.error(e)
-    #         raise e
-
-    #     active_plugin = ActivePlugin(room_id=room.id, plugin_id=plugin_id)
-    #     db.session.add(active_plugin)
-    #     db.session.commit()
-
-    #     exec(plugin.python)
-
-    #     config.global_plugins[room.id + '-' + active_plugin.id] = eval('Plugin()')
-    #     mylogger.info('--------------- plugins ---------------')
-    #     mylogger.info(config.global_plugins[room.id + '-' + active_plugin.id])
-
-    # ret = {'room': room.__to_dict__()}
-    # mylogger.info('- - return')
-    # mylogger.info('{}'.format(ret))
-    # socketio.emit('room/create', data=ret)
+    members = []
+    plugins = []
+    socketio.emit('room/create',
+                  data={'room': {**json,
+                                 'members': members,
+                                 'plugins': plugins}})
 
 
 @socketio.on('room/enter')
@@ -54,23 +36,20 @@ def room_create(data):
 @utils.check_user
 @utils.function_info_wrapper
 def room_enter(data):
-    basicConfig()
-#     room_id = data['room_id']
-#     room = Room.query.filter_by(id=room_id).one_or_none()
-#     if room is None:
-#         raise RuntimeError('room_id: {} does not exist'.format(room_id))
-#
-#     join_room(room_id)
-#
-#     user = User.query.filter_by(id=request.sid).one_or_none()
-#
-#     room.members.append(user)
-#     db.session.commit()
-#
-#     ret = {'room': room.__to_dict__()}
-#     mylogger.info('- - return')
-#     mylogger.info('{}'.format(ret))
-#     socketio.emit('room/enter', data=ret, room=room_id)
+    room_id = data['roomId']
+    join_room(room_id)
+    model.Room.enter(room_id, request.sid)
+    print("ok enter", flush=True)
+    json = model.Room.get(room_id)
+    print("ok get", flush=True)
+    members = []
+    plugins = []
+    # todo: maybe room_update
+    socketio.emit('room/enter',
+                  data={'room': {**json,
+                                 'members': members,
+                                 'plugins': plugins}},
+                  room=room_id)
 
 
 @socketio.on('room/exit')

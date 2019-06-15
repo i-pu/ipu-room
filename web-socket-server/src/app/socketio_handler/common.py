@@ -1,7 +1,9 @@
 from logging import basicConfig, DEBUG, getLogger
-from flask import request, g
+from uuid import uuid4
+from flask import request
+from flask_socketio import join_room, leave_room
 
-from ..config import socketio, app
+from ..config import socketio
 from .. import utils
 from .. import model
 
@@ -9,8 +11,6 @@ basicConfig()
 mylogger = getLogger(__name__)
 mylogger.setLevel(DEBUG)
 
-
-# todo: 特定の人に送る
 
 @socketio.on('sample')
 @utils.byte_data_to_dict
@@ -23,10 +23,10 @@ def sample(data):
 @utils.byte_data_to_dict
 @utils.function_info_wrapper
 def visit(data):
-    json = {'user': model.User.post({'name': data['userName']})}
+    json = model.User.create(request.sid, data['userName'])
     mylogger.info(json)
-
-    socketio.emit('visit', data=json)
+    join_room('user' + request.sid)
+    socketio.emit('visit', data={'user': json}, room='user' + request.sid)
 
 
 @socketio.on('lobby')
@@ -36,7 +36,7 @@ def visit(data):
 def lobby(data):
     json = model.Room.get()
     mylogger.info(json)
-    socketio.emit('lobby', data=json)
+    socketio.emit('lobby', data={'rooms': json}, room='user' + request.sid)
 
 
 @socketio.on('disconnect')
@@ -45,6 +45,8 @@ def lobby(data):
 @utils.function_info_wrapper
 def disconnect(data):
     mylogger.debug('- - socket id: {}'.format(request.sid))
+    leave_room('user' + request.sid)
+    # todo: delete from database
     # mylogger.debug('- - data: {}'.format(data))
 
     # user = User.query.filter_by(id=request.sid).one()

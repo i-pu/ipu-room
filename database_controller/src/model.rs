@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 use uuid::Uuid;
 
-use crate::schema::plugin_metas;
+use crate::schema::plugins;
 use crate::schema::users;
 use crate::schema::rooms;
 use crate::schema::active_plugins;
@@ -15,10 +15,9 @@ pub fn uuid4_str() -> String {
     Serialize, Deserialize,
     Insertable, Queryable, AsChangeset
 )]
-#[table_name = "plugin_metas"]
+#[table_name = "plugins"]
 #[serde(rename_all = "camelCase")]
-pub struct PluginMeta {
-    #[serde(default = "uuid4_str", skip_deserializing)]
+pub struct Plugin {
     pub id: String,
     pub name: String,
     pub description: String,
@@ -35,7 +34,6 @@ pub struct PluginMeta {
 #[table_name = "users"]
 #[serde(rename_all = "camelCase")]
 pub struct User {
-    #[serde(default = "uuid4_str", skip_deserializing)]
     pub id: String,
     pub name: String,
     pub room_id: Option<String>,
@@ -49,7 +47,6 @@ pub struct User {
 #[table_name = "rooms"]
 #[serde(rename_all = "camelCase")]
 pub struct Room {
-    #[serde(default = "uuid4_str", skip_deserializing)]
     pub id: String,
     pub name: String,
 }
@@ -62,8 +59,8 @@ pub struct Room {
 #[table_name = "active_plugins"]
 #[serde(rename_all = "camelCase")]
 pub struct ActivePlugin {
-    #[serde(default = "uuid4_str", skip_deserializing)]
     pub id: String,
-    pub plugin_name: String,
+    pub plugin_id: String,
     pub room_id: String,
+    pub enabled: bool,
 }

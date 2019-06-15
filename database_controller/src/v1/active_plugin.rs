@@ -38,17 +38,16 @@ pub fn post_active_plugin(json: web::Json<ActivePlugin>, pool: web::Data<Pool>)
 }
 
 /// update active_plugin
-pub fn put_active_plugin(path: web::Path<String>, json: web::Json<ActivePlugin>, pool: web::Data<Pool>)
+pub fn put_active_plugin(json: web::Json<ActivePlugin>, pool: web::Data<Pool>)
                   -> web::Json<ActivePlugin>
 {
     use crate::schema::active_plugins::{dsl::*};
-    let pi: ActivePlugin = ActivePlugin { id: path.into_inner(), .. json.0};
-    let p: ActivePlugin =
-        diesel::update(active_plugins.find(pi.id.clone()))
-            .set(pi)
+    let mut ap: ActivePlugin = json.0;
+    ap = diesel::update(active_plugins.find(ap.id.clone()))
+            .set(ap)
             .get_result(&pool.get().unwrap())
             .unwrap();
 
-    println!("{:#?}", p);
-    web::Json(p)
+    println!("{:#?}", ap);
+    web::Json(ap)
 }
