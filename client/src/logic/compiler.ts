@@ -72,8 +72,11 @@ export const compile = async (
           this.$socket.emit('plugin/trigger', {
             roomId: this.env.room.id,
             instanceId: this.env.instanceId,
-            eventName: event,
-            args,
+            data: {
+              event,
+              args,
+            },
+            options: {}
           })
         }
         hooks[`__callback__${event}`] = fn
@@ -185,7 +188,7 @@ export const compile = async (
           *  @event plugin/trigger
           *  @param roomId: string
           *  @param instanceId: string
-          *  @param eventName: string
+          *  @param event: string
           *  @param args: any[]
           */
         // @ts-ignore
@@ -194,8 +197,10 @@ export const compile = async (
             roomId: this.env.room.id,
             // @ts-ignore
             instanceId: this.env.instanceId,
-            eventName: event,
-            args,
+            data: {
+              event,
+              args
+            },
             options
           })
           // @ts-ignore

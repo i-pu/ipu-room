@@ -89,7 +89,7 @@ io.on('connection', (socket) => {
     socket.emit('room/make', { room: roomList[roomId] })
   })
 
-  socket.on('room/enter', ({ roomId }) => {
+  socket.on('room/enter', ({ roomId }: { roomId: string }) => {
     console.log(`${color.black.bgWhite('[room/enter]')} ROOM ${color.gray(roomId)} ${color.green.bold('+')} ${socket.id}`)
 
     if (!roomList[roomId]) {
@@ -127,23 +127,28 @@ io.on('connection', (socket) => {
   // socket.on('plugin/event/load', ({}) => {})
   // socket.on('plugin/event/destroy', ({}) => {})
 
-  socket.on('plugin/trigger', ({ roomId, instanceId, eventName, args}) => {
-    console.log(`${color.black.bgWhite('[plugin/trigger]')} ROOM ${color.gray(roomId)} ${color.yellow(instanceId)} ${color.blue(eventName)}`)
-    io.in(roomId).emit(`plugin/${instanceId}/trigger`, { event: eventName, args })
+  socket.on('plugin/trigger', ({ roomId, instanceId, data, options }: {
+    roomId: string, instanceId: string, data: { event: string, args: any[] }, options: {}
+  }) => {
+    const { event, args } = data
+    console.log(`${color.black.bgWhite('[plugin/trigger]')} ROOM ${color.gray(roomId)} ${color.yellow(instanceId)} ${color.blue(event)}`)
+    io.in(roomId).emit(`plugin/${instanceId}/trigger`, { event, args })
   })
 
-  socket.on('plugin/sync', ({ roomId, instanceId }) => {
+  socket.on('plugin/sync', ({ roomId, instanceId }: { roomId: string, instanceId: string }) => {
     const randomId = roomList[roomId].members.map((m) => m.id).filter((id) => id !== socket.id)[0]
     console.log(`${color.black.bgWhite('[plugin/sync]')} sync request ${color.gray(socket.id)} -> ${color.gray(randomId)}`)
     io.to(randomId).emit(`plugin/${instanceId}/clone`, { roomId, instanceId, from: socket.id })
   })
 
-  socket.on('plugin/clone', ({ roomId, instanceId, record, from }) => {
+  socket.on('plugin/clone', ({ roomId, instanceId, record, from }: {
+    roomId: string, instanceId: string, record: Record<string, any>, from: string
+  }) => {
     console.log(`${color.black.bgWhite('[plugin/clone]')} clone to ${color.gray(socket.id)} -> ${color.gray(from)}`)
     io.to(from).emit(`plugin/${instanceId}/sync`, { record })
   })
 
-  socket.on('room/exit', ({ roomId }) => {
+  socket.on('room/exit', ({ roomId }: { roomId: string }) => {
     leaveRoom(roomId)
     socket.emit('room/exit')
   })
