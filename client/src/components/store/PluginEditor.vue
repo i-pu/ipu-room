@@ -56,7 +56,7 @@ import { boot } from '@/logic/loader'
     async 'room/make' ({ room }: { room: Room }) {
       this.room = room
       this.instance = await boot(this.room.pluginPackages[0], { room: this.room })
-      this.$socket.emit('room/enter', { room_id: this.room.id })
+      this.$socket.emit('room/enter', { roomId: this.room.id })
     }
   }
 })

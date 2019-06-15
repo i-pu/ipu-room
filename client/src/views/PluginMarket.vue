@@ -55,7 +55,7 @@
 
         v-list-tile(avatar ripple @click="$router.push(`/market/${pluginOverview.id}`)" v-for="pluginOverview in pluginOverviews")
           v-list-tile-avatar
-            img(:src="pluginOverview.thumbnail_url")
+            img(:src="pluginOverview.thumbnailUrls[0]")
           v-list-tile-content
             v-list-tile-title {{ pluginOverview.name }}
             v-list-tile-sub-title {{ pluginOverview.description }}

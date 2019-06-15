@@ -49,9 +49,9 @@ import Component from 'vue-class-component'
   sockets: {
     /**
     *  response visit event
-    *  @param user_id: string
+    *  @param userId: string
     */
-    visit (data: { user_id: string }) {
+    visit (data: { userId: string }) {
       this.toLobby(data)
     },
   },
@@ -65,19 +65,19 @@ export default class Top extends Vue {
 
   private requestToLobby () {
     if (this.$store.getters.localOnly) {
-      this.toLobby({ user_id: 'random-uuid' })
+      this.toLobby({ userId: 'random-uuid' })
     } else {
       /**
        *  request visit event
-       *  @param user_name: string
+       *  @param userName: string
        */
-      this.$socket.emit('visit', { user_name: this.userName })
+      this.$socket.emit('visit', { userName: this.userName })
     }
   }
 
-  private toLobby ({ user_id }: { user_id: string }) {
+  private toLobby ({ userId }: { userId: string }) {
     this.$store.dispatch('setUserName', this.userName)
-    this.$store.dispatch('setUserId', user_id)
+    this.$store.dispatch('setUserId', userId)
     this.$router.push('/lobby')
   }
 }

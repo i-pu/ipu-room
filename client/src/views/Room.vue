@@ -57,9 +57,9 @@ export default class RoomView extends Vue {
     /**
     *  request room/enter event
     *  @event room/enter
-    *  @param room_id: string
+    *  @param roomId: string
     */
-    this.$socket.emit('room/enter', { room_id: this.roomId })
+    this.$socket.emit('room/enter', { roomId: this.roomId })
   }
 
   /**
@@ -89,9 +89,9 @@ export default class RoomView extends Vue {
     /**
     *  request room/exit event
     *  @event room/exit
-    *  @param room_id: string
+    *  @param roomId: string
     */
-    this.$socket.emit('room/exit', { room_id: this.roomId})
+    this.$socket.emit('room/exit', { roomId: this.roomId})
   }
 
   /**

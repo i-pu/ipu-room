@@ -1,13 +1,30 @@
 <template lang="pug">
-  div
+  v-layout(row wrap)
     v-toolbar(app)
+      v-btn(icon to="/market")
+        v-icon arrow_back
       v-toolbar-title.headline.text-uppercase
-        span.pr-3 {{ pluginPackage.meta.name }} TEST
+        span.pr-3 {{ pluginPackage.meta.name }} の詳細
       v-spacer
-    v-container(fluid grid-list-md text-xs-center)
-      v-layout(row wrap)
-        v-flex(d-flex xs12 sm12 md9)
-          PluginEditor(:pluginPackage="pluginPackage")
+    v-flex(xs12 d-flex)
+      v-carousel(hide-delimiters height="300")
+        v-carousel-item(
+          v-for="src, i in pluginPackage.meta.thumbnailUrls"
+          :key="i"
+          :src="src"
+        )
+    v-list(two-line subheader)
+      v-subheader 基本情報
+      v-list-tile(
+        v-for="value, key in pluginPackage.meta"
+      )
+        //- v-list-tile-action
+        //-   v-icon(color="indigo") phone
+        v-list-tile-content
+          v-list-tile-title {{ key }}
+          v-list-tile-sub-title {{ value }}
+
+    // PluginEditor(:pluginPackage="pluginPackage")
 </template>
 
 <script lang="ts">

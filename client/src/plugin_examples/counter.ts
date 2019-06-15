@@ -19,7 +19,12 @@ module.exports = {
     id: 'counter-0123-abcdef-4567',
     // plugin name
     name: 'counter',
-    thumbnail_url: 'https://avatars3.githubusercontent.com/u/50242068?s=200&v=4',
+    thumbnailUrls: [
+      'https://avatars3.githubusercontent.com/u/50242068?s=200&v=4',
+      'https://cdn.vuetifyjs.com/images/carousel/squirrel.jpg',
+      'https://cdn.vuetifyjs.com/images/carousel/sky.jpg',
+      'https://cdn.vuetifyjs.com/images/carousel/bird.jpg'
+    ],
     description: 'これはプラグインですこれはプラグインですこれはプラグインです',
     author: 'wakame-tech',
     version: 'v0.1.1',

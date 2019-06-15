@@ -38,10 +38,10 @@ export default class Lobby extends Vue {
     /**
     *  request lobby event
     *  @event lobby
-    *  @param user_id: string
+    *  @param userId: string
     */
     this.$socket.emit('lobby', {
-      user_id: this.$store.getters.userId,
+      userId: this.$store.getters.userId,
     })
   }
 

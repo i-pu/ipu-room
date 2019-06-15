@@ -64,14 +64,14 @@ export default class RoomCreateForm extends Vue {
           name: this.roomNameInput,
           id: Math.random().toString(32),
           // tslint:disable:max-line-length
-          thumbnail_url: 'https://public.potaufeu.asahi.com/686b-p/picture/12463073/5c4a362cea9cb2f5d90b60e2f2a6c85f.jpg',
+          thumbnailUrl: 'https://public.potaufeu.asahi.com/686b-p/picture/12463073/5c4a362cea9cb2f5d90b60e2f2a6c85f.jpg',
           members: [],
           plugins: [],
         },
       })
     } else {
       this.$socket.emit('room/create', {
-        room_name: this.roomNameInput,
+        roomName: this.roomNameInput,
         plugins: this.selectedPlugins,
       })
     }
