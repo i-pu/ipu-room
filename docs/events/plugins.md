@@ -20,11 +20,11 @@
 
 # `plugin/trigger`
 ## client to server
-- room_id: string
+- roomId: string
 部屋ID
-- instance_id: string
+- instanceId: string
 プラグインインスタンスID
-- event_name: string
+- eventName: string
 イベント名
 - args: any[]
 引数
@@ -36,9 +36,9 @@
 
 # `plugin/sync`
 ## client to server
-- room_id: string
+- roomId: string
 部屋ID
-- instance_id: string
+- instanceId: string
 プラグインインスタンスID
 ## server to client
 - record: Record<string, any>
@@ -46,18 +46,18 @@
 
 # `plugin/clone`
 ## client to server
-- room_id: string
+- roomId: string
 部屋ID
-- instance_id: string
+- instanceId: string
 プラグインインスタンスID
 - record: Record<string, any>
 プラグインのレコード
 - from: string
 syncリクエスト元ソケットID
 ## server to client
-- room_id: string
+- roomId: string
 部屋ID
-- instance_id: string
+- instanceId: string
 プラグインインスタンスID
 - from: string
 syncリクエスト元ソケットID

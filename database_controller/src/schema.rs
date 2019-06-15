@@ -1,5 +1,5 @@
 table! {
-    plugin_metas (id) {
+    plugins (id) {
         id -> Varchar,
         name -> Varchar,
         description -> Varchar,
@@ -27,7 +27,8 @@ table! {
 table! {
     active_plugins (id) {
         id -> Varchar,
-        plugin_name -> Varchar,
+        plugin_id -> Varchar,
         room_id -> Varchar,
+        enabled -> Bool,
     }
 }

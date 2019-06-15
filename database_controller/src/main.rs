@@ -9,9 +9,8 @@ use actix_web::{
     middleware,
 };
 use diesel::{
-    r2d2::{self, ConnectionManager, Pool},
+    r2d2::{ConnectionManager, Pool},
     pg::PgConnection,
-    result::QueryResult
 };
 use dotenv;
 
@@ -40,7 +39,7 @@ fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .data(pool.clone())
-            .wrap(middleware::Logger::new("%a %r"))
+            .wrap(middleware::Logger::new("%a %s %r"))
 
             // .service(web::resource("/api/v1/sample")
             //     .route(web::get().to(v1::sample)))
@@ -49,32 +48,32 @@ fn main() -> std::io::Result<()> {
 
             .service(web::resource("/api/v1/plugins")
                 .route(web::get().to(v1::plugin::get_all_plugins))
-                .route(web::post().to(v1::plugin::post_plugin)))
-            .service(web::resource("/api/v1/plugins/{id}")
-                .route(web::get().to(v1::plugin::get_plugin))
+                .route(web::post().to(v1::plugin::post_plugin))
                 .route(web::put().to(v1::plugin::put_plugin)))
+            .service(web::resource("/api/v1/plugins/{id}")
+                .route(web::get().to(v1::plugin::get_plugin)))
 
             .service(web::resource("/api/v1/users")
-                .route(web::get().to(v1::user::get_all_users))
-                .route(web::post().to(v1::user::post_user)))
-            .service(web::resource("/api/v1/users/{id}")
-                .route(web::get().to(v1::user::get_user))
+                .route(web::get().to(v1::user::get_users))
+                .route(web::post().to(v1::user::post_user))
                 .route(web::put().to(v1::user::put_user)))
+            .service(web::resource("/api/v1/users/{id}")
+                .route(web::get().to(v1::user::get_user)))
 
             .service(web::resource("/api/v1/rooms")
                 .route(web::get().to(v1::room::get_all_rooms))
-                .route(web::post().to(v1::room::post_room)))
-            .service(web::resource("/api/v1/rooms/{id}")
-                .route(web::get().to(v1::room::get_room))
+                .route(web::post().to(v1::room::post_room))
                 .route(web::put().to(v1::room::put_room)))
+            .service(web::resource("/api/v1/rooms/{id}")
+                .route(web::get().to(v1::room::get_room)))
 
             .service(web::resource("/api/v1/active_plugins")
-                .route(web::get().to(v1::active_plugin::get_all_active_plugins))
-                .route(web::post().to(v1::active_plugin::post_active_plugin)))
-            .service(web::resource("/api/v1/active_plugins/{id}")
-                .route(web::get().to(v1::active_plugin::get_active_plugin))
+                .route(web::get().to(v1::active_plugin::get_active_plugins))
+                .route(web::post().to(v1::active_plugin::post_active_plugin))
                 .route(web::put().to(v1::active_plugin::put_active_plugin)))
+            .service(web::resource("/api/v1/active_plugins/{id}")
+                .route(web::get().to(v1::active_plugin::get_active_plugin)))
     })
-        .bind("0.0.0.0:".to_owned()+&port)?
+        .bind("0.0.0.0:".to_owned() + &port)?
         .run()
 }

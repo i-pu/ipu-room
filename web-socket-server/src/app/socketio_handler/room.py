@@ -1,11 +1,13 @@
 from logging import basicConfig, DEBUG, getLogger
+from uuid import uuid4
 
 from flask_socketio import join_room, leave_room
-from flask import request, g
+from flask import request
 
-from .. import config
 from ..config import socketio
 from .. import utils
+from .. import model
+from .. import plugin_compiler
 
 basicConfig()
 mylogger = getLogger(__name__)
@@ -17,36 +19,17 @@ mylogger.setLevel(DEBUG)
 @utils.check_user
 @utils.function_info_wrapper
 def room_create(data):
-    basicConfig()
-    # room_name = data['room_name']
-    # plugins = data['plugins']
+    room_name = data['roomName']
+    plugin_ids = data['plugins']
 
-    # room = Room(name=room_name)
-    # db.session.add(room)
-    # db.session.commit()
+    room = model.Room.create(str(uuid4()), room_name)
 
-    # for plugin_id in plugins:
-
-    #     try:
-    #         plugin = Plugin.query.filter_by(id=plugin_id).one()
-    #     except Exception as e:
-    #         mylogger.error(e)
-    #         raise e
-
-    #     active_plugin = ActivePlugin(room_id=room.id, plugin_id=plugin_id)
-    #     db.session.add(active_plugin)
-    #     db.session.commit()
-
-    #     exec(plugin.python)
-
-    #     config.global_plugins[room.id + '-' + active_plugin.id] = eval('Plugin()')
-    #     mylogger.info('--------------- plugins ---------------')
-    #     mylogger.info(config.global_plugins[room.id + '-' + active_plugin.id])
-
-    # ret = {'room': room.__to_dict__()}
-    # mylogger.info('- - return')
-    # mylogger.info('{}'.format(ret))
-    # socketio.emit('room/create', data=ret)
+    members = []
+    plugins = get_plugins(room['id'], plugin_ids)
+    socketio.emit('room/create',
+                  data={'room': {**room,
+                                 'members': members,
+                                 'plugins': plugins}})
 
 
 @socketio.on('room/enter')
@@ -54,23 +37,21 @@ def room_create(data):
 @utils.check_user
 @utils.function_info_wrapper
 def room_enter(data):
-    basicConfig()
-#     room_id = data['room_id']
-#     room = Room.query.filter_by(id=room_id).one_or_none()
-#     if room is None:
-#         raise RuntimeError('room_id: {} does not exist'.format(room_id))
-#
-#     join_room(room_id)
-#
-#     user = User.query.filter_by(id=request.sid).one_or_none()
-#
-#     room.members.append(user)
-#     db.session.commit()
-#
-#     ret = {'room': room.__to_dict__()}
-#     mylogger.info('- - return')
-#     mylogger.info('{}'.format(ret))
-#     socketio.emit('room/enter', data=ret, room=room_id)
+    room_id = data['roomId']
+    join_room(room_id)
+    model.Room.enter(room_id, request.sid)
+    room = model.Room.get(room_id)
+    members = model.User.get(user_id=None, room_id=room_id)
+    plugin_ids = map(lambda ap: ap['pluginId'],
+                     model.ActivePlugin.get(active_plugin_id=None,
+                                            room_id=room_id))
+    plugins = get_plugins(room_id, plugin_ids)
+    # todo: room/update を呼ぶべきかも
+    socketio.emit('room/enter',
+                  data={'room': {**room,
+                                 'members': members,
+                                 'plugins': plugins}},
+                  room=request.sid)
 
 
 @socketio.on('room/exit')
@@ -94,3 +75,19 @@ def room_exit(data):
     # socketio.emit('room/exit_event',  # 残ってる人に通知
     #               data=ret,
     #               room=room_id)
+
+
+def get_plugins(room_id, plugin_ids):
+    plugins = []
+    for pi in plugin_ids:
+        active_plugin = model.ActivePlugin.create(str(uuid4()), pi, room_id)
+        plugin_meta = model.Plugin.get(pi)
+        template, functions = plugin_compiler.compiler(plugin_meta['content'])
+        plugins.append({'plugin': {'template': template,
+                                   'functions': functions,
+                                   'instanceId': active_plugin['id'],
+                                   'config': {'enabled': active_plugin['enabled']}
+                                   },
+                        'meta': {**plugin_meta}})
+
+    return plugins

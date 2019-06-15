@@ -10,3 +10,5 @@ data:
   RUST_LOG: actix_web=info
   {{ end }}
   PORT: "{{ .Values.databaseController.port }}"
+  RUST_BACKTRACE: "1"
+
