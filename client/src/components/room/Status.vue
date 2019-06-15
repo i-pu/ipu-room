@@ -9,7 +9,7 @@
             v-if="members[i - 1]"
             height="200"
           )
-            // v-img(:src="member.avatar_url")
+            // v-img(:src="member.avatarUrl")
             v-card-title(primary-title)
               .headline {{ members[i - 1].name }}
             v-card-actions
@@ -18,7 +18,7 @@
             v-else
             dark height="200"
           )
-            // v-img(:src="member.avatar_url")
+            // v-img(:src="member.avatarUrl")
             v-card-title(primary-title)
               .headline 無人
             v-card-actions

@@ -1,5 +1,5 @@
 import Vue, { Component } from 'vue'
-import { Plugin, PluginProperties, PluginComponent } from '@/model'
+import { Plugin, PluginProperties, PluginComponent, PluginFunctions } from '@/model'
 
 // @ts-ignore
 import VueP5 from 'vue-p5'
@@ -7,7 +7,7 @@ import VueP5 from 'vue-p5'
 /**
 * [TODO] Import dynamically additional components are used in a plugin.
 */
-const fetchPreinstalledModules = async () => {
+const installModules = async () => {
   // addons
   const modules: Record<string, Component> = {}
 
@@ -36,7 +36,7 @@ const fetchPreinstalledModules = async () => {
   // @ts-ignore
   modules.player = (await import('vue-youtube')).Youtube
 
-  modules['VueP5'] = VueP5
+  modules.VueP5 = VueP5
 
   return modules
 }
@@ -52,153 +52,171 @@ const fetchPreinstalledModules = async () => {
 * @param plugin hoge
 * @param properties hoge
 */
-// @ts-ignore
 export const compile = async (
   plugin: Plugin,
   properties: PluginProperties,
 ): Promise<any> => {
-  // addons
-  const addonComponents: Record<string, Component> = await fetchPreinstalledModules()
+  try {
+    // addons
+    const addonComponents: Record<string, Component> = await installModules()
 
-  const hooks: Record<string, (...args: any) => void> = {}
-  for (const [event, fnlike] of Object.entries<string[] | string | ((...args: any[]) => void)>(plugin.functions)) {
-    if (event.startsWith('_')) {
-      hooks[event] = typeof(fnlike) === 'string' ? eval(`(function ${fnlike})`) : new Function(...<string[]>fnlike) as (...args: any[]) => void
-    }
-    else {
-      hooks[event] = function (this: any, ...args: any[]) {
-        // emit to server
-        this.$socket.emit('plugin/trigger', {
-          room_id: this.env.room.id,
-          instance_id: this.env.instanceId,
-          event_name: event,
-          args: args,
-        })
-        console.log(`${this.env.instanceId} ${event}`)
-        // his.callbackFromServer(event, args)
+    const hooks: Record<string, (...args: any) => void> = {}
+    for (const [event, fn] of Object.entries<
+      ((...args: any[]) => void)
+    >(plugin.functions as PluginFunctions)) {
+      if (event.startsWith('_')) {
+        hooks[event] = fn
+      } else {
+        hooks[event] = function (this: PluginComponent, ...args: any[]) {
+          // emit to server
+          this.$socket.emit('plugin/trigger', {
+            roomId: this.env.room.id,
+            instanceId: this.env.instanceId,
+            data: {
+              event,
+              args,
+            },
+            options: {}
+          })
+        }
+        hooks[`__callback__${event}`] = fn
       }
-
-      hooks[`__callback__${event}`] = typeof(fnlike) === 'string' ? eval(`(function ${fnlike})`) : new Function(...<string[]>fnlike) as (...args: any[]) => void
     }
-  }
 
-  console.log(`[Compiler] compiled ${properties.env.instanceId} successfully`)
+    console.log(`[Compiler] compiled ${properties.env.instanceId} successfully`)
 
-  // @ts-ignore
-  return Vue.extend({
-    template: plugin.template,
-    components: addonComponents,
     // @ts-ignore
-    sockets: {
-      /**
-      *  reponse plugin/sync event
-      *  @event plugin/sync
-      *  @param record: Record<string, any>
-      */
-      [`plugin/${plugin.instanceId}/sync`] (this: PluginComponent, { record }: { record: Record<string, any> }) {
-        // @ts-ignore
-        this.record = record
-        console.log('record synced')
-      },
-      /**
-      *  response plugin/clone event
-      *  @event plugin/clone
-      *  @param room_id: string
-      *  @param instance_id: string
-      *  @param from: string
-      */
-      [`plugin/${plugin.instanceId}/clone`] ({ room_id, instance_id, from }: { room_id: string, instance_id: string, from: string }) {
-        console.log(`[Plugin] came clone request from ${from}`)
+    return Vue.extend({
+      template: plugin.template,
+      components: addonComponents,
+      // @ts-ignore
+      sockets: {
         /**
-        *  request plugin/clone event
-        *  @event plugin/clone
-        *  @param room_id: string
-        *  @param instance_id: string
+        *  reponse plugin/sync event
+        *  @event plugin/sync
         *  @param record: Record<string, any>
+        */
+        [`plugin/${plugin.instanceId}/sync`] (this: PluginComponent, { record }: { record: Record<string, any> }) {
+          // @ts-ignore
+          this.record = record
+          console.log('record synced')
+        },
+        /**
+        *  response plugin/clone event
+        *  @event plugin/clone
+        *  @param roomId: string
+        *  @param instanceId: string
         *  @param from: string
         */
-        // @ts-ignore
-        this.$socket.emit('plugin/clone', {
+        [`plugin/${plugin.instanceId}/clone`] ({ roomId, instanceId, from }: {
+          roomId: string, instanceId: string, from: string,
+        }) {
+          console.log(`[Plugin] came clone request from ${from}`)
+          /**
+          *  request plugin/clone event
+          *  @event plugin/clone
+          *  @param roomId: string
+          *  @param instanceId: string
+          *  @param record: Record<string, any>
+          *  @param from: string
+          */
           // @ts-ignore
-          room_id: this.env.room.id,
+          this.$socket.emit('plugin/clone', {
+            // @ts-ignore
+            roomId: this.env.room.id,
+            // @ts-ignore
+            instanceId: this.env.instanceId,
+            // @ts-ignore
+            record: this.$cloneRecord(),
+            from,
+          })
+        },
+        [`plugin/${plugin.instanceId}/trigger`] (payload: { event: string, args: [] }) {
           // @ts-ignore
-          instance_id: this.env.instanceId,
-          // @ts-ignore
-          record: this.$cloneRecord(),
-          from: from
-        })
+          this.callbackFromServer(payload)
+        },
       },
-      [`plugin/${plugin.instanceId}/trigger`] (payload: { event: string, args: [] }) {
-        // @ts-ignore
-        this.callbackFromServer(payload)
+      data (): {
+        record: Record<string, any>,
+        meta: PluginProperties['meta'],
+        env: PluginProperties['env'],
+      } {
+        return {
+          record: Object.assign({}, properties.record),
+          meta: properties.meta,
+          env: properties.env,
+        }
       },
-    },
-    data (): {
-      record: Record<string, any>,
-      meta: PluginProperties['meta'],
-      env: PluginProperties['env'],
-    } {
-      return {
-        record: Object.assign({}, properties.record),
-        meta: properties.meta,
-        env: properties.env,
-      }
-    },
 
-    mounted () {
-      console.log(`[${this.env.instanceId}] active`)
+      mounted () {
+        console.log(`[${this.env.instanceId}] active`)
 
-      // if someone exist, sync records
-      if (1 < this.env.room.members.length) {
+        // if someone exist, sync records
+        if (1 < this.env.room.members.length) {
+          /**
+          *  request plugin/sync event
+          *  @event plugin/sync
+          *  @param roomId: string
+          *  @param instanceId: string
+          */
+          this.$socket.emit('plugin/sync', {
+            roomId: this.env.room.id,
+            instanceId: this.env.instanceId,
+          })
+          console.log(`[Plugin] send sync request`)
+        } else {
+          console.log('[Plugin] initialized record')
+        }
+      },
+      computed: {
         /**
-        *  request plugin/sync event
-        *  @event plugin/sync
-        *  @param room_id: string
-        *  @param instance_id: string
+          *  return [User] of mine.
         */
-        this.$socket.emit('plugin/sync', {
-          room_id: this.env.room.id,
-          instance_id: this.env.instanceId
-        })
-        console.log(`[Plugin] send sync request`)
-      } else {
-        console.log('[Plugin] initialized record')
-      }
-    },
-    methods: {
-      $cloneRecord (): Record<string, any> {
-        // @ts-ignore
-        return Object.assign({}, this.record)
-      },
-      $send (event: string, ...args: any[]) {
-        /**
-        *  request plugin/trigger event
-        *  @event plugin/trigger
-        *  @param room_id: string
-        *  @param instance_id: string
-        *  @param event_name: string
-        *  @param args: any[]
-        */
-       // @ts-ignore
-        this.$socket.emit('plugin/trigger', {
+        $me () {
           // @ts-ignore
-          room_id: this.env.room.id,
+          return this.env.room.members.find(m => m.id === this.$socket.id)
+        }
+      },
+      methods: {
+        $cloneRecord (): Record<string, any> {
           // @ts-ignore
-          instance_id: this.env.instanceId,
-          event_name: event,
-          args: args,
-        })
+          return Object.assign({}, this.record)
+        },
+        $send (event: string, options?: { to: string } | { broadcast: boolean }, ...args: any[]) {
+          /**
+          *  request plugin/trigger event
+          *  @event plugin/trigger
+          *  @param roomId: string
+          *  @param instanceId: string
+          *  @param event: string
+          *  @param args: any[]
+          */
         // @ts-ignore
-        console.log(`${this.env.instanceId} ${event}`)
+          this.$socket.emit('plugin/trigger', {
+            // @ts-ignore
+            roomId: this.env.room.id,
+            // @ts-ignore
+            instanceId: this.env.instanceId,
+            data: {
+              event,
+              args
+            },
+            options
+          })
+          // @ts-ignore
+          console.log(`${this.env.instanceId} ${event}`)
+        },
+        ...hooks,
+        // callback from server
+        callbackFromServer ({ event, args }: { event: string, args: any[] },
+        ) {
+          // console.log(`[plugin/trigger/${this.env.instanceId}] ${event}(${args})`)
+          // @ts-ignore
+          this[`__callback__${event}`](...args)
+        },
       },
-      ...hooks,
-      // callback from server
-      callbackFromServer ({ event, args }: { event: string, args: any[] }
-      ) {
-        // console.log(`[plugin/trigger/${this.env.instanceId}] ${event}(${args})`)
-        // @ts-ignore
-        this[`__callback__${event}`](...args)
-      },
-    }
-  })
+    })
+  } catch (error) {
+    throw error
+  }
 }

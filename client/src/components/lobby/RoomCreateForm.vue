@@ -15,8 +15,7 @@
                 v-flex(xs12 sm12)
                   v-select(
                     v-model="selectedPlugins"
-                    
-                    :items="plugins"
+                    :items="pluginIds"
                     label="プラグイン"
                     multiple
                   )
@@ -36,8 +35,8 @@ import { Room } from '@/model'
 
 @Component<RoomCreateForm>({
   sockets: {
-    'room/create' (data: { room: Room }) {
-      this.$emit('create', data)
+    'room/make' (data: { room: Room }) {
+      this.$emit('add', data)
     },
   },
 })
@@ -46,35 +45,27 @@ export default class RoomCreateForm extends Vue {
 
   private dialog: boolean = false
   private roomNameInput: string = ''
-  private plugins: string[] = []
+  private pluginIds: string[] = []
   private selectedPlugins: string[] = []
 
   private fetchPluginData () {
-    fetch(`${process.env.VUE_APP_API_ORIGIN}/plugin`)
-      .then((res) => res.json())
-      .then(({ plugins }: { plugins: Array<{ id: string }>}) => {
-        this.plugins = plugins.map((plugin) => plugin.id)
-      })
+    this.pluginIds = [
+      'counter-0123-abcdef-4567',
+      'paint-xxxx-12345678',
+    ]
+    // TODO
+    // fetch(`${process.env.VUE_APP_API_ORIGIN}/plugin`)
+    //   .then((res) => res.json())
+    //   .then(({ plugins }: { plugins: Array<{ id: string }>}) => {
+    //     this.plugins = plugins.map((plugin) => plugin.id)
+    //   })
   }
 
   private requestCreateRoom () {
-    if (this.$store.getters.localOnly) {
-      this.$emit('create', {
-        room: {
-          name: this.roomNameInput,
-          id: Math.random().toString(32),
-          // tslint:disable:max-line-length
-          thumbnail_url: 'https://public.potaufeu.asahi.com/686b-p/picture/12463073/5c4a362cea9cb2f5d90b60e2f2a6c85f.jpg',
-          members: [],
-          plugins: [],
-        },
-      })
-    } else {
-      this.$socket.emit('room/create', {
-        room_name: this.roomNameInput,
-        plugins: this.selectedPlugins,
-      })
-    }
+    this.$socket.emit('room/make', {
+      roomName: this.roomNameInput,
+      pluginIds: this.selectedPlugins,
+    })
 
     this.dialog = false
     this.roomNameInput = ''

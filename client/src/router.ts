@@ -5,9 +5,8 @@ import store from '@/store'
 import Top from '@/views/Top.vue'
 import Lobby from '@/views/Lobby.vue'
 import Room from '@/views/Room.vue'
+import PluginMarket from '@/views/PluginMarket.vue'
 import PluginDetail from '@/views/PluginDetail.vue'
-
-import 'vuetify/dist/vuetify.min'
 
 Vue.use(Router)
 
@@ -18,8 +17,7 @@ const router = new Router({
     {
       path: '/',
       name: 'Top',
-      component: PluginDetail,
-      // component: Top,
+      component: Top,
     },
     {
       path: '/lobby',
@@ -32,11 +30,24 @@ const router = new Router({
       component: Room,
     },
     {
-      path: '/editor',
-      name: 'Editor',
+      path: '/market',
+      name: 'PluginMarket',
+      component: PluginMarket,
+    },
+    {
+      path: '/market/:pluginId',
+      name: 'PluginDetail',
       component: PluginDetail,
-    }
+    },
   ],
+})
+
+router.beforeEach((to, from, next) => {
+  if (from.path !== '/' && !store.getters.userId) {
+    next('/')
+  } else {
+    next()
+  }
 })
 
 export default router

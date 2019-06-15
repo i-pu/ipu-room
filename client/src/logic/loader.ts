@@ -1,23 +1,30 @@
-import { Room, PluginProperties, PluginInstance, PluginPackage } from '@/model'
+import { Room, PluginProperties, PluginInstance, PluginPackage, PluginFunctions } from '@/model'
 import { compile } from '@/logic/compiler'
 
+/**
+*  Initialize plugin with record and compile Vue Component
+*/
 export const boot = async ({ plugin, meta }: PluginPackage, options: { room: Room }): Promise<PluginInstance> => {
   try {
-    const fnlike = plugin.functions.initialize
+    // plugin.functin: string -> Function[]
+    plugin.functions = typeof plugin.functions === 'string'
+      ? eval(plugin.functions) as PluginFunctions
+      : plugin.functions
 
-    if (!fnlike) {
-      throw new Error()
+    const initializeFn = plugin.functions.initialize
+
+    if (!initializeFn) {
+      throw 'Plugin initializer not found'
     }
 
-    const initializer = typeof(fnlike) === 'string' ? eval(`(function ${fnlike})`) : new Function(...<string[]>fnlike) as (...args: any) => Record<string, any>
-    console.log(initializer())
+    console.log(initializeFn())
     const properties: PluginProperties = {
-      record: initializer(),
+      record: initializeFn(),
       env: { instanceId: plugin.instanceId, ...options },
-      meta: meta,
+      meta,
     }
     return { component: await compile(plugin, properties), properties }
   } catch (e) {
-    throw 'Plugin initializer not found'
+    throw e
   }
 }

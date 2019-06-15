@@ -8,9 +8,9 @@ import { Socket } from 'socket.io'
 type ThenArg<T> = T extends Promise<infer U> ? U : T
 export type PluginComponent = ThenArg<ReturnType<typeof compile>> & {
   record: Record<string, any>,
-  $send: (event: string, ...args: any[]) => void,
+  $send: (event: string, options?: { to: string, broadcast: boolean }, ...args: any[]) => void,
   $socket: Socket,
-  env: PluginProperties['env']
+  env: PluginProperties['env'],
 }
 
 /**
@@ -20,26 +20,31 @@ export type PluginComponent = ThenArg<ReturnType<typeof compile>> & {
 * @param instanceId instanceId
 * @param config config
 */
+
+// compiler internal expression
+export type PluginFunctions = {
+  initialize: ((...args: any) => Record<string, any>)
+  [event: string]: (this: PluginComponent, ...args: any) => void
+}
+
 export interface Plugin {
   template: string,
-  functions: { 
-    initialize: string[] | string | ((...args: any) => Record<string, any>) } &
-    (Record<string, string[] | string | ((this: PluginComponent, ...args: any) => void)>),
+  functions: string | PluginFunctions,
   instanceId: string,
   config: {
-    enabled: boolean
+    enabled: boolean,
   }
 }
 
 /**
 * Expresses Data of static infomation about a plugin.
 * @param id HTML template
-* @param thumbnail_url
+* @param thumbnailUrls
 * @param content raw script of a plugin
 */
 interface PluginMeta {
   id: string,
-  thumbnail_url: string,
+  thumbnailUrls: string[],
   name: string,
   description: string,
   author: string,
@@ -59,12 +64,12 @@ export interface PluginProperties {
   meta: PluginMeta
 }
 
-export type PluginInstance = {
+export interface PluginInstance {
   component: Component,
   properties: PluginProperties,
 }
 
-export type PluginPackage = {
+export interface PluginPackage {
   plugin: Plugin,
   meta: PluginMeta,
 }
@@ -75,10 +80,10 @@ export type PluginPackage = {
 export interface Room {
   name: string,
   id: string,
-  thumbnail_url: string,
+  thumbnailUrl: string,
   members: User[],
-  pluginPackages: Array<PluginPackage>,
-  plugins: Array<PluginInstance>,
+  pluginPackages: PluginPackage[],
+  plugins: PluginInstance[],
 }
 
 /**
@@ -87,6 +92,6 @@ export interface Room {
 export interface User {
   name: string,
   id: string,
-  avatar_url: string
+  avatarUrl: string
 }
 

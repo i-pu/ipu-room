@@ -4,21 +4,16 @@ import Vuex, { Commit } from 'vuex'
 Vue.use(Vuex)
 
 export interface State {
-  isLocalOnly: boolean
   userName: string
   userId: string
 }
 
 const storeState: State = {
-  isLocalOnly: true,
   userName: '',
   userId: '',
 }
 
 const getters = {
-  localOnly (state: State) {
-    return state.isLocalOnly
-  },
   userName (state: State) {
     return state.userName
   },

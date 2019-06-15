@@ -4,102 +4,110 @@
 const Counter = require('./../plugin_examples/counter')
 const Chat = require('./../plugin_examples/chat')
 const Player = require('./../plugin_examples/player')
-const Paint: { plugin: Plugin, meta: PluginMeta } = require('./../plugin_examples/paint')
+const Paint: PluginPackage = require('./../plugin_examples/paint')
 const app = require('http').createServer()
 import * as SocketIO from 'socket.io'
 const uuidv4 = require('uuid')
 const io: SocketIO.Server = require('socket.io')(app)
 const color = require('colors')
 
-import { Room, Plugin, PluginMeta, PluginPackage } from '@/model'
+import { Room, PluginPackage } from '@/model'
 
 app.listen(1234, () => {
   console.log(`simple server running on ${color.green.bold('localhost:1234')}`)
 })
 
-const stringifyWithFunctions = (data: object): string => {
-  return JSON.stringify(data, (k, v) => typeof v === 'function'
-    ? v.toString() 
-    : v
-  )
-}
-
-const parseWithFunctions = <T>(data: string): T => {
-  return JSON.parse(
-    data,
-    function (k, v) { 
-      return typeof v === 'string' && v.match(/^function/)
-        ? Function.call(null, `return ${v}`)()
-        : v
-    }
-  )
-}
-
-const deepCloneWithFunctions = <T>(data: object): T => {
-  return parseWithFunctions<T>(stringifyWithFunctions(data))
-}
-
 const activatePlugin = (pluginPackage: PluginPackage): PluginPackage => {
-  const newPackage: PluginPackage = deepCloneWithFunctions<PluginPackage>(pluginPackage)
+  const newPackage: PluginPackage = JSON.parse(JSON.stringify(pluginPackage))
   newPackage.plugin.instanceId = uuidv4()
   return newPackage
 }
 
-// room_id -> room
+// roomId -> room
 const roomList: Record<string, Room> = {
   'xxxx-yyyy-zzzz': {
     name: '雑談部屋1',
     id: 'xxxx-yyyy-zzzz',
     // tslint:disable:max-line-length
-    thumbnail_url: 'https://public.potaufeu.asahi.com/686b-p/picture/12463073/5c4a362cea9cb2f5d90b60e2f2a6c85f.jpg',
+    thumbnailUrl: 'https://public.potaufeu.asahi.com/686b-p/picture/12463073/5c4a362cea9cb2f5d90b60e2f2a6c85f.jpg',
     members: [],
     pluginPackages: [
-      activatePlugin(Counter), 
-      // activatePlugin(Counter),
-      // activatePlugin(Chat),
-      // activatePlugin(Player),
-      activatePlugin(Paint)
+      activatePlugin(Counter),
+      activatePlugin(Chat),
+      activatePlugin(Paint),
+      activatePlugin(Player)
     ],
-    plugins: []
-  }
+    plugins: [],
+  },
 }
-// socket_id -> room_id
-const sessions: Record<string, string> = {}
 
-io.on('connection', socket => {
-  socket.on('lobby', ({ user_id }) => {
+// plugin-id -> pluginPackage
+const pluginMarket: Record<string, PluginPackage> = {
+  'counter-0123-abcdef-4567': Counter,
+  'paint-xxxx-12345678': Paint,
+}
+
+// socketId -> roomId
+const sessions: Record<string, {
+  name: string,
+  id: string,
+  roomId: string | null,
+}> = {}
+
+io.on('connection', (socket) => {
+  socket.on('visit', ({ userName }) => {
+    sessions[socket.id] = {
+      name: userName,
+      id: socket.id,
+      roomId: '',
+    }
+    socket.emit('visit', { userId: socket.id })
+  })
+
+  socket.on('lobby', ({ userId }) => {
     console.log(`${color.black.bgWhite('[lobby]')} Lobby ${color.yellow(Object.keys(roomList).length)} rooms`)
-    socket.emit('lobby', { rooms: [ roomList['xxxx-yyyy-zzzz'] ] })
+    socket.emit('lobby', { rooms: Object.values(roomList) })
   })
 
-  socket.on('room/make', ({ name, pluginPackages }) => {
-    const room_id = uuidv4()
-    console.log(`${color.black.bgWhite('[room/make]')} ${color.green.bold('+')} ${color.yellow(name)} (${color.gray(room_id)})`)
-    roomList[room_id] = {
-      name,
-      id: room_id,
-      thumbnail_url: '',
+  socket.on('room/make', ({ roomName, pluginIds }: { roomName: string, pluginIds: string[]}) => {
+    const roomId = uuidv4()
+    console.log(`${color.black.bgWhite('[room/make]')} ${color.green.bold('+')} ${color.yellow(roomName)} (${color.gray(roomId)})`)
+
+    const pluginPackages = pluginIds
+      .filter((id: string) => Object.keys(pluginMarket).includes(id))
+      .map((id) => pluginMarket[id])
+      .map((pluginPackage) => activatePlugin(pluginPackage))
+
+    roomList[roomId] = {
+      name: roomName,
+      id: roomId,
+      thumbnailUrl: '',
       members: [],
-      pluginPackages: pluginPackages.map((p: PluginPackage) => activatePlugin(p)),
-      plugins: []
+      pluginPackages,
+      plugins: [],
     }
-    socket.emit('room/make', { room: roomList[room_id] })
+    socket.emit('room/make', { room: roomList[roomId] })
   })
 
-  socket.on('room/enter', ({ room_id }) => {
-    console.log(`${color.black.bgWhite('[room/enter]')} ROOM ${color.gray(room_id)} ${color.green.bold('+')} ${socket.id}`)
+  socket.on('room/enter', ({ roomId }: { roomId: string }) => {
+    console.log(`${color.black.bgWhite('[room/enter]')} ROOM ${color.gray(roomId)} ${color.green.bold('+')} ${socket.id}`)
 
-    if (!roomList[room_id]) {
-      throw `Room ${room_id} does not exist`
+    if (!roomList[roomId]) {
+      throw new Error(`Room ${roomId} does not exist`)
     }
-    const room = roomList[room_id]
 
-    socket.join(room_id)
-    sessions[socket.id] = room_id
+    const room = roomList[roomId]
 
-    if (!room.members.map(m => m.id).includes(socket.id)) {
+    if (!sessions[socket.id] || !room) {
+      return
+    }
+
+    socket.join(roomId)
+    sessions[socket.id].roomId = roomId
+
+    if (!room.members.map((m) => m.id).includes(socket.id)) {
       room.members.push({
-        id: socket.id, name: '名無し', avatar_url: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460'
+        id: socket.id, name: sessions[socket.id].name, avatarUrl: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460',
       })
     }
 
@@ -109,42 +117,58 @@ io.on('connection', socket => {
     }
 
     socket.emit('room/enter', { room })
-    io.in(room_id).emit('room/update', { room })
+    socket.in(roomId).broadcast.emit('room/update', { room })
   })
 
-  socket.on('plugin/trigger', ({ room_id, instance_id, event_name, args}) => {
-    console.log(`${color.black.bgWhite('[plugin/trigger]')} ROOM ${color.gray(room_id)} ${color.yellow(instance_id)} ${color.blue(event_name)}`)
-    io.in(room_id).emit(`plugin/${instance_id}/trigger`, { event: event_name, args })
+  // since v2
+  // socket.on('room/event/join', ({}) => {})
+  // socket.on('room/event/leave', ({}) => {})
+
+  // socket.on('plugin/event/load', ({}) => {})
+  // socket.on('plugin/event/destroy', ({}) => {})
+
+  socket.on('plugin/trigger', ({ roomId, instanceId, data, options }: {
+    roomId: string, instanceId: string, data: { event: string, args: any[] }, options: {}
+  }) => {
+    const { event, args } = data
+    console.log(`${color.black.bgWhite('[plugin/trigger]')} ROOM ${color.gray(roomId)} ${color.yellow(instanceId)} ${color.blue(event)}`)
+    io.in(roomId).emit(`plugin/${instanceId}/trigger`, { event, args })
   })
 
-  socket.on('plugin/sync', ({ room_id, instance_id }) => {
-    const random_id = roomList[room_id].members.map(m => m.id).filter(id => id !== socket.id)[0]
-    console.log(`${color.black.bgWhite('[plugin/sync]')} sync request ${color.gray(socket.id)} -> ${color.gray(random_id)}`)
-    io.to(random_id).emit(`plugin/${instance_id}/clone`, { room_id, instance_id, from: socket.id })
+  socket.on('plugin/sync', ({ roomId, instanceId }: { roomId: string, instanceId: string }) => {
+    const randomId = roomList[roomId].members.map((m) => m.id).filter((id) => id !== socket.id)[0]
+    console.log(`${color.black.bgWhite('[plugin/sync]')} sync request ${color.gray(socket.id)} -> ${color.gray(randomId)}`)
+    io.to(randomId).emit(`plugin/${instanceId}/clone`, { roomId, instanceId, from: socket.id })
   })
 
-  socket.on('plugin/clone', ({ room_id, instance_id, record, from }) => {
+  socket.on('plugin/clone', ({ roomId, instanceId, record, from }: {
+    roomId: string, instanceId: string, record: Record<string, any>, from: string
+  }) => {
     console.log(`${color.black.bgWhite('[plugin/clone]')} clone to ${color.gray(socket.id)} -> ${color.gray(from)}`)
-    io.to(from).emit(`plugin/${instance_id}/sync`, { record })
+    io.to(from).emit(`plugin/${instanceId}/sync`, { record })
   })
 
-  socket.on('room/exit', ({ room_id }) => {
-    leaveRoom(room_id)
+  socket.on('room/exit', ({ roomId }: { roomId: string }) => {
+    leaveRoom(roomId)
     socket.emit('room/exit')
   })
 
   socket.on('disconnect', () => {
-    if (sessions[socket.id])
-      leaveRoom(sessions[socket.id])
+    if (sessions[socket.id] && sessions[socket.id].roomId) {
+      leaveRoom(sessions[socket.id].roomId!!)
+    }
+    delete sessions[socket.id]
   })
 
   const leaveRoom = (roomId: string) => {
     console.log(`${color.black.bgWhite('[room/exit]')} ${color.gray(roomId)} ${color.red.bold('-')} ${color.gray(socket.id)}`)
-    roomList[roomId].members = roomList[roomId].members.filter(m => m.id !== socket.id)
-    delete sessions[socket.id]
+    roomList[roomId].members = roomList[roomId].members.filter((m) => m.id !== socket.id)
+
+    sessions[socket.id].roomId = ''
 
     if (roomList[roomId].members.length === 0) {
-      delete roomList[roomId]
+      // remain room for sometimes
+      // delete roomList[roomId]
     }
 
     io.in(roomId).emit('room/update', { room: roomList[roomId] })

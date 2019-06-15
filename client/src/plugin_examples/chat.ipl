@@ -26,17 +26,24 @@
       </v-layout>
     </v-container>
   </div>
-</html>
 <template>
 <script>
-comment () {
-  this.record.comments.push({
-    type: 'comment',
-    avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-    comment_id: 'a',
-    user_name: 'John',
-    user_id: 'xxxx',
-    text: this.record.chatInput
-  })
+export default {
+  initialize () {
+    return {
+      comments: [],
+      chatInput: ''
+    }
+  },
+  comment () {
+    this.record.comments.push({
+      type: 'comment',
+      avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
+      comment_id: 'a',
+      user_name: 'John',
+      user_id: 'xxxx',
+      text: this.record.chatInput
+    })
+  }
 }
 </script>

@@ -1,21 +1,17 @@
-<template lang='pug'>
-  div(v-if="room")
-    v-container(fluid grid-list-md text-xs-center)
-      v-layout(row wrap)
-        v-flex(d-flex xs12 sm12 md12)
-          v-toolbar(dense)
-            v-toolbar-title {{ room.name }}
-            v-spacer
-            settings(:room="room")
-            v-btn(color="error" @click="requestExitRoom") 退出
+<template lang="pug">
+  v-layout(row wrap v-if="room")
+    v-flex(d-flex xs12 sm12 md12)
+      v-toolbar(dense)
+        v-toolbar-title {{ room.name }}
+        v-spacer
+        settings(:room="room")
+        v-btn(color="error" @click="requestExitRoom") 退出
 
     desk#desk(:plugins="room.plugins")
 
-    v-container(fluid grid-list-md text-xs-center)
-      v-layout(row wrap)
-        v-flex(d-flex xs12 sm12 md12)
-          v-card(white)
-            status#status(:members="room.members")
+    v-flex(d-flex xs12 sm12 md12)
+      v-card(white)
+        status#status(:members="room.members")
 </template>
 
 <script lang="ts">
@@ -40,9 +36,6 @@ import Settings from '@/components/room/Settings.vue'
     'room/exit' (data: {}) {
       this.responseExitRoom()
     },
-    'room/exit-event' ({ members }: { members: User[] }) {
-      this.room!!.members = members
-    }
   },
 })
 export default class RoomView extends Vue {
@@ -54,65 +47,32 @@ export default class RoomView extends Vue {
 
   private mounted () {
     console.log(`[Room] request enter`)
-    /**
-    *  request room/enter event
-    *  @event room/enter
-    *  @param room_id: string
-    */
-    this.$socket.emit('room/enter', { room_id: this.roomId })
+    this.$socket.emit('room/enter', { roomId: this.roomId })
   }
 
-  /**
-  * Room
-  */
   private async responseEnterRoom ({ room }: { room: Room }) {
     console.log(`[Room] entered`)
     this.room = room
     this.room.plugins = []
 
     for (const pluginPackage of this.room.pluginPackages) {
-      const instance = await boot(pluginPackage, { room: this.room })
-        .catch(error => {
-          console.error(error)
-        })
-        .then(instance => {
-          // push reactively
-          this.$set(this.room!!, 'plugins', [...this.room!!.plugins, instance])
-        })
+      try {
+        const instance = await boot(pluginPackage, { room: this.room })
+        // push reactively
+        this.$set(this.room, 'plugins', [...this.room.plugins, instance])
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 
-  /**
-  * Room
-  */
   private requestExitRoom () {
-    /**
-    *  request room/exit event
-    *  @event room/exit
-    *  @param room_id: string
-    */
-    this.$socket.emit('room/exit', { room_id: this.roomId})
+    this.$socket.emit('room/exit', { roomId: this.roomId })
   }
 
-  /**
-  * Room
-  */
   private responseExitRoom () {
     this.$router.push('/lobby')
   }
 }
 </script>
 
-<style scoped>
-#desk {
-  height: 100%;
-}
-
-#status {
-  height: 300px;
-}
-
-v-card {
-  height: 100%;
-}
-</style>

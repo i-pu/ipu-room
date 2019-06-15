@@ -11,38 +11,40 @@ module.exports = {
       <player :video-id="record.videoId" ref="youtube" @playing="_playing" @paused="_paused" />
     </div>
     `,
-    functions: {
-      initialize: [`return { videoId: 'SX_ViT4Ra7k' }`],
-      _playing: [`
+    functions: `({
+      initialize () {
+        return { videoId: 'SX_ViT4Ra7k' }
+      },
+      _playing () {
         console.log('playing')
         this.$send('play')
-      `],
-      _paused: [`
+      },
+      _paused () {
         console.log('paused')
         this.$send('pause')
-      `],
-      play: [`
+      },
+      play () {
         this.$refs.youtube.player.playVideo()
-      `],
-      pause: [`
+      },
+      pause () {
         this.$refs.youtube.player.pauseVideo()
-      `]
-    },
+      },
+    })`,
     instanceId: 'a',
     config: {
-      enabled: true
-    }
+      enabled: true,
+    },
   },
   meta: {
     id: 'counter_xxx',
     // plugin name
     name: 'counter',
-    thumbnail_url: 'https://avatars3.githubusercontent.com/u/50242068?s=200&v=4',
+    thumbnailUrls: ['https://avatars3.githubusercontent.com/u/50242068?s=200&v=4'],
     description: 'aaa',
     author: 'wakame-tech',
     tags: 'a,b,c',
     content: '<html></html>',
-  }
+  },
 } as {
-  plugin: Plugin, meta: PluginMeta
+  plugin: Plugin, meta: PluginMeta,
 }
