@@ -7,7 +7,6 @@
 import re
 from textwrap import dedent
 
-
 def compile(ipl):
     """
     extract template and functions from the ipl file, 
@@ -20,20 +19,24 @@ def compile(ipl):
     Returns
     -------
     template : string
-        A plugin html that'll be passed to a client.
-    functions : dict
-        A python code that'll be run as a socket server.
+        A plugin template that'll be passed to a client.
+    functions : string
+        A JavaScript code that'll be run as a socket server.
     """
 
-    res = re.match(r'.*<html>(.*)</html>.*<script>(.*)</script>.*', ipl, flags=re.DOTALL)
-    if res:
-        functions = dict()
-        template, script = res.groups()
-        # [(f, args, stmt), ...]
-        it = re.finditer(r"^(\w+)\s*\((.*?)\)\s*\{(.*?)^\}", script, flags=re.DOTALL | re.MULTILINE)
-        for match in it:
-            (f, args, stmt) = match.groups()
-            args = [] if args == '' else [arg.strip() for arg in args.split(',')]
-            functions[f] = [*args, stmt]
+    match_result = re.match(r'.*<template>(.*)</template>.*<script>(.*)</script>.*',ipl, flags = re.DOTALL)
 
-        return template, functions
+    if match_result is None:
+        print("[Plugin Compiler] Illegal format.")
+        return None
+
+    template, raw_script = match_result.groups()
+
+    match_result = re.findall(r"export default.*?{(.*)}", raw_script, flags = re.DOTALL)
+
+    if len(match_result) == 0:
+        print("[Plugin Compiler] Functions not found.")
+        return None
+        
+    functions = '({' + match_result[0] + '})'
+    return template, functions

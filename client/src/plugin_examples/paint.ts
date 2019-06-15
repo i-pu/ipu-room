@@ -7,7 +7,7 @@ module.exports = {
   plugin: {
     // tslint:disable-next-line
     template: `<div><vue-p5 @setup="_setup" @draw="_draw" @mousedragged="_dragged" @mousereleased="_released"></vue-p5></div>`,
-    functions: {
+    functions: `({
       initialize () {
         return { lines: [], buffer: [] }
       },
@@ -37,7 +37,7 @@ module.exports = {
           this.record.lines.push(...buffer)
         }
       },
-    },
+    })`,
     instanceId: 'a',
     config: {
       enabled: true,

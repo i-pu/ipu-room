@@ -4,43 +4,21 @@
 const Counter = require('./../plugin_examples/counter')
 const Chat = require('./../plugin_examples/chat')
 const Player = require('./../plugin_examples/player')
-const Paint: { plugin: Plugin, meta: PluginMeta } = require('./../plugin_examples/paint')
+const Paint: PluginPackage = require('./../plugin_examples/paint')
 const app = require('http').createServer()
 import * as SocketIO from 'socket.io'
 const uuidv4 = require('uuid')
 const io: SocketIO.Server = require('socket.io')(app)
 const color = require('colors')
 
-import { Room, Plugin, PluginMeta, PluginPackage } from '@/model'
+import { Room, PluginPackage } from '@/model'
 
 app.listen(1234, () => {
   console.log(`simple server running on ${color.green.bold('localhost:1234')}`)
 })
 
-const stringifyWithFunctions = (data: object): string => {
-  return JSON.stringify(data, (k, v) => typeof v === 'function'
-    ? v.toString()
-    : v,
-  )
-}
-
-const parseWithFunctions = <T>(data: string): T => {
-  return JSON.parse(
-    data,
-    (k, v) => {
-      return typeof v === 'string' && v.match(/^function/)
-        ? Function.call(null, `return ${v}`)()
-        : v
-    },
-  )
-}
-
-const deepCloneWithFunctions = <T>(data: object): T => {
-  return parseWithFunctions<T>(stringifyWithFunctions(data))
-}
-
 const activatePlugin = (pluginPackage: PluginPackage): PluginPackage => {
-  const newPackage: PluginPackage = deepCloneWithFunctions<PluginPackage>(pluginPackage)
+  const newPackage: PluginPackage = JSON.parse(JSON.stringify(pluginPackage))
   newPackage.plugin.instanceId = uuidv4()
   return newPackage
 }
@@ -55,10 +33,9 @@ const roomList: Record<string, Room> = {
     members: [],
     pluginPackages: [
       activatePlugin(Counter),
-      // activatePlugin(Counter),
-      // activatePlugin(Chat),
-      // activatePlugin(Player),
+      activatePlugin(Chat),
       activatePlugin(Paint),
+      activatePlugin(Player)
     ],
     plugins: [],
   },
@@ -140,7 +117,7 @@ io.on('connection', (socket) => {
     }
 
     socket.emit('room/enter', { room })
-    io.in(roomId).emit('room/update', { room })
+    socket.in(roomId).broadcast.emit('room/update', { room })
   })
 
   // since v2

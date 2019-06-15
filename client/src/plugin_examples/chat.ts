@@ -29,24 +29,24 @@ module.exports = {
         </v-layout>
       </v-container>
     </div>`,
-    functions: {
-      initialize: [`
+    functions: `({
+      initialize () {
         return {
           comments: [],
           chatInput: ''
         }
-      `],
-      comment: ['text', `
+      },
+      comment (text) {
         this.record.comments.push({
           type: 'comment',
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
+          avatar: this.$me.avatarUrl,
           commentId: Math.random().toString(),
-          userName: 'John',
-          userId: 'xxxx',
+          userName: this.$me.name,
+          userId: this.$me.id,
           text: text
         })
-      `],
-    },
+      }
+    })`,
     instanceId: '',
     config: {
       enabled: true,

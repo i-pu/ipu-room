@@ -6,10 +6,7 @@ import { Plugin, PluginMeta } from '@/model'
 module.exports = {
   plugin: {
     template: `<div><h3> {{ record.count }} </h3><v-btn @click="plus"> Add </v-btn></div>`,
-    functions: {
-      initialize: ['return { count: 0 }'],
-      plus: ['this.record.count++'],
-    },
+    functions: "({\n  initialize () {\n    return {\n      count: 0\n    }\n  },\n  plus() {\n    this.record.count++\n  }\n })",
     instanceId: '',
     config: {
       enabled: true,

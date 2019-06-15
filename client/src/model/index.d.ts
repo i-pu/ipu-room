@@ -20,11 +20,16 @@ export type PluginComponent = ThenArg<ReturnType<typeof compile>> & {
 * @param instanceId instanceId
 * @param config config
 */
+
+// compiler internal expression
+export type PluginFunctions = {
+  initialize: ((...args: any) => Record<string, any>)
+  [event: string]: (this: PluginComponent, ...args: any) => void
+}
+
 export interface Plugin {
   template: string,
-  functions: {
-    initialize: string[] | string | ((...args: any) => Record<string, any>) } &
-    (Record<string, string[] | string | ((this: PluginComponent, ...args: any) => void)>),
+  functions: string | PluginFunctions,
   instanceId: string,
   config: {
     enabled: boolean,

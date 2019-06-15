@@ -5,30 +5,34 @@
 # =========================
 
 # from .html_interpreter import compile
+import json
 from compiler import compile
 
 # sample counter plugin
 counter_plugin = '''
-<html>
+<template>
   <div>
     <h3> {{ record.count }} </h3>
     <v-btn @click="plus(1)"> Add </v-btn>
   </div>
-</html>
+</template>
 <script>
-initializer (aa, b) {
-  return { count: 0 }
-}
-
-plus() {
-  this.record.count++
+export default {
+  initialize () {
+    return {
+      count: 0
+    }
+  },
+  plus() {
+    this.record.count++
+  }
 }
 </script>
 '''
 
 # sample chat plugin
 chat_plugin = """
-<html>
+<template>
   <div>
     <v-list id="chat" two-line="two-line" height="50%">
       <v-subheader>チャット</v-subheader>
@@ -56,17 +60,25 @@ chat_plugin = """
       </v-layout>
     </v-container>
   </div>
-</html>
+<template>
 <script>
-comment () {
-  this.record.comments.push({
-    type: 'comment',
-    avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-    comment_id: 'a',
-    user_name: 'John',
-    user_id: 'xxxx',
-    text: this.record.chatInput
-  })
+export default {
+  initialize () {
+    return {
+      comments: [],
+      chatInput: ''
+    }
+  },
+  comment () {
+    this.record.comments.push({
+      type: 'comment',
+      avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
+      comment_id: 'a',
+      user_name: 'John',
+      user_id: 'xxxx',
+      text: this.record.chatInput
+    })
+  }
 }
 </script>
 """
@@ -74,5 +86,7 @@ comment () {
 # test
 
 template, functions = compile(counter_plugin)
-print('template: \n{}'.format(template))
-print(functions)
+print(json.dumps({
+  'template': template,
+  'functions': functions
+}))
