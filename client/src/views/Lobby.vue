@@ -4,7 +4,6 @@
       v-toolbar-title.headline.text-uppercase
         span.pr-3 ipu-room
       v-spacer
-      plugin-create-form
       room-create-form(@create="responseCreateRoom")
     room-list(:rooms="rooms")
 </template>
@@ -17,10 +16,9 @@ import { Room } from '@/model'
 
 import RoomList from '@/components/lobby/RoomList.vue'
 import RoomCreateForm from '@/components/lobby/RoomCreateForm.vue'
-import PluginCreateForm from '@/components/PluginCreateForm.vue'
 
 @Component<Lobby>({
-  components: { RoomList, RoomCreateForm, PluginCreateForm },
+  components: { RoomList, RoomCreateForm },
   sockets: {
     lobby (data: { rooms: Room[] }) {
       this.responseLobby(data)

@@ -16,7 +16,7 @@ Vue.config.productionTip = false
 import App from './App.vue'
 import router from './router'
 
-router.push('/market')
+router.push('/')
 
 new Vue({
   router,

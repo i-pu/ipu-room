@@ -45,6 +45,8 @@
           v-model="searchText"
           placeholder="名前, タグで検索"
         )
+
+        plugin-create-form
       
       v-list(two-line subheader)
         v-subheader
@@ -58,11 +60,9 @@
             img(:src="pluginOverview.thumbnailUrls[0]")
           v-list-tile-content
             v-list-tile-title {{ pluginOverview.name }}
-            v-list-tile-sub-title {{ pluginOverview.description }}
+            v-list-tile-sub-title {{ pluginOverview.description | less }}
           v-list-tile-action
             v-list-tile-action-text {{ pluginOverview.version }}
-            v-btn(icon ripple)
-              v-icon(color="grey lighten-1") info
 
 </template>
 
@@ -71,17 +71,24 @@ import Vue from 'vue'
 import _ from 'lodash'
 import Component from 'vue-class-component'
 import { Prop, Watch } from 'vue-property-decorator'
-import { PluginMeta } from '../model';
+import { PluginMeta } from '../model'
 const Counter = require('@/plugin_examples/counter')
+import PluginUploadForm from '@/components/market/PluginUploadForm.vue'
 
 interface MarketCategory { name: string, icon: string }
 interface MarketSortKey { name: string, icon: string, query: string }
 
 @Component({
+  components: { PluginUploadForm },
   watch: {
     searchText: _.debounce((v: string) => {
       console.log(v)
     }, 1500)
+  },
+  filters: {
+    less (s: string): string {
+      return s.slice(0, 14) + '...'
+    }
   }
 })
 export default class PluginMarket extends Vue {

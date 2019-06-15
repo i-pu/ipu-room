@@ -65,14 +65,14 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 
-@Component<PluginCreateForm>({
+@Component<PluginUploadForm>({
   sockets: {
     'plugin/register' (data) {
       this.responseCreatePlugin(data)
     },
   },
 })
-export default class PluginCreateForm extends Vue {
+export default class PluginUploadForm extends Vue {
   private dialog: boolean = false
   private valid: boolean = false
   private loader: any = null
@@ -116,7 +116,7 @@ export default class PluginCreateForm extends Vue {
     }
   }
 
-  public requestCreatePlugin () {
+  public requestUploadPlugin () {
     if (this.$store.getters.localOnly) {
       this.responseCreatePlugin({ state: true })
     } else {
