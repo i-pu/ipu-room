@@ -1,4 +1,4 @@
-use actix_web::{HttpRequest, web};
+use actix_web::{web};
 use diesel::{
     r2d2::{self, ConnectionManager},
     pg::PgConnection,
@@ -17,7 +17,11 @@ pub fn get_all_rooms(pool: web::Data<Pool>) -> web::Json<Vec<Room>> {
 
 pub fn get_room(path: web::Path<String>, pool: web::Data<Pool>) -> web::Json<Room> {
     use crate::schema::rooms::dsl::rooms;
-    web::Json(rooms.find(path.into_inner()).first(&pool.get().unwrap()).unwrap())
+    let id = path.into_inner();
+    let room = rooms.find(&id).first(&pool.get().unwrap())
+        .expect(&format!("not found room: {:?}", id));
+    println!("{:#?}", room);
+    web::Json(room)
 }
 
 /// create room
@@ -26,28 +30,28 @@ pub fn post_room(json: web::Json<Room>, pool: web::Data<Pool>)
 {
     /// todo: 返り値をResult にする
     use crate::schema::rooms::dsl::rooms;
-    let p: Room =
+    let room: Room =
         diesel::insert_into(rooms)
             .values(&json.0)
             .get_result(&pool.get().unwrap())
             .unwrap();
 
-    println!("{:#?}", p);
-    web::Json(p)
+    println!("{:#?}", room);
+    web::Json(room)
 }
 
 /// update room
-pub fn put_room(path: web::Path<String>, json: web::Json<Room>, pool: web::Data<Pool>)
+pub fn put_room(json: web::Json<Room>, pool: web::Data<Pool>)
                   -> web::Json<Room>
 {
     use crate::schema::rooms::{dsl::*};
-    let pi: Room = Room { id: path.into_inner(), .. json.0};
-    let p: Room =
-        diesel::update(rooms.find(pi.id.clone()))
-            .set(pi)
+    let mut new_room: Room = json.0;
+    new_room =
+        diesel::update(rooms.find(new_room.id.clone()))
+            .set(new_room)
             .get_result(&pool.get().unwrap())
             .unwrap();
 
-    println!("{:#?}", p);
-    web::Json(p)
+    println!("{:#?}", new_room);
+    web::Json(new_room)
 }

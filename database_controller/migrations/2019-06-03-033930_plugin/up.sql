@@ -1,4 +1,4 @@
-create table plugin_metas (
+create table plugins (
     id varchar(40) primary key,
     name varchar(20) not null,
     description varchar(140) not null,
@@ -20,6 +20,7 @@ create table rooms (
 
 create table active_plugins (
     id varchar(40) primary key,
-    plugin_name varchar(20) not null,
-    room_id varchar(40) not null
+    plugin_id varchar(40) not null,
+    room_id varchar(40) not null,
+    enabled boolean
 );

@@ -1,9 +1,11 @@
 from logging import basicConfig, DEBUG, getLogger
-from flask import request, g
-import requests
+from uuid import uuid4
+from flask import request
+from flask_socketio import join_room, leave_room
 
 from ..config import socketio
 from .. import utils
+from .. import model
 
 basicConfig()
 mylogger = getLogger(__name__)
@@ -21,19 +23,10 @@ def sample(data):
 @utils.byte_data_to_dict
 @utils.function_info_wrapper
 def visit(data):
-
-    mylogger.debug('- - socket id: {}'.format(request.sid))
-    # user = User(name=data['user_name'], id=request.sid)
-    # requests.get()
-    # db.session.add(user)
-    # db.session.commit()
-
-    # mylogger.debug('- - user: {}'.format(user))
-
-    # ret = {'user': user.__to_dict__()}
-    # mylogger.info('- - return')
-    # mylogger.info('{}'.format(ret))
-    # socketio.emit('visit', data=ret)
+    json = model.User.create(request.sid, data['userName'])
+    mylogger.info(json)
+    join_room('user' + request.sid)
+    socketio.emit('visit', data={'user': json}, room='user' + request.sid)
 
 
 @socketio.on('lobby')
@@ -41,14 +34,9 @@ def visit(data):
 @utils.check_user
 @utils.function_info_wrapper
 def lobby(data):
-
-    mylogger.debug('- - socket id: {}'.format(request.sid))
-    # all_room = Room.query.all()
-
-    # ret = {'rooms': list(map(Room.__to_dict__, all_room))}
-    # mylogger.info('- - return')
-    # mylogger.info('{}'.format(ret))
-    # socketio.emit('lobby', data=ret)
+    json = model.Room.get()
+    mylogger.info(json)
+    socketio.emit('lobby', data={'rooms': json}, room='user' + request.sid)
 
 
 @socketio.on('disconnect')
@@ -57,6 +45,8 @@ def lobby(data):
 @utils.function_info_wrapper
 def disconnect(data):
     mylogger.debug('- - socket id: {}'.format(request.sid))
+    leave_room('user' + request.sid)
+    # todo: delete from database
     # mylogger.debug('- - data: {}'.format(data))
 
     # user = User.query.filter_by(id=request.sid).one()
@@ -66,5 +56,7 @@ def disconnect(data):
 
 @socketio.on_error()
 def on_error(e):
-    mylogger.error('---------- error happen!!! --------- ')
+    mylogger.error('error happen!!!')
+    mylogger.error(request.event["message"])
+    mylogger.error(request.event["args"])
     mylogger.error(e)

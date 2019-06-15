@@ -1,4 +1,3 @@
-use actix_web::{HttpRequest, web, error};
 use failure;
 
 pub mod plugin;

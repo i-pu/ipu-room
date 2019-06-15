@@ -1,7 +1,7 @@
 {{ if .Values.isLocal }}
 You run server in local!
 web socket server is running [http://localhost:{{ .Values.webSocketServer.nodePort }}].
-It'll take some time!
+It'll take a little time!
 You can check server state by `kubectl get pod -w`.
 
 You should set "isLocal".
