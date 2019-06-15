@@ -1,7 +1,11 @@
 import requests
+from uuid import uuid4
 
 from ..config import app
 from .user import User
+from .active_plugin import ActivePlugin
+from .plugin import Plugin
+from ..plugin_compiler import compiler
 
 
 class Room:
@@ -35,3 +39,24 @@ class Room:
     @classmethod
     def enter(cls, room_id, sid):
         User.enter(room_id, sid)
+
+    @classmethod
+    def make_json_elem(cls, room_id, members, active_plugins):
+        if members is None:
+            members = User.get(user_id=None, room_id=room_id)
+
+        if active_plugins is None:
+            active_plugins = []
+
+        plugins = []
+        for ap in active_plugins:
+            plugin_meta = Plugin.get(ap['pluginId'])
+            template, functions = compiler(plugin_meta['content'])
+            plugins.append({'plugin': {'template': template,
+                                       'functions': functions,
+                                       'instanceId': ap['id'],
+                                       'config': {'enabled': ap['enabled']}
+                                       },
+                            'meta': {**plugin_meta}})
+
+        return members, plugins

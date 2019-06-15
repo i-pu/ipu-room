@@ -5,27 +5,26 @@
 # =========================
 
 import re
-from textwrap import dedent
 
 
-def compile(ipl):
+def compiler(ipl):
     """
-    extract template and functions from the ipl file, 
+    extract template and functions from the ipl file,
 
     Parameters
     ----------
-    ipl : string
+    ipl : str
         A content of a plugin (*.ipl)
-    
+
     Returns
     -------
-    template : string
+    template : str
         A plugin html that'll be passed to a client.
     functions : dict
         A python code that'll be run as a socket server.
     """
 
-    res = re.match(r'.*<html>(.*)</html>.*<script>(.*)</script>.*', ipl, flags=re.DOTALL)
+    res = re.match(r'.*<template>(.*)</template>.*<script>(.*)</script>.*', ipl, flags=re.DOTALL)
     if res:
         functions = dict()
         template, script = res.groups()
@@ -37,3 +36,5 @@ def compile(ipl):
             functions[f] = [*args, stmt]
 
         return template, functions
+
+    return 'compile error', {}

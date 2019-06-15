@@ -7,7 +7,6 @@ from flask import request
 from ..config import socketio
 from .. import utils
 from .. import model
-from .. import plugin_compiler
 
 basicConfig()
 mylogger = getLogger(__name__)
@@ -25,7 +24,14 @@ def room_create(data):
     room = model.Room.create(str(uuid4()), room_name)
 
     members = []
-    plugins = get_plugins(room['id'], plugin_ids)
+    active_plugins = []
+    for pi in plugin_ids:
+        active_plugins.append(model.ActivePlugin.create(str(uuid4()),
+                                                        pi,
+                                                        room['id']))
+    members, plugins = model.Room.make_json_elem(room['id'],
+                                                 members,
+                                                 active_plugins)
     socketio.emit('room/create',
                   data={'room': {**room,
                                  'members': members,
@@ -41,12 +47,16 @@ def room_enter(data):
     join_room(room_id)
     model.Room.enter(room_id, request.sid)
     room = model.Room.get(room_id)
-    members = model.User.get(user_id=None, room_id=room_id)
-    plugin_ids = map(lambda ap: ap['pluginId'],
-                     model.ActivePlugin.get(active_plugin_id=None,
-                                            room_id=room_id))
-    plugins = get_plugins(room_id, plugin_ids)
-    # todo: room/update を呼ぶべきかも
+
+    active_plugins = model.ActivePlugin.get(active_plugin_id=None,
+                                            room_id=room_id)
+    members, plugins = model.Room.make_json_elem(room_id, None, active_plugins)
+
+    socketio.emit('room/update',
+                  data={'room': {**room,
+                                 'members': members,
+                                 'plugins': plugins}},
+                  room=room_id)
     socketio.emit('room/enter',
                   data={'room': {**room,
                                  'members': members,
@@ -75,19 +85,3 @@ def room_exit(data):
     # socketio.emit('room/exit_event',  # 残ってる人に通知
     #               data=ret,
     #               room=room_id)
-
-
-def get_plugins(room_id, plugin_ids):
-    plugins = []
-    for pi in plugin_ids:
-        active_plugin = model.ActivePlugin.create(str(uuid4()), pi, room_id)
-        plugin_meta = model.Plugin.get(pi)
-        template, functions = plugin_compiler.compiler(plugin_meta['content'])
-        plugins.append({'plugin': {'template': template,
-                                   'functions': functions,
-                                   'instanceId': active_plugin['id'],
-                                   'config': {'enabled': active_plugin['enabled']}
-                                   },
-                        'meta': {**plugin_meta}})
-
-    return plugins
