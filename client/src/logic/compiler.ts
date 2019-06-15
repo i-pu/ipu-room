@@ -74,7 +74,7 @@ export const compile = async (
           eventName: event,
           args: args,
         })
-        console.log(`${this.env.instanceId} ${event}`)
+        // console.log(`${this.env.instanceId} ${event}`)
         // his.callbackFromServer(event, args)
       }
 

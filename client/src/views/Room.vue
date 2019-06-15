@@ -1,4 +1,4 @@
-<template lang='pug'>
+<template lang="pug">
   div(v-if="room")
     v-container(fluid grid-list-md text-xs-center)
       v-layout(row wrap)
@@ -40,9 +40,6 @@ import Settings from '@/components/room/Settings.vue'
     'room/exit' (data: {}) {
       this.responseExitRoom()
     },
-    'room/exit-event' ({ members }: { members: User[] }) {
-      this.room!!.members = members
-    }
   },
 })
 export default class RoomView extends Vue {
@@ -54,17 +51,9 @@ export default class RoomView extends Vue {
 
   private mounted () {
     console.log(`[Room] request enter`)
-    /**
-    *  request room/enter event
-    *  @event room/enter
-    *  @param roomId: string
-    */
     this.$socket.emit('room/enter', { roomId: this.roomId })
   }
 
-  /**
-  * Room
-  */
   private async responseEnterRoom ({ room }: { room: Room }) {
     console.log(`[Room] entered`)
     this.room = room
@@ -82,37 +71,13 @@ export default class RoomView extends Vue {
     }
   }
 
-  /**
-  * Room
-  */
   private requestExitRoom () {
-    /**
-    *  request room/exit event
-    *  @event room/exit
-    *  @param roomId: string
-    */
-    this.$socket.emit('room/exit', { roomId: this.roomId})
+    this.$socket.emit('room/exit', { roomId: this.roomId })
   }
 
-  /**
-  * Room
-  */
   private responseExitRoom () {
     this.$router.push('/lobby')
   }
 }
 </script>
 
-<style scoped>
-#desk {
-  height: 100%;
-}
-
-#status {
-  height: 300px;
-}
-
-v-card {
-  height: 100%;
-}
-</style>

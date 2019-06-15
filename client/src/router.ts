@@ -42,4 +42,12 @@ const router = new Router({
   ],
 })
 
+router.beforeEach((to, from, next) => {
+  if (from.path !== '/' && !store.getters.userId) {
+    next('/')
+  } else {
+    next()
+  }
+})
+
 export default router

@@ -63,24 +63,50 @@ const roomList: Record<string, Room> = {
     plugins: []
   }
 }
+
+// plugin-id -> pluginPackage
+const pluginMarket: Record<string, PluginPackage> = {
+  'counter-0123-abcdef-4567': Counter,
+  'paint-xxxx-12345678': Paint
+}
+
 // socketId -> roomId
-const sessions: Record<string, string> = {}
+const sessions: Record<string, {
+  name: string,
+  id: string,
+  roomId: string | null
+}> = {}
 
 io.on('connection', socket => {
-  socket.on('lobby', ({ userId }) => {
-    console.log(`${color.black.bgWhite('[lobby]')} Lobby ${color.yellow(Object.keys(roomList).length)} rooms`)
-    socket.emit('lobby', { rooms: [ roomList['xxxx-yyyy-zzzz'] ] })
+  socket.on('visit', ({ userName }) => {
+    sessions[socket.id] = {
+      name: userName,
+      id: socket.id,
+      roomId: ''
+    }
+    socket.emit('visit', { userId: socket.id })
   })
 
-  socket.on('room/make', ({ name, pluginPackages }) => {
+  socket.on('lobby', ({ userId }) => {
+    console.log(`${color.black.bgWhite('[lobby]')} Lobby ${color.yellow(Object.keys(roomList).length)} rooms`)
+    socket.emit('lobby', { rooms: Object.values(roomList) })
+  })
+
+  socket.on('room/make', ({ roomName, pluginIds }: { roomName: string, pluginIds: string[]}) => {
     const roomId = uuidv4()
-    console.log(`${color.black.bgWhite('[room/make]')} ${color.green.bold('+')} ${color.yellow(name)} (${color.gray(roomId)})`)
+    console.log(`${color.black.bgWhite('[room/make]')} ${color.green.bold('+')} ${color.yellow(roomName)} (${color.gray(roomId)})`)
+
+    const pluginPackages = pluginIds
+      .filter((id: string) => Object.keys(pluginMarket).includes(id))
+      .map(id => pluginMarket[id])
+      .map(pluginPackage => activatePlugin(pluginPackage))
+
     roomList[roomId] = {
-      name,
+      name: roomName,
       id: roomId,
       thumbnailUrl: '',
       members: [],
-      pluginPackages: pluginPackages.map((p: PluginPackage) => activatePlugin(p)),
+      pluginPackages,
       plugins: []
     }
     socket.emit('room/make', { room: roomList[roomId] })
@@ -92,14 +118,19 @@ io.on('connection', socket => {
     if (!roomList[roomId]) {
       throw `Room ${roomId} does not exist`
     }
+
     const room = roomList[roomId]
 
+    if (!sessions[socket.id] || !room) {
+      return
+    }
+
     socket.join(roomId)
-    sessions[socket.id] = roomId
+    sessions[socket.id].roomId = roomId
 
     if (!room.members.map(m => m.id).includes(socket.id)) {
       room.members.push({
-        id: socket.id, name: '名無し', avatarUrl: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460'
+        id: socket.id, name: sessions[socket.id].name, avatarUrl: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460'
       })
     }
 
@@ -111,6 +142,13 @@ io.on('connection', socket => {
     socket.emit('room/enter', { room })
     io.in(roomId).emit('room/update', { room })
   })
+
+  // since v2
+  // socket.on('room/event/join', ({}) => {})
+  // socket.on('room/event/leave', ({}) => {})
+
+  // socket.on('plugin/event/load', ({}) => {})
+  // socket.on('plugin/event/destroy', ({}) => {})
 
   socket.on('plugin/trigger', ({ roomId, instanceId, eventName, args}) => {
     console.log(`${color.black.bgWhite('[plugin/trigger]')} ROOM ${color.gray(roomId)} ${color.yellow(instanceId)} ${color.blue(eventName)}`)
@@ -134,17 +172,21 @@ io.on('connection', socket => {
   })
 
   socket.on('disconnect', () => {
-    if (sessions[socket.id])
-      leaveRoom(sessions[socket.id])
+    if (sessions[socket.id] && sessions[socket.id].roomId) {
+      leaveRoom(sessions[socket.id].roomId!!)
+    }
+    delete sessions[socket.id]
   })
 
   const leaveRoom = (roomId: string) => {
     console.log(`${color.black.bgWhite('[room/exit]')} ${color.gray(roomId)} ${color.red.bold('-')} ${color.gray(socket.id)}`)
     roomList[roomId].members = roomList[roomId].members.filter(m => m.id !== socket.id)
-    delete sessions[socket.id]
+
+    sessions[socket.id].roomId = ''
 
     if (roomList[roomId].members.length === 0) {
-      delete roomList[roomId]
+      // remain room for sometimes
+      // delete roomList[roomId]
     }
 
     io.in(roomId).emit('room/update', { room: roomList[roomId] })

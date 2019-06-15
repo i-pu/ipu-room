@@ -42,7 +42,7 @@ module.exports = {
     }
   },
   meta: {
-    id: 'counter_xxx',
+    id: 'paint-xxxx-12345678',
     // plugin name
     name: 'counter',
     thumbnailUrls: ['https://avatars3.githubusercontent.com/u/50242068?s=200&v=4'],
