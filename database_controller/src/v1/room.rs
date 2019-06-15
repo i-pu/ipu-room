@@ -1,4 +1,4 @@
-use actix_web::{HttpRequest, web};
+use actix_web::{web};
 use diesel::{
     r2d2::{self, ConnectionManager},
     pg::PgConnection,

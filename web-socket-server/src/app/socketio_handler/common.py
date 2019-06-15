@@ -56,5 +56,7 @@ def disconnect(data):
 
 @socketio.on_error()
 def on_error(e):
-    mylogger.error('---------- error happen!!! --------- ')
+    mylogger.error('error happen!!!')
+    mylogger.error(request.event["message"])
+    mylogger.error(request.event["args"])
     mylogger.error(e)

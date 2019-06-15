@@ -22,14 +22,14 @@ class Room:
         return res.json()
 
     @classmethod
-    def create(cls, room_id, name, plugins):
+    def create(cls, room_id, name):
         room_res = requests.post(cls.url, json={'id': room_id, 'name': name})
         room_res.close()
         if room_res.status_code >= 400:
-            raise Exception("status code is {}. ".format(room_res.status_code) + \
-                            'request: {}.'.format({'name': name}))
+            raise Exception("{0}{1}" \
+                            .format("status code is {}. ".format(room_res.status_code),
+                                    'request: {}.'.format({'name': name})))
 
-        # todo: plugin
         return room_res.json()
 
     @classmethod

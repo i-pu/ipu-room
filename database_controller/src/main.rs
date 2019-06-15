@@ -9,9 +9,8 @@ use actix_web::{
     middleware,
 };
 use diesel::{
-    r2d2::{self, ConnectionManager, Pool},
+    r2d2::{ConnectionManager, Pool},
     pg::PgConnection,
-    result::QueryResult,
 };
 use dotenv;
 
@@ -55,7 +54,7 @@ fn main() -> std::io::Result<()> {
                 .route(web::get().to(v1::plugin::get_plugin)))
 
             .service(web::resource("/api/v1/users")
-                .route(web::get().to(v1::user::get_all_users))
+                .route(web::get().to(v1::user::get_users))
                 .route(web::post().to(v1::user::post_user))
                 .route(web::put().to(v1::user::put_user)))
             .service(web::resource("/api/v1/users/{id}")
@@ -69,7 +68,7 @@ fn main() -> std::io::Result<()> {
                 .route(web::get().to(v1::room::get_room)))
 
             .service(web::resource("/api/v1/active_plugins")
-                .route(web::get().to(v1::active_plugin::get_all_active_plugins))
+                .route(web::get().to(v1::active_plugin::get_active_plugins))
                 .route(web::post().to(v1::active_plugin::post_active_plugin))
                 .route(web::put().to(v1::active_plugin::put_active_plugin)))
             .service(web::resource("/api/v1/active_plugins/{id}")

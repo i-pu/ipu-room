@@ -1,5 +1,4 @@
 import requests
-from uuid import uuid4
 
 from ..config import app
 
@@ -8,12 +7,18 @@ class User:
     url = 'http://' + app.config['DC_URL'] + ':' + app.config['DC_PORT'] + '/api/v1/users'
 
     @classmethod
-    def get(cls, user_id=None, **kwargs):
+    def get(cls, user_id=None, room_id=None, **kwargs):
         res = None
-        if user_id is None:
-            res = requests.get(cls.url)
-        else:
+        if user_id is not None and room_id is not None:
+            raise Exception('user_id and room_id cant be set at once'
+                            'user_id: {}, room_id: {}'.format(user_id, room_id))
+
+        if user_id is not None:
             res = requests.get(cls.url + '/' + user_id)
+        elif room_id is not None:
+            res = requests.get(cls.url + '?roomId={}'.format(room_id))
+        else:
+            res = requests.get(cls.url)
         res.close()
 
         if res.status_code >= 400:

@@ -1,6 +1,8 @@
 from logging import basicConfig, DEBUG, getLogger
 from uuid import uuid4
 
+from flask import request
+
 from ..config import socketio
 from .. import utils
 from .. import model
@@ -23,44 +25,13 @@ def plugin_register(data):
                                data['content'])
     print(json, flush=True)
     if 'id' in json:
-        socketio.emit('plugin/register', data={'state': True})
+        socketio.emit('plugin/register',
+                      data={'state': True, **json},
+                      room='user' + request.sid)
     else:
-        socketio.emit('plugin/register', data={'state': False})
-
-
-@socketio.on('plugin/info')
-@utils.byte_data_to_dict
-@utils.check_user
-@utils.function_info_wrapper
-def plugin_info(data):
-    basicConfig()
-    # active_plugins = ActivePlugin.query.filter_by(room_id=data['room_id']).all()
-    # mylogger.debug('active_plugins: {}'.format(active_plugins))
-
-    # configs = []
-    # for ap in active_plugins:
-    #     plugin_obj = config.global_plugins[data['room_id'] + '-' + ap.id]
-    #     plugin = Plugin.query.filter_by(id=ap.plugin_id).one()
-    #     try:
-    #         configs.append(
-    #             {'instance': {'template': plugin.template,
-    #                           'events': plugin_obj.events,
-    #                           'record': plugin_obj.constructor(),
-    #                           'addons': [],
-    #                           **ap.__to_dict__(),
-    #                           },
-    #              'meta': plugin.__to_dict__(),
-    #              }
-    #         )
-    #     except Exception as e:
-    #         import traceback
-    #         mylogger.error(e)
-    #         traceback.print_exc()
-    #         raise e
-
-    # mylogger.info('- - return')
-    # mylogger.info('{}'.format(configs))
-    # socketio.emit('plugin/info', data=configs)
+        socketio.emit('plugin/register',
+                      data={'state': False},
+                      room='user' + request.sid)
 
 
 @socketio.on('plugin/trigger')
@@ -82,6 +53,17 @@ def plugin_trigger(data):
 @utils.byte_data_to_dict
 @utils.check_user
 @utils.function_info_wrapper
+def plugin_clone(data):
+    # todo: 今いる部屋にいるユーザをランダムに一人選びクローンする
+    # todo: tokenを利用して，有効な相手からクローンが来たかドウかを確認するのもいいかも
+    # todo: clone がsyncのとき以外からアクセスできるようになってしまっているのか
+    socketio.emit('plugin/sync')
+
+
+@socketio.on('plugin/sync')
+@utils.byte_data_to_dict
+@utils.check_user
+@utils.function_info_wrapper
 def plugin_sync(data):
     basicConfig()
     # sync要求が
@@ -90,9 +72,5 @@ def plugin_sync(data):
     # @utils.check_user
     # @utils.function_info_wrapper
     # def plugin_clone(data):
-    #     # todo: 今いる部屋にいるユーザをランダムに一人選びクローンする
-    #     # todo: tokenを利用して，有効な相手からクローンが来たかドウかを確認するのもいいかも
-    #     # todo: clone がsyncのとき以外からアクセスできるようになってしまっているのか
-    #     socketio.emit('plugin/sync')
 
     # socketio.emit('plugin/clone')
