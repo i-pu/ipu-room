@@ -1,9 +1,9 @@
-<template lang='pug'>
+<template lang="pug">
   div
     v-layout(row justify-center)
       v-dialog(v-model="dialog" max-width="600px")
         template(v-slot:activator="{ on }")
-          v-btn(color="primary" v-on="on") プラグインを作成
+          v-btn(color="red" v-on="on") プラグインを作成
         v-card
           v-card-title
             span.headline プラグインを作成
@@ -32,7 +32,7 @@
 
                   v-flex(xs12)
                     v-text-field(
-                      v-model="pluginInfo.name"
+                      v-model="meta.name"
                       :counter="12"
                       :rules="[v => !!v || '必須項目です']",
                       label="プラグイン名"
@@ -41,9 +41,16 @@
 
                   v-flex(xs12)
                     v-textarea(
-                      v-model="pluginInfo.description"
+                      v-model="meta.description"
                       label="説明"
                       :counter="200"
+                    )
+
+                  v-flex(xs12)
+                    v-text-field(
+                      v-model="meta.tags"
+                      label="タグ名(カンマ区切り)"
+                      :counter="100"
                     )
 
                   v-flex(xs12)
@@ -64,12 +71,13 @@
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component'
+import { PluginMeta } from '../../model'
 
 @Component<PluginUploadForm>({
   sockets: {
-    'plugin/register' (data) {
-      this.responseCreatePlugin(data)
-    },
+    // 'plugin/register' (data) {
+    //   this.responseCreatePlugin(data)
+    // },
   },
 })
 export default class PluginUploadForm extends Vue {
@@ -80,18 +88,12 @@ export default class PluginUploadForm extends Vue {
   private fileUploaded: boolean = false
   private loading: boolean = false
   private agreed: boolean = false
-  private pluginInfo: {
-    name: string,
-    description: string,
-    author: string,
-    tags: string,
-    content: string,
-  } = {
+  private meta: Partial<PluginMeta> = {
     name: '',
     description: '',
     author: '',
     tags: '',
-    content: '',
+    content: ''
   }
 
   public onFileSelected (event: Event) {
@@ -102,14 +104,14 @@ export default class PluginUploadForm extends Vue {
       const file = event.target.files[0]
       const reader = new FileReader()
       reader.onload = (e: Event) => {
-        this.pluginInfo.content = reader.result as string
+        this.meta.content = reader.result as string
         this.loader = null
         this.loading = false
         this.fileUploaded = true
         this.fileName = file.name
 
-        if (this.pluginInfo.name === '') {
-          this.pluginInfo.name = this.fileName.match(/(.*)(?:\.([^.]+$))/)!![1]
+        if (this.meta.name === '') {
+          this.meta.name = this.fileName.match(/(.*)(?:\.([^.]+$))/)!![1]
         }
       }
       reader.readAsText(file)
@@ -117,13 +119,10 @@ export default class PluginUploadForm extends Vue {
   }
 
   public requestUploadPlugin () {
-    if (this.$store.getters.localOnly) {
-      this.responseCreatePlugin({ state: true })
-    } else {
-      this.pluginInfo.author = this.$store.getters.userName
-      console.log(Object.assign({}, this.pluginInfo))
-      this.$socket.emit('plugin/register', this.pluginInfo)
-    }
+    this.meta.author = this.$store.getters.userName
+    console.log(Object.assign({}, this.meta))
+    // TODO
+    this.responseCreatePlugin({ state: true })
   }
 
   public responseCreatePlugin (payload: { state: boolean }) {

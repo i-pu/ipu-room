@@ -59,7 +59,7 @@ export default class PluginEditor extends Vue {
   private editableTempate: string = _.clone(this.innerPluginPackage.plugin.template)
 
   async mounted () {
-    this.$socket.emit('room/make', { name: '部屋', pluginPackages: [ this.innerPluginPackage ] }) 
+    this.$socket.emit('room/make', { roomName: '部屋', pluginIds: [ this.innerPluginPackage.meta.id ] }) 
   }
 
   private get prettifiedFunctions (): string {

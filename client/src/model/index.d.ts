@@ -8,7 +8,7 @@ import { Socket } from 'socket.io'
 type ThenArg<T> = T extends Promise<infer U> ? U : T
 export type PluginComponent = ThenArg<ReturnType<typeof compile>> & {
   record: Record<string, any>,
-  $send: (event: string, ...args: any[]) => void,
+  $send: (event: string, options?: { to: string, broadcast: boolean }, ...args: any[]) => void,
   $socket: Socket,
   env: PluginProperties['env']
 }
