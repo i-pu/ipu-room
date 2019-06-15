@@ -208,8 +208,9 @@ export const compile = async (
         },
         ...hooks,
         // callback from server
-        callbackFromServer ({ event, args }: { event: string, args: any[] },
+        callbackFromServer ({ data }: { data: { event: string, args: any[] } },
         ) {
+          const { event, args } = data
           // console.log(`[plugin/trigger/${this.env.instanceId}] ${event}(${args})`)
           // @ts-ignore
           this[`__callback__${event}`](...args)
