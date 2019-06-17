@@ -13,6 +13,7 @@ use crate::model::ActivePlugin;
 type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ActivePluginQuery {
     room_id: Option<String>,
 }

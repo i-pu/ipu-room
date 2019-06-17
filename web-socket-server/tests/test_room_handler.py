@@ -20,7 +20,7 @@ class TestSocketIOHandler(unittest.TestCase):
         self.client.disconnect()
 
     def test_room_create_no_plugin(self):
-        print('\n', sys._getframe().f_code.co_name)
+        print('\n', sys._getframe().f_code.co_name, flush=True)
 
         @self.client.on('room/create')
         def room_create(data):
@@ -30,7 +30,7 @@ class TestSocketIOHandler(unittest.TestCase):
         self.client.emit('visit', {'userName': 'room/create user'})
         self.client.emit('lobby')
         self.client.emit('room/create', {'roomName': 'some room', 'plugins': []})
-        self.client.sleep(2)
+        self.client.sleep(1)
 
         self.assertTrue('room' in self.data)
         self.assertTrue('id' in self.data['room'])
@@ -39,7 +39,7 @@ class TestSocketIOHandler(unittest.TestCase):
         self.assertTrue('plugins' in self.data['room'])
 
     def test_room_enter_no_plugin(self):
-        print('\n', sys._getframe().f_code.co_name)
+        print('\n', sys._getframe().f_code.co_name, flush=True)
 
         @self.client.on('room/create')
         def room_create(data):
@@ -52,9 +52,9 @@ class TestSocketIOHandler(unittest.TestCase):
 
         self.client.emit('visit', {'userName': 'room/enter user'})
         self.client.emit('room/create', {'roomName': 'room/enter room', 'plugins': []})
-        self.client.sleep(2)
+        self.client.sleep(1)
         self.client.emit('room/enter', {'roomId': self.data})
-        self.client.sleep(2)
+        self.client.sleep(1)
 
         self.assertTrue('room' in self.data)
         self.assertTrue('id' in self.data['room'])
@@ -63,7 +63,7 @@ class TestSocketIOHandler(unittest.TestCase):
         self.assertTrue('plugins' in self.data['room'])
 
     def test_room_create_with_plugin(self):
-        print('\n', sys._getframe().f_code.co_name)
+        print('\n', sys._getframe().f_code.co_name, flush=True)
 
         @self.client.on('plugin/register')
         def plugin_register(data):
@@ -81,15 +81,15 @@ class TestSocketIOHandler(unittest.TestCase):
 
         self.client.emit('visit', {'userName': 'room_with_plugin'})
         self.client.emit('plugin/register',
-                      {'name': 'counter',
-                       'description': 'counter',
-                       'author': 'k',
-                       'tags': 'official',
-                       'content': content})
+                         {'name': 'counter',
+                          'description': 'counter',
+                          'author': 'k',
+                          'tags': 'official',
+                          'content': content})
 
-        self.client.sleep(2)
+        self.client.sleep(1)
         self.client.emit('room/create', {'roomName': 'some_room', 'plugins': [self.data['id']]})
-        self.client.sleep(2)
+        self.client.sleep(1)
 
         self.assertTrue('room' in self.data)
         self.assertTrue('plugins' in self.data['room'])
@@ -110,7 +110,7 @@ class TestSocketIOHandler(unittest.TestCase):
         self.assertTrue('content' in self.data['room']['plugins'][0]['meta'])
 
     def test_room_enter_with_plugin(self):
-        print('\n', sys._getframe().f_code.co_name)
+        print('\n', sys._getframe().f_code.co_name, flush=True)
 
         @self.client.on('plugin/register')
         def plugin_register(data):
@@ -133,16 +133,16 @@ class TestSocketIOHandler(unittest.TestCase):
 
         self.client.emit('visit', {'userName': 'room_with_plugin'})
         self.client.emit('plugin/register',
-                      {'name': 'counter',
-                       'description': 'counter',
-                       'author': 'k',
-                       'tags': 'official',
-                       'content': content})
-        self.client.sleep(2)
+                         {'name': 'counter',
+                          'description': 'counter',
+                          'author': 'k',
+                          'tags': 'official',
+                          'content': content})
+        self.client.sleep(1)
         self.client.emit('room/create', {'roomName': 'some_room', 'plugins': [self.data['id']]})
-        self.client.sleep(2)
+        self.client.sleep(1)
         self.client.emit('room/enter', {'roomId': self.data['room']['id']})
-        self.client.sleep(2)
+        self.client.sleep(1)
 
         self.assertTrue('room' in self.data)
         self.assertTrue('plugins' in self.data['room'])
@@ -161,3 +161,78 @@ class TestSocketIOHandler(unittest.TestCase):
         self.assertTrue('author' in self.data['room']['plugins'][0]['meta'])
         self.assertTrue('tags' in self.data['room']['plugins'][0]['meta'])
         self.assertTrue('content' in self.data['room']['plugins'][0]['meta'])
+
+    def test_room_enter_update_detection(self):
+        print('\n', sys._getframe().f_code.co_name, flush=True)
+        self.client2 = socketio.Client()
+        self.client2.connect(url)
+
+        @self.client.on('room/create')
+        def room_enter(data):
+            self.data = data
+
+        @self.client.on('room/update')
+        def room_update(data):
+            self.data = data
+
+        self.client.emit('visit', {'userName': 'update_detection'})
+        self.client.sleep(1)
+        self.client.emit('room/create', {'roomName': 'some room', 'plugins': []})
+        self.client.sleep(1)
+        self.client.emit('room/enter', {'roomId': self.data['room']['id']})
+        self.client.sleep(1)
+
+        self.client2.emit('visit', {'userName': 'update_detection2'})
+        self.client.sleep(1)
+        self.client2.emit('room/enter', {'roomId': self.data['room']['id']})
+
+        self.client2.sleep(1)
+
+        self.assertTrue('room' in self.data)
+        self.assertTrue('id' in self.data['room'])
+        self.assertTrue('name' in self.data['room'])
+        self.assertTrue('members' in self.data['room'])
+        self.assertTrue('plugins' in self.data['room'])
+
+        self.client2.disconnect()
+
+    def test_room_exit_update_detection(self):
+        print('\n', sys._getframe().f_code.co_name, flush=True)
+
+        self.client2 = socketio.Client()
+        self.client2.connect(url)
+
+        @self.client.on('room/create')
+        def room_enter(data):
+            self.data = data
+
+        @self.client.on('room/update')
+        def room_update(data):
+            self.data = data
+
+        @self.client2.on('room/exit')
+        def room_exit(data):
+            print(data, file=sys.stderr, flush=True)
+
+        self.client.emit('visit', {'userName': 'exit_detection'})
+        self.client.sleep(1)
+        self.client.emit('room/create', {'roomName': 'some room', 'plugins': []})
+        self.client.sleep(1)
+        self.client.emit('room/enter', {'roomId': self.data['room']['id']})
+        self.client.sleep(1)
+
+        self.client2.emit('visit', {'userName': 'exit_detection2'})
+        self.client.sleep(1)
+        self.client2.emit('room/enter', {'roomId': self.data['room']['id']})
+        self.client.sleep(1)
+        self.client2.emit('room/exit')
+        self.client2.sleep(1)
+
+        self.assertTrue('room' in self.data)
+        self.assertTrue('id' in self.data['room'])
+        self.assertTrue('name' in self.data['room'])
+        self.assertTrue('members' in self.data['room'])
+        self.assertEqual(len(self.data['room']['members']), 1)
+        self.assertTrue('plugins' in self.data['room'])
+
+        self.client2.disconnect()

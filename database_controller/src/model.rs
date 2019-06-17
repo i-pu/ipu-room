@@ -28,6 +28,7 @@ pub struct Plugin {
 )]
 #[table_name = "users"]
 #[serde(rename_all = "camelCase")]
+#[changeset_options(treat_none_as_null="true")]
 pub struct User {
     pub id: String,
     pub name: String,

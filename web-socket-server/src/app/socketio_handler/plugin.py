@@ -29,7 +29,7 @@ def plugin_register(data):
     if 'id' in json:
         res_data = {'state': True, **json}
     else:
-        res_data={'state': False},
+        res_data = {'state': False},
 
     socketio.emit('plugin/register',
                   data=res_data,
@@ -50,7 +50,7 @@ def plugin_trigger(data):
                   room=room_id)
 
 
-@socketio.on('plugin/sync')
+@socketio.on('plugin/clone')
 @utils.byte_data_to_dict
 @utils.check_user
 @utils.function_info_wrapper
@@ -74,5 +74,7 @@ def plugin_sync(data):
     clone_id = model.User.get(None, room_id)[0]['id']
 
     socketio.emit('plugin/clone',
-                  data={'roomId': room_id, 'instanceId': instance_id, 'from': request.sid},
+                  data={'roomId': room_id,
+                        'instanceId': instance_id,
+                        'from': request.sid},
                   room=clone_id)

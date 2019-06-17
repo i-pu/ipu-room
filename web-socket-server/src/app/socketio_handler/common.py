@@ -50,10 +50,9 @@ def disconnect(data):
         leave_room(room_id)
         model.User.delete(request.sid)
         room = model.Room.get(room_id)
-        active_plugins = model.ActivePlugin.get(None, room_id)
         members, plugins = model.Room.make_json_elem(room_id,
                                                      None,
-                                                     active_plugins)
+                                                     None)
         socketio.emit('room/update',
                       data={'room': {**room,
                                      'members': members,

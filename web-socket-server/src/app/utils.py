@@ -3,6 +3,10 @@ from functools import wraps
 from types import FunctionType
 from logging import basicConfig, getLogger, DEBUG
 
+from flask import request
+
+from .model import User
+
 basicConfig()
 mylogger = getLogger(__name__)
 mylogger.setLevel(DEBUG)
@@ -29,13 +33,12 @@ def check_user(handler: FunctionType):
     @wraps(handler)
     def already_registered(*args, **kwargs):
         mylogger.info('check user')
+        user = User.get(request.sid, None)
 
-        # todo: check
-        # user = User.query.filter_by(id=request.sid).one_or_none()
-        # if user is None:
-        #     raise RuntimeError("user.id: {} is not defined.".format(request.sid))
-
-        # mylogger.debug('- - user is {}'.format(user))
+        if user is None:
+            raise RuntimeError("user.id: {} is not defined.".format(request.sid))
+        else:
+            mylogger.info('user: {}'.format(request.sid))
         return handler(*args, **kwargs)
 
     return already_registered

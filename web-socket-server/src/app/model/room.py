@@ -41,12 +41,25 @@ class Room:
         User.enter(room_id, sid)
 
     @classmethod
-    def make_json_elem(cls, room_id, members, active_plugins):
+    def make_json_elem(cls, room_id, members=None, active_plugins=None):
+        """
+        Parameters
+        ----------
+        room_id: str
+        members: list[Any]
+        active_plugins: list[str]
+
+        Returns
+        -------
+        tuple
+        """
+
         if members is None:
             members = User.get(user_id=None, room_id=room_id)
 
         if active_plugins is None:
-            active_plugins = []
+            active_plugins = ActivePlugin.get(active_plugin_id=None,
+                                              room_id=room_id)
 
         plugins = []
         for ap in active_plugins:

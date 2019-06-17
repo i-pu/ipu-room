@@ -48,9 +48,7 @@ def room_enter(data):
     model.Room.enter(room_id, request.sid)
     room = model.Room.get(room_id)
 
-    active_plugins = model.ActivePlugin.get(active_plugin_id=None,
-                                            room_id=room_id)
-    members, plugins = model.Room.make_json_elem(room_id, None, active_plugins)
+    members, plugins = model.Room.make_json_elem(room_id, None, None)
 
     socketio.emit('room/update',
                   data={'room': {**room,
@@ -69,19 +67,17 @@ def room_enter(data):
 @utils.check_user
 @utils.function_info_wrapper
 def room_exit(data):
-    basicConfig()
-    # user = User.query.filter_by(id=request.sid).one()
-    # room_id = user.room_id
-    # leave_room(room_id)
+    user = model.User.get(request.sid, None)
+    room_id = user['roomId']
+    user = model.User.update(user['id'], user['name'], None)
+    leave_room(room_id)
 
-    # user.query.update({'room_id': None})
-    # db.session.commit()
+    room = model.Room.get(room_id)
+    members, plugins = model.Room.make_json_elem(room_id, None, None)
 
-    # socketio.emit('room/exit')  # 抜けた人に通知
-
-    # users = User.query.filter_by(room_id=room_id).all()
-
-    # ret = {'members': list(map(User.__to_dict__, users))}
-    # socketio.emit('room/exit_event',  # 残ってる人に通知
-    #               data=ret,
-    #               room=room_id)
+    socketio.emit('room/exit', data=user, room=request.sid)
+    socketio.emit('room/update',
+                  data={'room': {**room,
+                                 'members': members,
+                                 'plugins': plugins}},
+                  room=room_id)

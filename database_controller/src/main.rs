@@ -15,6 +15,7 @@ use diesel::{
 use dotenv;
 
 mod v1;
+mod v2;
 mod schema;
 mod model;
 
@@ -74,6 +75,11 @@ fn main() -> std::io::Result<()> {
                 .route(web::put().to(v1::active_plugin::put_active_plugin)))
             .service(web::resource("/api/v1/active_plugins/{id}")
                 .route(web::get().to(v1::active_plugin::get_active_plugin)))
+
+            .service(web::resource("/api/v2/helthz")
+                .route(web::get().to(v2::healthz)))
+            .service(web::resource("/api/v2/visit")
+                .route(web::post().to(v2::common::visit)))
     })
         .bind("0.0.0.0:".to_owned() + &port)?
         .run()

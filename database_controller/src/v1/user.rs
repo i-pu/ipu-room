@@ -60,12 +60,12 @@ pub fn put_user(json: web::Json<User>, pool: web::Data<Pool>) -> web::Json<User>
     use crate::schema::users;
     let mut new_user: User = json.0;
     new_user =
-        diesel::update(users::dsl::users.find(new_user.id.clone()))
-            .set(new_user)
+        diesel::update(users::dsl::users.find(&new_user.id))
+            .set(&new_user)
             .get_result(&pool.get().unwrap())
             .unwrap();
 
-    println!("{:#?}", new_user);
+    println!("user: {:#?}", new_user);
     web::Json(new_user)
 }
 

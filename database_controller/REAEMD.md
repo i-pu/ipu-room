@@ -32,6 +32,17 @@ update の際にidを変更しないのでidは直接変更させる必要があ
 #### QueryDsl
 filter や find や order などが入った trait
 
+#### Null に update するときに注意すること
+Opion<T>にして，Noneをdatabaseに入れようとしても．  
+Noneをデフォルトで無視するらしい．
+Noneにupdateしたければ，Option<Option<T>>にする必要がある  
+こっちでもいいらしい
+```
+#[changeset_options（treat_none_as_null =“true”）]
+pub struct Hoge {
+}
+```
+
 ### serde
 #### skip_deserialization
 json 等から struct(rust) にするときスキップするのでdefault があればそれを呼ぶ

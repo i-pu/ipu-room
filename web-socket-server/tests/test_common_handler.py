@@ -20,13 +20,13 @@ class TestSocketIOHandler(unittest.TestCase):
         self.client.disconnect()
 
     def test_visit(self):
-        print('\n', sys._getframe().f_code.co_name)
+        print('\n', sys._getframe().f_code.co_name, flush=True)
         @self.client.on('visit')
         def visit(data):
             self.data = data
 
         self.client.emit('visit', {'userName': 'alis'})
-        self.client.sleep(2)
+        self.client.sleep(1)
 
         self.assertTrue('user' in self.data)
         self.assertTrue('id' in self.data['user'])
@@ -34,7 +34,7 @@ class TestSocketIOHandler(unittest.TestCase):
         self.assertTrue('roomId' in self.data['user'])
 
     def test_lobby(self):
-        print('\n', sys._getframe().f_code.co_name)
+        print('\n', sys._getframe().f_code.co_name, flush=True)
         @self.client.on('lobby')
         def lobby(data):
             self.data = data
@@ -42,6 +42,6 @@ class TestSocketIOHandler(unittest.TestCase):
 
         self.client.emit('visit', {'userName': 'lobby user'})
         self.client.emit('lobby')
-        self.client.sleep(2)
+        self.client.sleep(1)
 
         self.assertTrue('rooms' in self.data)
