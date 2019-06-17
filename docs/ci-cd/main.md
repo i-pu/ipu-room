@@ -28,7 +28,12 @@ if (document.readyState == 'interactive' || document.readyState == 'complete') {
 # Overview
 簡単そうなのでgoogle cloud build を使う
 ```mermaid
-graph TD
-  A --> B
-  C --> D
+graph LR
+  GIT[github master] --> GCB[google cloud build]
+  GCB -- push --> DOCKER[docker.io]
+  GCB -- build --> GCB 
+  GCB -- trigger --> HELM[helm]
+  DOCKER -- image --> HELM
+  HELM -- install --> GKE
+
 ```
