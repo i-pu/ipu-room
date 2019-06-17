@@ -132,7 +132,7 @@ io.on('connection', (socket) => {
   }) => {
     const { event, args } = data
     console.log(`${color.black.bgWhite('[plugin/trigger]')} ROOM ${color.gray(roomId)} ${color.yellow(instanceId)} ${color.blue(event)}`)
-    io.in(roomId).emit(`plugin/${instanceId}/trigger`, { event, args })
+    io.in(roomId).emit(`plugin/${instanceId}/trigger`, { data: { event, args } })
   })
 
   socket.on('plugin/sync', ({ roomId, instanceId }: { roomId: string, instanceId: string }) => {
