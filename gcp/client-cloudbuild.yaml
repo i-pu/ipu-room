@@ -82,7 +82,6 @@ steps:
         || \
         ./helm3-alpha-arm64 install \
         -f helm/values.yaml \
-        -f helm/client/values.yaml \
-        --set env=prd
+        --set env=prd,image=ipu-client,tag=${REVISION_ID} \
         client helm/client
     waitFor: ['push-image', 'get-cluster-credentials']
