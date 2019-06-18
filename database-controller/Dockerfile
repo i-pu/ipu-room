@@ -1,6 +1,6 @@
 FROM rust:1.35 as builder
 
-WORKDIR /usr/src/database_controller
+WORKDIR /usr/src/database-controller
 
 RUN apt-get update && \
     apt-get install musl-tools -y && \
@@ -11,8 +11,8 @@ RUN apt-get update && \
 COPY Cargo.toml ./
 
 RUN RUSTFLAGS=-Clinker=musl-gcc cargo build --release --target=x86_64-unknown-linux-musl
-RUN rm -rf /usr/src/database_controller/target/x86_64-unknown-linux-musl/release/database_controller
-RUN rm -f /usr/src/database_controller/target/x86_64-unknown-linux-musl/release/deps/database_controller*
+RUN rm -rf /usr/src/database-controller/target/x86_64-unknown-linux-musl/release/database_controller
+RUN rm -f /usr/src/database-controller/target/x86_64-unknown-linux-musl/release/deps/database-controller*
 RUN rm -rf src/
 
 COPY src src/
@@ -24,9 +24,9 @@ FROM alpine:3.9
 
 RUN apk add --no-cache libpq postgresql-client
 
-COPY --from=builder /usr/src/database_controller/target/x86_64-unknown-linux-musl/release/database_controller /usr/local/bin/database_controller
+COPY --from=builder /usr/src/database-controller/target/x86_64-unknown-linux-musl/release/database-controller /usr/local/bin/database-controller
 
 COPY entry.sh ./
 
 USER nobody
-CMD ["./entry.sh" , "database_controller"]
+CMD ["./entry.sh" , "database-controller"]

@@ -4,5 +4,5 @@ webSocketServer:
   tag: latest
 
 databaseController:
-  image: database_controller
+  image: database-controller
   tag: latest

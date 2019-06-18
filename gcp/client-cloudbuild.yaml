@@ -14,8 +14,8 @@ steps:
     args:
       - '-c'
       - |
-        docker pull docker.io/${_DOCKER_USERNAME}/ipu-client:latest &&\
-        docker pull docker.io/${_DOCKER_USERNAME}/ipu-client-builder:latest
+        docker pull docker.io/${_DOCKER_USERNAME}/ipu-client:latest;\
+        docker pull docker.io/${_DOCKER_USERNAME}/ipu-client-builder:latest || true
     waitFor: ['-']
 
   - name: 'gcr.io/cloud-builders/docker'
@@ -35,7 +35,7 @@ steps:
         docker build \
         -t docker.io/${_DOCKER_USERNAME}/ipu-client:latest \
         -t docker.io/${_DOCKER_USERNAME}/ipu-client:${REVISION_ID} \
-        --cache-from docker.io/${_DOCKER_USERNAME}/ipu-client-builder:latest \
+        --cache-from docker.io/${_DOCKER_USERNAME}/ipu-client-builder:${REVISION_ID} \
         --cache-from docker.io/${_DOCKER_USERNAME}/ipu-client:latest \
         -f Dockerfile-cd \
         .
@@ -55,28 +55,34 @@ steps:
 
   # deploy
   - name: 'gcr.io/cloud-builders/gcloud'
-    id: 'sed-file'
-    entrypoint: '/bin/bash'
-    args:
-      - '-c'
-      - |
-        ./gcp/kubernetes/client/sed.sh ${_DOCKER_USERNAME} ${REVISION_ID}
-    waitFor: ['-']
-
-  - name: 'gcr.io/cloud-builders/gcloud'
     id: 'get-cluster-credentials'
     entrypoint: '/bin/bash'
     args:
       - '-c'
       - |
-        gcloud container clusters get-credentials ipu-project-cluster --zone=${_ZONE} --project=${PROJECT_ID}
+        gcloud container clusters get-credentials ipu-project-cluster \
+        --zone=${_ZONE} \
+        --project=${PROJECT_ID}
     waitFor: ['-']
 
   - name: 'gcr.io/cloud-builders/kubectl'
-    id: 'deploy'
+    id: 'helm'
     entrypoint: '/bin/bash'
     args:
       - '-c'
       - |
-        kubectl apply -f gcp/kubernetes/client
-    waitFor: ['sed-file', 'get-cluster-credentials', 'push-image']
+        ./helm3-alpha-arm64 lint \
+        -f helm/values.yaml \
+        --set env=prd,image=ipu-client,tag=${REVISION_ID} \
+        && \
+        ./helm3-alpha-arm64 upgrade \
+        -f helm/values.yaml \
+        --set env=prd,image=ipu-client,tag=${REVISION_ID} \
+        client helm/client \
+        || \
+        ./helm3-alpha-arm64 install \
+        -f helm/values.yaml \
+        -f helm/client/values.yaml \
+        --set env=prd
+        client helm/client
+    waitFor: ['push-image', 'get-cluster-credentials']

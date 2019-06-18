@@ -39,6 +39,11 @@ __pycache__/
 /gcp/terraform/*
 !/gcp/terraform/*.tf
 
+# helm
+helm/values.yaml
+
 # rust
 /plugin_market/target
 /plugin_market/plugin_market.iml
+
+

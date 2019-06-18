@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: web-socket-client
-          image: {{ .Values.docker.username }}/ipu-client:{{ .Values.client.imageTag }}
+          image: {{ .Values.docker.username }}/{{ .Values.image }}:{{ .Values.tag }}
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: {{ .Values.client.port }}

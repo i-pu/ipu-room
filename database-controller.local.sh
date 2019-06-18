@@ -2,7 +2,7 @@
 set -ex
 
 ./helm3-alpha uninstall database-controller || true
-docker build -t kafuhamada/database_controller database_controller
+docker build -t kafuhamada/database-controller database-controller
 
 ./helm3-alpha install \
 -f helm/values.yaml \
