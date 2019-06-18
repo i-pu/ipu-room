@@ -1,17 +1,23 @@
-// A Simple socket server for testing
+// =========================
+// simple-server.ts
+//
+// Copyright (c) 2019 i-pu
+// =========================
 
 // @ts-ignore
-const Counter = require('./../plugin_examples/counter')
-const Chat = require('./../plugin_examples/chat')
-const Player = require('./../plugin_examples/player')
-const Paint: PluginPackage = require('./../plugin_examples/paint')
+const Counter = require('@plugin/counter')
+const Chat = require('@plugin/chat')
+const Player = require('@plugin/player')
+const Paint: PluginPackage = require('@plugin/paint')
+
 const app = require('http').createServer()
+const tsc = require('typescript-compiler')
 import * as SocketIO from 'socket.io'
 const uuidv4 = require('uuid')
 const io: SocketIO.Server = require('socket.io')(app)
 const color = require('colors')
 
-import { Room, PluginPackage } from '@/model'
+import { Room, PluginPackage } from '@client/model'
 
 app.listen(1234, () => {
   console.log(`simple server running on ${color.green.bold('localhost:1234')}`)
@@ -126,6 +132,10 @@ io.on('connection', (socket) => {
 
   // socket.on('plugin/event/load', ({}) => {})
   // socket.on('plugin/event/destroy', ({}) => {})
+
+  socket.on('room/compile', ({ ipl }: { ipl: string }) => {
+
+  })
 
   socket.on('plugin/trigger', ({ roomId, instanceId, data, options }: {
     roomId: string, instanceId: string, data: { event: string, args: any[] }, options: {}
