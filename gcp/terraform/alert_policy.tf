@@ -1,4 +1,4 @@
-resource "google_monitoring_alert_policy" "kube-error" {
+resource "google_monitoring_alert_policy" "web-socket-server-error" {
   display_name = "[Test alert policy]"
   combiner = "OR"
   documentation {
@@ -8,7 +8,7 @@ resource "google_monitoring_alert_policy" "kube-error" {
     display_name = "test-alert-policy conditions"
     condition_threshold {
       filter = <<EOF
-metric.type="logging.googleapis.com/user/${google_logging_metric.web-socket-server.name}" AND
+metric.type="logging.googleapis.com/user/${google_logging_metric.web-socket-server-error.name}" AND
 resource.type="k8s_container"
 EOF
 
@@ -31,9 +31,10 @@ EOF
     google_monitoring_notification_channel.email.id,
   ]
   enabled = true
+  depends_on = [google_logging_metric.web-socket-server-error]
 }
 
-resource "google_logging_metric" "web-socket-server" {
+resource "google_logging_metric" "web-socket-server-error" {
   name = "k8s_container/web-socket-server"
   filter = <<EOF
 resource.type="k8s_container" AND
