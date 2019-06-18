@@ -100,7 +100,7 @@ class TestSocketIOHandler(unittest.TestCase):
 
         @self.client.on('plugin/clone')
         def plugin_clone(data):
-            print('\n', sys._getframe().f_code.co_name, flush=True)
+            print('\ncalled clone\n', flush=True)
             self.data = data
             # clone が呼ばれているか
             self.assertTrue('roomId' in self.data)
@@ -144,7 +144,6 @@ class TestSocketIOHandler(unittest.TestCase):
                            'instanceId': self.data['room']['plugins'][0]['plugin']['instanceId']})
         self.client.sleep(1)
 
-        print(self.data, file=sys.stderr, flush=True)
         self.assertTrue('record' in self.data)
 
         self.client2.disconnect()

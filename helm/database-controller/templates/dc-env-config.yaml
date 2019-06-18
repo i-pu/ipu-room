@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-dc-env-config
+data:
+  {{ if eq .Values.env "dev" }}
+  IPU_ENV: dev
+  {{ end }}
+  {{ if eq .Values.env "prd" }}
+  IPU_ENV: prd
+  {{ end }}
+  DATABASE_URL: postgresql://{{ .Values.postgres.user }}:{{ .Values.postgres.password }}@{{ .Values.postgres.hostname }}:5432/{{ .Values.postgres.db }}
+  {{ if eq .Values.env "dev" }}
+  RUST_LOG: actix_web=debug
+  {{ end }}
+  {{ if eq .Values.env "prd" }}
+  RUST_LOG: actix_web=info
+  {{ end }}
+  PORT: "{{ .Values.databaseController.port }}"
+  RUST_BACKTRACE: "1"
+  POSTGRES_HOST: {{ .Values.postgres.hostname }}
+  POSTGRES_USER: {{ .Values.postgres.user }}
+  POSTGRES_PASSWORD: {{ .Values.postgres.password }}
+  POSTGRES_DB: {{ .Values.postgres.db }}

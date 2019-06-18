@@ -1,0 +1,4 @@
+image: database_controller
+tag: latest
+
+env: dev

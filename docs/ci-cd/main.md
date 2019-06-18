@@ -26,7 +26,7 @@ if (document.readyState == 'interactive' || document.readyState == 'complete') {
 </head>
 
 # Overview
-簡単そうなのでgoogle cloud build を使う
+簡単そうなのでgoogle cloud build を使う．以下は全体図．
 ```mermaid
 graph LR
   GIT[github master] --> GCB[google cloud build]
@@ -35,5 +35,15 @@ graph LR
   GCB -- trigger --> HELM[helm]
   DOCKER -- image --> HELM
   HELM -- install --> GKE
-
 ```
+
+## Helm 
+helm 以下のディレクトリにチャートが揃っており，
+互いに共通の変数がディレクトリ直下の`values.yaml`にしまわれている．
+チャートごとの変数はそれぞれのチャートのディレクトリ以下にしまわれている．
+
+チャート名やリリース名はkubeのリソース名に含まれるので，`lowercase`で
+`-`か`.`を使うようにする．
+
+### dev
+### prd

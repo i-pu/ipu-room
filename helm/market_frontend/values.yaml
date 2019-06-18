@@ -1,0 +1,18 @@
+docker:
+  username: kafuhamada
+
+webSocketServer:
+  port: 8008
+  nodePort: 30008
+
+databaseController:
+  serviceName: dc
+  port: 8888
+  nodePort: 30888
+  configMapName: dc-config
+
+postgres:
+  user: ipu
+  password: ipu-password
+  db: ipu-room
+  hostname: postgres

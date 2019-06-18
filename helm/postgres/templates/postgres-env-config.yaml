@@ -7,3 +7,9 @@ data:
   POSTGRES_USER: {{ .Values.postgres.user }}
   POSTGRES_PASSWORD: {{ .Values.postgres.password }}
   POSTGRES_DB: {{ .Values.postgres.db }}
+  {{ if eq .Values.env "dev" }}
+  IPU_ENV: dev
+  {{ end }}
+  {{ if eq .Values.env "prd" }}
+  IPU_ENV: prd
+  {{ end }}

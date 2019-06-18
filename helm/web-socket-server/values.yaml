@@ -1,0 +1,4 @@
+image: web-socket-server
+tag: latest
+
+env: dev

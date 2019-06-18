@@ -38,7 +38,6 @@ class TestSocketIOHandler(unittest.TestCase):
         @self.client.on('lobby')
         def lobby(data):
             self.data = data
-            print(self.data, file=sys.stderr, flush=True)
 
         self.client.emit('visit', {'userName': 'lobby user'})
         self.client.emit('lobby')

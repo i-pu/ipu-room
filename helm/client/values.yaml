@@ -1,5 +1,1 @@
-docker:
-  username: kafuhamada
-
-client:
-  port: 8000
+env: local

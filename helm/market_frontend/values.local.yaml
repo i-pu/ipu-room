@@ -1,4 +1,4 @@
-isLocal: true
+isLocal: true # アプリごとにログの仕方が変わる
 webSocketServer:
   image: web-socket-server
   tag: latest

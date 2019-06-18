@@ -21,13 +21,11 @@ spec:
     spec:
       containers:
         - name: web-socket-server
-          image: {{ .Values.docker.username }}/{{ .Values.webSocketServer.image }}:{{ .Values.webSocketServer.tag }}
+          image: {{ .Values.docker.username }}/{{ .Values.image }}:{{ .Values.tag }}
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
                 name: {{ .Chart.Name }}-web-socket-server-env-config
-            - configMapRef:
-                name: {{ .Chart.Name }}-global-env-config
           ports:
             - containerPort: {{ .Values.webSocketServer.port }}
           resources:

@@ -23,8 +23,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ .Chart.Name }}-postgres-env-config
-            - configMapRef:
-                name: {{ .Chart.Name }}-global-env-config
           ports:
             - containerPort: 5432
           resources:

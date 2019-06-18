@@ -25,7 +25,6 @@ class TestSocketIOHandler(unittest.TestCase):
         @self.client.on('room/create')
         def room_create(data):
             self.data = data
-            print(self.data, file=sys.stderr, flush=True)
 
         self.client.emit('visit', {'userName': 'room/create user'})
         self.client.emit('lobby')
@@ -48,7 +47,6 @@ class TestSocketIOHandler(unittest.TestCase):
         @self.client.on('room/enter')
         def room_enter(data):
             self.data = data
-            print(self.data, file=sys.stderr, flush=True)
 
         self.client.emit('visit', {'userName': 'room/enter user'})
         self.client.emit('room/create', {'roomName': 'room/enter room', 'plugins': []})
@@ -68,12 +66,10 @@ class TestSocketIOHandler(unittest.TestCase):
         @self.client.on('plugin/register')
         def plugin_register(data):
             self.data = data
-            print(self.data, file=sys.stderr, flush=True)
 
         @self.client.on('room/create')
         def room_create(data):
             self.data = data
-            print(self.data, file=sys.stderr, flush=True)
 
         file_name = os.path.join(os.path.dirname(__file__), 'counter.ipl')
         with open(file_name, mode='r') as f:
@@ -115,17 +111,14 @@ class TestSocketIOHandler(unittest.TestCase):
         @self.client.on('plugin/register')
         def plugin_register(data):
             self.data = data
-            print(self.data, file=sys.stderr, flush=True)
 
         @self.client.on('room/create')
         def room_create(data):
             self.data = data
-            print(self.data, file=sys.stderr, flush=True)
 
         @self.client.on('room/enter')
         def room_enter(data):
             self.data = data
-            print(self.data, file=sys.stderr, flush=True)
 
         file_name = os.path.join(os.path.dirname(__file__), 'counter.ipl')
         with open(file_name, mode='r') as f:
@@ -212,7 +205,7 @@ class TestSocketIOHandler(unittest.TestCase):
 
         @self.client2.on('room/exit')
         def room_exit(data):
-            print(data, file=sys.stderr, flush=True)
+            print('\ncalled exit\n', flush=True)
 
         self.client.emit('visit', {'userName': 'exit_detection'})
         self.client.sleep(1)

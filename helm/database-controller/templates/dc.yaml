@@ -19,17 +19,13 @@ spec:
     spec:
       containers:
         - name: database-controller
-          image: {{ .Values.docker.username}}/{{ .Values.databaseController.image }}:{{ .Values.databaseController.tag }}
+          image: {{ .Values.docker.username}}/{{ .Values.image }}:{{ .Values.tag }}
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: {{ .Values.databaseController.port }}
           envFrom:
             - configMapRef:
-                name: {{ .Chart.Name }}-postgres-env-config
-            - configMapRef:
                 name: {{ .Chart.Name }}-dc-env-config
-            - configMapRef:
-                name: {{ .Chart.Name }}-global-env-config
           readinessProbe:
             initialDelaySeconds: 10
             failureThreshold: 1
