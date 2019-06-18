@@ -4,20 +4,22 @@
 // Copyright (c) 2019 i-pu
 // =========================
 
-// @ts-ignore
-const Counter = require('@plugin/counter')
-const Chat = require('@plugin/chat')
-const Player = require('@plugin/player')
-const Paint: PluginPackage = require('@plugin/paint')
-
-const app = require('http').createServer()
-const tsc = require('typescript-compiler')
-import * as SocketIO from 'socket.io'
-const uuidv4 = require('uuid')
-const io: SocketIO.Server = require('socket.io')(app)
-const color = require('colors')
-
+import SocketIO, { Server } from 'socket.io'
+import uuidv4 from 'uuid'
+import color from 'colors'
+import { createServer } from 'http'
 import { Room, PluginPackage } from '@client/model'
+import { __compilePlugin_test__ } from '../plugin-compiler/compiler'
+
+import Counter from '../examples/counter'
+// import Chat from '@plugin/chat'
+// import Player from '@plugin/player'
+// import Paint from '@plugin/paint'
+
+const app = createServer()
+const io: Server = SocketIO(app)
+
+__compilePlugin_test__()
 
 app.listen(1234, () => {
   console.log(`simple server running on ${color.green.bold('localhost:1234')}`)
@@ -39,9 +41,9 @@ const roomList: Record<string, Room> = {
     members: [],
     pluginPackages: [
       activatePlugin(Counter),
-      activatePlugin(Chat),
-      activatePlugin(Paint),
-      activatePlugin(Player)
+      // activatePlugin(Chat),
+      // activatePlugin(Paint),
+      // activatePlugin(Player)
     ],
     plugins: [],
   },
@@ -50,7 +52,7 @@ const roomList: Record<string, Room> = {
 // plugin-id -> pluginPackage
 const pluginMarket: Record<string, PluginPackage> = {
   'counter-0123-abcdef-4567': Counter,
-  'paint-xxxx-12345678': Paint,
+ // 'paint-xxxx-12345678': Paint,
 }
 
 // socketId -> roomId
@@ -71,7 +73,7 @@ io.on('connection', (socket) => {
   })
 
   socket.on('lobby', ({ userId }) => {
-    console.log(`${color.black.bgWhite('[lobby]')} Lobby ${color.yellow(Object.keys(roomList).length)} rooms`)
+    console.log(`${color.black.bgWhite('[lobby]')} Lobby ${color.yellow(Object.keys(roomList).length.toString())} rooms`)
     socket.emit('lobby', { rooms: Object.values(roomList) })
   })
 
@@ -117,7 +119,7 @@ io.on('connection', (socket) => {
       })
     }
 
-    console.log(`${color.black.bgWhite('[room/enter]')} Total ${color.yellow(room.pluginPackages.length)} Plugins applied!!`)
+    console.log(`${color.black.bgWhite('[room/enter]')} Total ${color.yellow(room.pluginPackages.length.toString())} Plugins applied!!`)
     for (const { plugin, meta } of room.pluginPackages) {
       console.log(`${color.black.bgWhite('[room/enter]')}   - ${color.gray(meta.author + '/' + meta.name)} (${plugin.instanceId})`)
     }

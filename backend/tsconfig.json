@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
+    "module": "commonjs",
+    "target": "es6",
     "strict": true,
     "jsx": "preserve",
     "importHelpers": true,
@@ -16,12 +16,18 @@
       "node"
     ],
     "paths": {
-      "@client/*": [
-        "../client/src/*"
+      "@": [
+        "./../client/src"
       ],
-      "@plugin/*": [
-        "../client/src/plugin_examples/*"
-      ]
-    },
-  }
+      "@client/*": [
+        "./../client/src/*"
+      ],
+    }
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

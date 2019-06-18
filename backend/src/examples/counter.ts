@@ -1,9 +1,9 @@
 // ==========================
 //  Example plugin counter
 // ========================
-import { Plugin, PluginMeta } from '@/model'
+import { PluginPackage } from '@client/model'
 
-module.exports = {
+export default {
   plugin: {
     template: `<div><h3> {{ record.count }} </h3><v-btn @click="plus"> Add </v-btn></div>`,
     functions: "({\n  initialize () {\n    return {\n      count: 0\n    }\n  },\n  plus() {\n    this.record.count++\n  }\n })",
@@ -28,6 +28,4 @@ module.exports = {
     tags: 'a,b,c',
     content: '<html></html>',
   },
-} as {
-  plugin: Plugin, meta: PluginMeta,
-}
+} as PluginPackage
