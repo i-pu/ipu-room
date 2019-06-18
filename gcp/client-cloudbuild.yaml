@@ -65,7 +65,7 @@ steps:
         --project=${PROJECT_ID}
     waitFor: ['-']
 
-  - name: 'gcr.io/gcloud-builders/gcloud'
+  - name: 'gcr.io/cloud-builders/gcloud'
     id: 'decryption'
     entrypoint: '/bin/bash'
     args:
