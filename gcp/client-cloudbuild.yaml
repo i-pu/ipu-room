@@ -75,9 +75,8 @@ steps:
         --key=helm \
         --keyring=gcb \
         --location=global \
-        --plaintext-file=helm/values.yaml\
+        --plaintext-file=helm/values.yaml \
         --ciphertext-file=helm/values.yaml.enc
-        --project=${PROJECT_ID}
     waitFor: ['-']
 
   - name: 'gcr.io/cloud-builders/kubectl'
