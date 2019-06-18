@@ -1,18 +1,22 @@
-<template>
-  <div>
-    <h3> {{ record.count }} </h3>
-    <v-btn @click="plus(1)"> Add </v-btn>
-  </div>
+<template lang="pug">
+  div
+    h3 {{ record.count }}
+    v-btn(@click="plus(1)") Add
 </template>
-<script>
-export default {
-  initialize () {
-    return {
-      count: 0
-    }
-  },
+<script lang="ts">
+class IplPlugin {
+}
+
+class Counter extends IplPlugin {
+  private count: number = 0
+
+  constructor () {
+    super()
+    this.count = 0
+  }
+
   plus() {
-    this.record.count++
+    this.count++
   }
 }
 </script>

@@ -9,17 +9,17 @@ import uuidv4 from 'uuid'
 import color from 'colors'
 import { createServer } from 'http'
 import { Room, PluginPackage } from '@client/model'
-import { __compilePlugin_test__ } from '../plugin-compiler/compiler'
+import { compilePlugin, __compilePlugin_test__ } from '../plugin-compiler/compiler'
 
 import Counter from '../examples/counter'
 // import Chat from '@plugin/chat'
 // import Player from '@plugin/player'
 // import Paint from '@plugin/paint'
 
+__compilePlugin_test__()
+
 const app = createServer()
 const io: Server = SocketIO(app)
-
-__compilePlugin_test__()
 
 app.listen(1234, () => {
   console.log(`simple server running on ${color.green.bold('localhost:1234')}`)
@@ -135,8 +135,9 @@ io.on('connection', (socket) => {
   // socket.on('plugin/event/load', ({}) => {})
   // socket.on('plugin/event/destroy', ({}) => {})
 
-  socket.on('room/compile', ({ ipl }: { ipl: string }) => {
-
+  socket.on('room/compile', async ({ ipl }: { ipl: string }) => {
+    const result = await compilePlugin(ipl)
+    socket.emit('room/compile', result)
   })
 
   socket.on('plugin/trigger', ({ roomId, instanceId, data, options }: {
