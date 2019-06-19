@@ -90,7 +90,7 @@ steps:
         ./helm3-alpha-amd64 lint \
         -f helm/values.yaml \
         --set env=prd,image=ipu-client,tag=${REVISION_ID} \
-        helm/client
+        helm/client \
         && \
         ./helm3-alpha-amd64 upgrade \
         -f helm/values.yaml \
