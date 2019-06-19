@@ -107,9 +107,9 @@ io.on('connection', (socket) => {
         const pluginPackage = await fetch(`http://localhost:8080/api/v1/plugin/load/${id}`)
           .then((res: any) => res.json()) as PluginPackage
         pluginPackages.push(pluginPackage)
-        console.log(`${color.black.bgWhite('[plugin/load]')} [${i}/${pluginIds.length}] Plugin ${color.yellow(id)} successfully loaded!!`)
+        console.log(`${color.black.bgWhite('[plugin/load]')} [${i + 1}/${pluginIds.length}] Plugin ${color.yellow(id)} successfully loaded!!`)
       } catch (error) {
-        console.log(`${color.black.bgRed('[plugin/load]')} [${i}/${pluginIds.length}] Plugin ${color.yellow(id)} failed to load...`)
+        console.log(`${color.black.bgRed('[plugin/load]')} [${i + 1}/${pluginIds.length}] Plugin ${color.yellow(id)} failed to load...`)
         console.log(error) 
       }
     })

@@ -90,10 +90,6 @@ export default class PluginDetail extends Vue {
         this.loaded = true
       })
 
-    this.makeSandbox()
-  }
-
-  makeSandbox () {
     this.$socket.emit('room/make', { 
       roomName: '部屋', 
       pluginIds: [ 'counter' ] 
@@ -109,6 +105,7 @@ export default class PluginDetail extends Vue {
         this.instance = await boot(pluginPackage, { room: this.room })
       }
       this.toast('Successfully Compiled')
+      console.log('[4/4] refresh all plugin')
     } catch (error) {
       this.toast('Failed to Compile')
       console.log(error)
