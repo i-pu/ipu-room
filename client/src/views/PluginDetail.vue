@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-layout(row wrap)
+  v-layout(row wrap v-if="loaded")
     v-toolbar(app)
       v-btn(icon to="/market")
         v-icon arrow_back
@@ -41,12 +41,21 @@ import Component from 'vue-class-component'
 import { Prop } from 'vue-property-decorator'
 import PluginEditor from '@/components/market/PluginEditor.vue'
 import { PluginPackage } from '../model'
-const Counter = require('@/plugin_examples/counter')
 
 @Component({
   components: { PluginEditor },
 })
 export default class PluginDetail extends Vue {
-  private pluginPackage: PluginPackage = _.clone(Counter)
+  private pluginPackage!: PluginPackage
+  private loaded: boolean = false
+
+  created () {
+    fetch(`http://localhost:8080/api/v1/market/plugins/aaa`)
+      .then(res => res.json())
+      .then((pluginPackage: PluginPackage) => {
+        this.pluginPackage = pluginPackage
+        this.loaded = true
+      })
+  }
 }
 </script>

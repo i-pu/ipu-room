@@ -6,61 +6,44 @@
 
 import SocketIO, { Server } from 'socket.io'
 import uuidv4 from 'uuid'
+import { readFileSync } from 'fs'
 import color from 'colors'
-import { createServer } from 'http'
-import { Room, PluginPackage } from '@client/model'
-import { compilePlugin, __compilePlugin_test__ } from '../plugin-compiler/compiler'
+import micro, { send } from 'micro'
+// @ts-ignore
+import cors from 'micro-cors'
+import { router, post, get } from 'microrouter'
+import { compilePlugin } from '../plugin-compiler/compiler'
+import { sessions, pluginMarket, roomList, activatePlugin } from './resources'
 
-import Counter from '../examples/counter'
-// import Chat from '@plugin/chat'
-// import Player from '@plugin/player'
-// import Paint from '@plugin/paint'
+const handler = router(
+  post('/api/v1/plugin/package', async (req, res) => {
+    const RawCounter = readFileSync(__dirname + '/../examples/counter.ipl', { encoding: 'utf-8' })
+    return await compilePlugin(RawCounter)
+  }),
+  get('/api/v1/market/plugins', async (req, res) => {
+    const metas = Object.values(pluginMarket)
+      .map(pluginPackage => pluginPackage.meta)
+    send(res, 200, JSON.stringify(metas))
+  }),
+  get('/api/v1/market/plugins/:id', async (req, res) => {
+    const pluginPackage = pluginMarket['counter-0123-abcdef-4567']
+    send(res, 200, JSON.stringify(pluginPackage))
+  }),
+  (req, res) => send(res, 404, 'Not Found')
+)
 
-__compilePlugin_test__()
-
-const app = createServer()
-const io: Server = SocketIO(app)
-
-app.listen(1234, () => {
-  console.log(`simple server running on ${color.green.bold('localhost:1234')}`)
+const apiServer = micro(cors()(handler))
+apiServer.listen(8080, () => {
+  console.log(`simple api server running on ${color.green.bold('localhost:8080')}`)
 })
 
-const activatePlugin = (pluginPackage: PluginPackage): PluginPackage => {
-  const newPackage: PluginPackage = JSON.parse(JSON.stringify(pluginPackage))
-  newPackage.plugin.instanceId = uuidv4()
-  return newPackage
-}
-
-// roomId -> room
-const roomList: Record<string, Room> = {
-  'xxxx-yyyy-zzzz': {
-    name: '雑談部屋1',
-    id: 'xxxx-yyyy-zzzz',
-    // tslint:disable:max-line-length
-    thumbnailUrl: 'https://public.potaufeu.asahi.com/686b-p/picture/12463073/5c4a362cea9cb2f5d90b60e2f2a6c85f.jpg',
-    members: [],
-    pluginPackages: [
-      activatePlugin(Counter),
-      // activatePlugin(Chat),
-      // activatePlugin(Paint),
-      // activatePlugin(Player)
-    ],
-    plugins: [],
-  },
-}
-
-// plugin-id -> pluginPackage
-const pluginMarket: Record<string, PluginPackage> = {
-  'counter-0123-abcdef-4567': Counter,
- // 'paint-xxxx-12345678': Paint,
-}
-
-// socketId -> roomId
-const sessions: Record<string, {
-  name: string,
-  id: string,
-  roomId: string | null,
-}> = {}
+const socketServer = micro(
+  (req, res) => send(res, 200)
+)
+const io: Server = SocketIO(socketServer)
+socketServer.listen(1234, () => {
+  console.log(`simple socket server running on ${color.green.bold('localhost:1234')}`)
+})
 
 io.on('connection', (socket) => {
   socket.on('visit', ({ userName }) => {
@@ -135,11 +118,6 @@ io.on('connection', (socket) => {
   // socket.on('plugin/event/load', ({}) => {})
   // socket.on('plugin/event/destroy', ({}) => {})
 
-  socket.on('room/compile', async ({ ipl }: { ipl: string }) => {
-    const result = await compilePlugin(ipl)
-    socket.emit('room/compile', result)
-  })
-
   socket.on('plugin/trigger', ({ roomId, instanceId, data, options }: {
     roomId: string, instanceId: string, data: { event: string, args: any[] }, options: {}
   }) => {
@@ -187,5 +165,3 @@ io.on('connection', (socket) => {
     io.in(roomId).emit('room/update', { room: roomList[roomId] })
   }
 })
-
-io.listen(3000)

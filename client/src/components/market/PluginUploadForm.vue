@@ -64,7 +64,7 @@
             v-btn(
               :disabled="!valid"
               color="success"
-              @click="requestCreatePlugin"
+              @click="requestUploadPlugin"
             ) 作成
 </template>
 

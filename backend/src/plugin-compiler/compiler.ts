@@ -4,7 +4,6 @@
 // Copyright (c) 2019 i-pu
 // =========================
 
-import { readFileSync } from 'fs'
 // @ts-ignore
 import { compileString } from 'typescript-compiler'
 import { parse, NodeType, HTMLElement } from 'node-html-parser'
@@ -36,7 +35,7 @@ const compileScript = async (script: string, lang: 'js' | 'ts'): Promise<string>
   } else {
     const js = compileString(
       script,
-      '--project ./../../tsconfig.json --module commonjs --target es5',
+      '', // '--project ./../../tsconfig.json',
       null,
       (error: any) => {
         if (error) {
@@ -52,7 +51,13 @@ const compileScript = async (script: string, lang: 'js' | 'ts'): Promise<string>
  * 
  * @param iplRawString 
  */
-export const compilePlugin = async (iplRawString: string): Promise<{ template: string, functions: string }> => {
+export const compilePlugin = async (iplRawString: string): Promise<{
+  errors: string[],
+  data?: {
+    template: string,
+    functions: string
+  }
+}> => {
   try {
     const plugin = parse(iplRawString, { script: true })
     const elements: HTMLElement[] = plugin.childNodes
@@ -102,16 +107,14 @@ export const compilePlugin = async (iplRawString: string): Promise<{ template: s
         throw error
       })
 
-    return { template, functions }
-
+    return { 
+      errors: [],
+      data: { template, functions }
+    }
   } catch (error) {
     console.error(error)
-    throw error
+    return {
+      errors: error
+    }
   }
-}
-
-export const __compilePlugin_test__ = async () => {
-  const RawCounter = readFileSync(__dirname + '/../examples/counter.ipl', { encoding: 'utf-8' })
-  const result = await compilePlugin(RawCounter)
-  console.log(result)
 }
