@@ -72,7 +72,6 @@ import _ from 'lodash'
 import Component from 'vue-class-component'
 import { Prop, Watch } from 'vue-property-decorator'
 import { PluginMeta } from '../model'
-const Counter = require('@/plugin_examples/counter')
 import PluginUploadForm from '@/components/market/PluginUploadForm.vue'
 
 interface MarketCategory { name: string, icon: string }
@@ -110,6 +109,15 @@ export default class PluginMarket extends Vue {
   private sortKey: MarketSortKey = this.sortKeys[0]
   private searchText: string = ''
 
-  private pluginOverviews: PluginMeta[] = [...Array(20)].map(() => Counter.meta)
+  private pluginOverviews: PluginMeta[] = []
+
+  created () {
+    fetch(`http://localhost:8080/api/v1/market/plugins`)
+      .then(async res => res.json())
+      .then((pluginMetas: PluginMeta[]) => {
+        console.log(pluginMetas)
+        this.pluginOverviews = pluginMetas
+      }).catch(console.log)
+  }
 }
 </script>

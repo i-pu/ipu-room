@@ -1,9 +1,9 @@
 // ========================
 //  Example plugin paint
 // ========================
-import { Plugin, PluginMeta } from '@/model'
+import { PluginPackage } from '@client/model'
 
-module.exports = {
+export default {
   plugin: {
     // tslint:disable-next-line
     template: `<div><vue-p5 @setup="_setup" @draw="_draw" @mousedragged="_dragged" @mousereleased="_released"></vue-p5></div>`,
@@ -53,6 +53,4 @@ module.exports = {
     tags: 'a,b,c',
     content: '<html></html>',
   },
-} as {
-  plugin: Plugin, meta: PluginMeta,
-}
+} as PluginPackage

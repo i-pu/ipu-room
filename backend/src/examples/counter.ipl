@@ -1,8 +1,7 @@
-<template>
-  <div>
-    <h3> {{ record.count }} </h3>
-    <v-btn @click="plus(1)"> Add </v-btn>
-  </div>
+<template lang="pug">
+  div
+    h3 {{ record.count }}
+    v-btn(@click="plus(1)") Add
 </template>
 <script>
 export default {
@@ -10,8 +9,9 @@ export default {
     return {
       count: 0
     }
-  },
-  plus() {
+  }
+
+  plus () {
     this.record.count++
   }
 }
