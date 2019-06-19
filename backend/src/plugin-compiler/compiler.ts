@@ -8,6 +8,8 @@
 import { compileString } from 'typescript-compiler'
 import { parse, NodeType, HTMLElement } from 'node-html-parser'
 import { compile } from 'pug'
+import { Plugin } from '@client/model'
+import uuidv4 from 'uuid'
 
 /**
  * 
@@ -51,13 +53,7 @@ const compileScript = async (script: string, lang: 'js' | 'ts'): Promise<string>
  * 
  * @param iplRawString 
  */
-export const compilePlugin = async (iplRawString: string): Promise<{
-  errors: string[],
-  data?: {
-    template: string,
-    functions: string
-  }
-}> => {
+export const compilePlugin = async (iplRawString: string): Promise<Plugin> => {
   try {
     const plugin = parse(iplRawString, { script: true })
     const elements: HTMLElement[] = plugin.childNodes
@@ -107,14 +103,9 @@ export const compilePlugin = async (iplRawString: string): Promise<{
         throw error
       })
 
-    return { 
-      errors: [],
-      data: { template, functions }
-    }
+    return { template, functions, instanceId: uuidv4(), config: { enabled: true } }
   } catch (error) {
     console.error(error)
-    return {
-      errors: error
-    }
+    throw error
   }
 }

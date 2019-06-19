@@ -4,18 +4,11 @@
 // Copyright (c) 2019 i-pu
 // =========================
 
-import { Room, PluginPackage } from '@client/model'
-import uuidv4 from 'uuid'
+import { Room, PluginMeta } from '@client/model'
 import Counter from '../examples/counter'
 // import Chat from '@plugin/chat'
 // import Player from '@plugin/player'
 // import Paint from '@plugin/paint'
-
-export const activatePlugin = (pluginPackage: PluginPackage): PluginPackage => {
-  const newPackage: PluginPackage = JSON.parse(JSON.stringify(pluginPackage))
-  newPackage.plugin.instanceId = uuidv4()
-  return newPackage
-}
 
 // roomId -> room
 export const roomList: Record<string, Room> = {
@@ -26,7 +19,6 @@ export const roomList: Record<string, Room> = {
     thumbnailUrl: 'https://public.potaufeu.asahi.com/686b-p/picture/12463073/5c4a362cea9cb2f5d90b60e2f2a6c85f.jpg',
     members: [],
     pluginPackages: [
-      activatePlugin(Counter),
       // activatePlugin(Chat),
       // activatePlugin(Paint),
       // activatePlugin(Player)
@@ -35,10 +27,9 @@ export const roomList: Record<string, Room> = {
   },
 }
 
-// plugin-id -> pluginPackage
-export const pluginMarket: Record<string, PluginPackage> = {
-  'counter-0123-abcdef-4567': Counter,
- // 'paint-xxxx-12345678': Paint,
+// plugin-id -> pluginMeta
+export const pluginMarket: Record<string, PluginMeta> = {
+  'counter': Counter,
 }
 
 // socketId -> roomId

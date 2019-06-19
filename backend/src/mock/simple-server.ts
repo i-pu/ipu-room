@@ -6,28 +6,52 @@
 
 import SocketIO, { Server } from 'socket.io'
 import uuidv4 from 'uuid'
-import { readFileSync } from 'fs'
 import color from 'colors'
-import micro, { send } from 'micro'
+import micro, { send, json } from 'micro'
 // @ts-ignore
 import cors from 'micro-cors'
 import { router, post, get } from 'microrouter'
 import { compilePlugin } from '../plugin-compiler/compiler'
-import { sessions, pluginMarket, roomList, activatePlugin } from './resources'
+import { sessions, pluginMarket, roomList } from './resources'
+import { PluginMeta, PluginPackage } from '@client/model'
+import Counter from '../examples/counter'
+// @ts-ignore
+import fetch from 'node-fetch'
 
 const handler = router(
-  post('/api/v1/plugin/package', async (req, res) => {
-    const RawCounter = readFileSync(__dirname + '/../examples/counter.ipl', { encoding: 'utf-8' })
-    return await compilePlugin(RawCounter)
+  // ====== Plugin Compiler API Mock ======
+  post('/api/v1/plugin/load/:id', async (req, res) => {
+    try {
+      const pluginId = 'counter'
+      // fetch package from market
+      const meta: PluginMeta = await fetch(`http://localhost:8080/api/v1/market/plugins/${pluginId}`)
+        .then((res: any) => res.json())
+        .then((json: any) => JSON.parse(json))
+
+      const plugin = await compilePlugin(meta.content)
+
+      send(res, 200, { plugin, meta })
+    } catch (error) {
+      send(res, 500, error)
+    }
+  }),
+
+  // ====== Api Mock =======
+  post('/api/v1/market/plugins', async (req, res) => {
+    // const pluginMeta: PluginMeta = await json(req) as PluginMeta
+    const pluginMeta = Counter as PluginMeta
+    pluginMeta.id = 'counter' // uuidv4()
+    console.log(pluginMeta)
+    pluginMarket[pluginMeta.id] = pluginMeta
+    return send(res, 200, JSON.stringify({ state: true }))
   }),
   get('/api/v1/market/plugins', async (req, res) => {
     const metas = Object.values(pluginMarket)
-      .map(pluginPackage => pluginPackage.meta)
     send(res, 200, JSON.stringify(metas))
   }),
   get('/api/v1/market/plugins/:id', async (req, res) => {
-    const pluginPackage = pluginMarket['counter-0123-abcdef-4567']
-    send(res, 200, JSON.stringify(pluginPackage))
+    const meta = pluginMarket['counter']
+    send(res, 200, JSON.stringify(meta))
   }),
   (req, res) => send(res, 404, 'Not Found')
 )
@@ -60,14 +84,17 @@ io.on('connection', (socket) => {
     socket.emit('lobby', { rooms: Object.values(roomList) })
   })
 
-  socket.on('room/make', ({ roomName, pluginIds }: { roomName: string, pluginIds: string[]}) => {
+  socket.on('room/make', async ({ roomName, pluginIds }: { roomName: string, pluginIds: string[]}) => {
     const roomId = uuidv4()
     console.log(`${color.black.bgWhite('[room/make]')} ${color.green.bold('+')} ${color.yellow(roomName)} (${color.gray(roomId)})`)
 
-    const pluginPackages = pluginIds
+    const pluginPackages = await pluginIds
       .filter((id: string) => Object.keys(pluginMarket).includes(id))
-      .map((id) => pluginMarket[id])
-      .map((pluginPackage) => activatePlugin(pluginPackage))
+      .map((id) => {
+        return fetch(`http://localhost:8080/api/v1/plugin/load/${id}`)
+          .then((res: any) => res.json())
+          .then((json: any) => JSON.parse(json)) as PluginPackage
+      })
 
     roomList[roomId] = {
       name: roomName,
