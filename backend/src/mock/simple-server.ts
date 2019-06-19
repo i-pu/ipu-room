@@ -55,7 +55,7 @@ io.on('connection', (socket) => {
     socket.emit('visit', { userId: socket.id })
   })
 
-  socket.on('lobby', ({ userId }) => {
+  socket.on('lobby', ({ userId }: { userId: string }) => {
     console.log(`${color.black.bgWhite('[lobby]')} Lobby ${color.yellow(Object.keys(roomList).length.toString())} rooms`)
     socket.emit('lobby', { rooms: Object.values(roomList) })
   })
@@ -89,7 +89,13 @@ io.on('connection', (socket) => {
 
     const room = roomList[roomId]
 
-    if (!sessions[socket.id] || !room) {
+    if (!room) {
+      console.log(`${color.black.bgRed('[room/enter]')} Error room does not exist of ROOM ${roomId}`)
+      return
+    }
+
+    if (!sessions[socket.id]) {
+      console.log(`${color.black.bgRed('[room/enter]')} Error invalid id ${socket.id}`)
       return
     }
 
@@ -148,7 +154,7 @@ io.on('connection', (socket) => {
     if (sessions[socket.id] && sessions[socket.id].roomId) {
       leaveRoom(sessions[socket.id].roomId!!)
     }
-    delete sessions[socket.id]
+    // delete sessions[socket.id]
   })
 
   const leaveRoom = (roomId: string) => {

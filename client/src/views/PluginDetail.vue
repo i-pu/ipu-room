@@ -31,7 +31,20 @@
               v-icon(left) label
               | {{ tag }}
 
-    PluginEditor(:pluginPackage="pluginPackage")
+    PluginEditor(
+      :pluginPackage="pluginPackage"
+      @refresh="refresh"
+      @toast="toast"
+    )
+
+    v-flex(d-flex xs12 sm12 md6)
+      v-card(white flat fluid)
+        v-card-title.grey--text(icon) Plugin
+        component(v-if="instance" :is="instance.component")
+        v-snackbar(
+          v-model="snackbar"
+          :timeout="2000"
+        ) {{ snackbarMessage }}
 </template>
 
 <script lang="ts">
@@ -40,22 +53,65 @@ import _ from 'lodash'
 import Component from 'vue-class-component'
 import { Prop } from 'vue-property-decorator'
 import PluginEditor from '@/components/market/PluginEditor.vue'
-import { PluginPackage } from '../model'
+import { PluginPackage, Room, PluginInstance } from '../model'
+import { boot } from '@/logic/loader'
 
-@Component({
+@Component<PluginDetail>({
   components: { PluginEditor },
+  sockets: {
+    async 'room/make' ({ room }: { room: Room }) {
+      console.log('[2/4] made room')
+      this.$socket.emit('room/enter', { roomId: room.id })
+    },
+    'room/enter' ({ room }: { room: Room }) {
+      console.log('[3/4] enter room')
+      this.room = room
+      for (const pluginPackage of this.room.pluginPackages) {
+        this.refresh(pluginPackage)
+      }
+    }
+  },
 })
 export default class PluginDetail extends Vue {
   private pluginPackage!: PluginPackage
   private loaded: boolean = false
 
+  private room!: Room
+  private instance: PluginInstance | null = null
+
+  private snackbar: boolean = false
+  private snackbarMessage: string = ''
+
   created () {
     fetch(`http://localhost:8080/api/v1/market/plugins/aaa`)
       .then(res => res.json())
       .then((pluginPackage: PluginPackage) => {
+        console.log('[1/4] fetched plugin package')
         this.pluginPackage = pluginPackage
         this.loaded = true
+        this.makeSandbox()
       })
+  }
+
+  makeSandbox () {
+    this.$socket.emit('room/make', { 
+      roomName: '部屋', 
+      pluginIds: [ this.pluginPackage.meta.id ] 
+    })
+  }
+
+  private async refresh (pluginPackage: PluginPackage) {
+    try {
+      this.instance = await boot(pluginPackage, { room: this.room })
+      this.toast('Successfully Compiled')
+    } catch (error) {
+      this.toast('Failed to Compile')
+    }
+  }
+
+  private async toast (message: string) {
+    this.snackbar = true
+    this.snackbarMessage = message
   }
 }
 </script>
