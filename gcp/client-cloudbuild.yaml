@@ -65,24 +65,40 @@ steps:
         --project=${PROJECT_ID}
     waitFor: ['-']
 
+  - name: 'gcr.io/gcloud-builders/gcloud'
+    id: 'decryption'
+    entrypoint: '/bin/bash'
+    args:
+      - '-c'
+      - |
+        gcloud kms decrypt \
+        --key=helm \
+        --keyring=gcb \
+        --location=global \
+        --plaintext-file=helm/values.yaml\
+        --ciphertext-file=helm/values.yaml.enc
+        --project=${PROJECT_ID}
+    waitFor: ['-']
+
   - name: 'gcr.io/cloud-builders/kubectl'
     id: 'helm'
     entrypoint: '/bin/bash'
     args:
       - '-c'
       - |
-        ./helm3-alpha-arm64 lint \
+        ./helm3-alpha-amd64 init \
+        && \
+        ./helm3-alpha-amd64 lint \
         -f helm/values.yaml \
         --set env=prd,image=ipu-client,tag=${REVISION_ID} \
         && \
-        ./helm3-alpha-arm64 upgrade \
+        ./helm3-alpha-amd64 upgrade \
         -f helm/values.yaml \
         --set env=prd,image=ipu-client,tag=${REVISION_ID} \
         client helm/client \
         || \
-        ./helm3-alpha-arm64 install \
+        ./helm3-alpha-amd64 install \
         -f helm/values.yaml \
-        -f helm/client/values.yaml \
-        --set env=prd
+        --set env=prd,image=ipu-client,tag=${REVISION_ID} \
         client helm/client
-    waitFor: ['push-image', 'get-cluster-credentials']
+    waitFor: ['push-image', 'get-cluster-credentials', 'decryption']
