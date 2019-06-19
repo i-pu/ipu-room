@@ -1,0 +1,4 @@
+image: ipu-database-controller
+tag: latest
+
+env: dev

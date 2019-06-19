@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-postgres-env-config
+data:
+  POSTGRES_HOST: {{ .Values.postgres.hostname }}
+  POSTGRES_USER: {{ .Values.postgres.user }}
+  POSTGRES_PASSWORD: {{ .Values.postgres.password }}
+  POSTGRES_DB: {{ .Values.postgres.db }}
+  {{ if eq .Values.env "dev" }}
+  IPU_ENV: dev
+  {{ end }}
+  {{ if eq .Values.env "prd" }}
+  IPU_ENV: prd
+  {{ end }}

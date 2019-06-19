@@ -1,5 +1,3 @@
-docker:
-  username: kafuhamada
-
-client:
-  port: 8000
+image: ipu-client
+tag: latest
+env: dev

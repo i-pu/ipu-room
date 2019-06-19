@@ -13,3 +13,6 @@
 ## サーバー
 👉 [Socket Event Spec (Plugin)](events/plugins.md)
 👉 [Socket Event Spec (Other)](events/others.md)
+
+## ci-cd
+👉 [ci-cd の構成](ci-cd/main.md)

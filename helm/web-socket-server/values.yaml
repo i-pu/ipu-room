@@ -1,0 +1,4 @@
+image: ipu-web-socket-server
+tag: latest
+
+env: dev

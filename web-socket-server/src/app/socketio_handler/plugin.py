@@ -24,14 +24,16 @@ def plugin_register(data):
                                data['tags'],
                                data['content'])
     print(json, flush=True)
+
+    res_data = None
     if 'id' in json:
-        socketio.emit('plugin/register',
-                      data={'state': True, **json},
-                      room='user' + request.sid)
+        res_data = {'state': True, **json}
     else:
-        socketio.emit('plugin/register',
-                      data={'state': False},
-                      room='user' + request.sid)
+        res_data = {'state': False},
+
+    socketio.emit('plugin/register',
+                  data=res_data,
+                  room=request.sid)
 
 
 @socketio.on('plugin/trigger')
@@ -39,25 +41,27 @@ def plugin_register(data):
 @utils.check_user
 @utils.function_info_wrapper
 def plugin_trigger(data):
-    basicConfig()
-    # room_id = data['room_id']
-    # instance_id = data['instance_id']
-    # event_name = data['event_name']
-    # event_args: List[Any] = data['args']
+    room_id = data['roomId']
+    instance_id = data['instanceId']
+    data = data['data']
 
-    # mylogger.info('- - return')
-    # socketio.emit('plugin/trigger', data=result, room=room_id)
+    socketio.emit('plugin/trigger',
+                  data={'data': data, 'instanceId': instance_id},
+                  room=room_id)
 
 
-@socketio.on('plugin/sync')
+@socketio.on('plugin/clone')
 @utils.byte_data_to_dict
 @utils.check_user
 @utils.function_info_wrapper
 def plugin_clone(data):
-    # todo: 今いる部屋にいるユーザをランダムに一人選びクローンする
-    # todo: tokenを利用して，有効な相手からクローンが来たかドウかを確認するのもいいかも
-    # todo: clone がsyncのとき以外からアクセスできるようになってしまっているのか
-    socketio.emit('plugin/sync')
+    room_id = data['roomId']
+    instance_id = data['instanceId']
+    record = data['record']
+    sync_id = data['from']
+    socketio.emit('plugin/sync',
+                  data={'record': record},
+                  room=sync_id)
 
 
 @socketio.on('plugin/sync')
@@ -65,12 +69,12 @@ def plugin_clone(data):
 @utils.check_user
 @utils.function_info_wrapper
 def plugin_sync(data):
-    basicConfig()
-    # sync要求が
-    # @socketio.on('plugin/clone')
-    # @utils.byte_data_to_dict
-    # @utils.check_user
-    # @utils.function_info_wrapper
-    # def plugin_clone(data):
+    room_id = data['roomId']
+    instance_id = data['instanceId']
+    clone_id = model.User.get(None, room_id)[0]['id']
 
-    # socketio.emit('plugin/clone')
+    socketio.emit('plugin/clone',
+                  data={'roomId': room_id,
+                        'instanceId': instance_id,
+                        'from': request.sid},
+                  room=clone_id)
