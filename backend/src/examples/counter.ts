@@ -24,7 +24,7 @@ export default {
       </div>
     </template>
     <script>
-    export default {
+    ({
       initialize () {
         return {
           count: 0
@@ -33,6 +33,6 @@ export default {
       plus() {
         this.record.count++
       }
-    }
+    })
     </script>`
 } as PluginMeta

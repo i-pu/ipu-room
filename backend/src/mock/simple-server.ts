@@ -18,15 +18,29 @@ import Counter from '../examples/counter'
 // @ts-ignore
 import fetch from 'node-fetch'
 
+const __test__ = async () => {
+  // plugin upload test
+  await fetch(`http://localhost:8080/api/v1/market/plugins/counter`)
+    .then((res: any) => res.json())
+    .then((json: any) => console.log)
+
+  // plugin load test
+  await fetch(`http://localhost:8080/api/v1/plugin/load/counter`)
+    .then((res: any) => res.json())
+    .then(console.log)
+    .catch(console.log)
+}
+
+// __test__()
+
 const handler = router(
   // ====== Plugin Compiler API Mock ======
-  post('/api/v1/plugin/load/:id', async (req, res) => {
+  get('/api/v1/plugin/load/:id', async (req, res) => {
     try {
       const pluginId = 'counter'
       // fetch package from market
       const meta: PluginMeta = await fetch(`http://localhost:8080/api/v1/market/plugins/${pluginId}`)
         .then((res: any) => res.json())
-        .then((json: any) => JSON.parse(json))
 
       const plugin = await compilePlugin(meta.content)
 
@@ -41,7 +55,6 @@ const handler = router(
     // const pluginMeta: PluginMeta = await json(req) as PluginMeta
     const pluginMeta = Counter as PluginMeta
     pluginMeta.id = 'counter' // uuidv4()
-    console.log(pluginMeta)
     pluginMarket[pluginMeta.id] = pluginMeta
     return send(res, 200, JSON.stringify({ state: true }))
   }),
@@ -88,13 +101,18 @@ io.on('connection', (socket) => {
     const roomId = uuidv4()
     console.log(`${color.black.bgWhite('[room/make]')} ${color.green.bold('+')} ${color.yellow(roomName)} (${color.gray(roomId)})`)
 
-    const pluginPackages = await pluginIds
-      .filter((id: string) => Object.keys(pluginMarket).includes(id))
-      .map((id) => {
-        return fetch(`http://localhost:8080/api/v1/plugin/load/${id}`)
-          .then((res: any) => res.json())
-          .then((json: any) => JSON.parse(json)) as PluginPackage
-      })
+    const pluginPackages: PluginPackage[] = []
+    pluginIds.forEach(async (id: string, i: number) => {
+      try {
+        const pluginPackage = await fetch(`http://localhost:8080/api/v1/plugin/load/${id}`)
+          .then((res: any) => res.json()) as PluginPackage
+        pluginPackages.push(pluginPackage)
+        console.log(`${color.black.bgWhite('[plugin/load]')} [${i}/${pluginIds.length}] Plugin ${color.yellow(id)} successfully loaded!!`)
+      } catch (error) {
+        console.log(`${color.black.bgRed('[plugin/load]')} [${i}/${pluginIds.length}] Plugin ${color.yellow(id)} failed to load...`)
+        console.log(error) 
+      }
+    })
 
     roomList[roomId] = {
       name: roomName,
