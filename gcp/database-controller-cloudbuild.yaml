@@ -1,0 +1,103 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'docker-auth'
+    entrypoint: '/bin/bash'
+    args:
+      - '-c'
+      - | 
+        docker login -u ${_DOCKER_USERNAME} -p ${_DOCKER_PASSWORD}
+    waitFor: ['-']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'pull-image'
+    entrypoint: '/bin/bash'
+    args:
+      - '-c'
+      - |
+        docker pull docker.io/${_DOCKER_USERNAME}/ipu-database-controller:latest;\
+        docker pull docker.io/${_DOCKER_USERNAME}/ipu-database-controller-builder:latest || true
+    waitFor: ['-']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-image'
+    entrypoint: '/bin/bash'
+    args:
+      - '-c'
+      - |
+        cd database-controller && \
+        docker build \
+        -t docker.io/${_DOCKER_USERNAME}/ipu-database-controller-builder:latest \
+        -t docker.io/${_DOCKER_USERNAME}/ipu-database-controller-builder:${REVISION_ID} \
+        --cache-from docker.io/${_DOCKER_USERNAME}/ipu-database-controller-builder:latest \
+        -f Dockerfile \
+        --target builder \
+        . && \
+        docker build \
+        -t docker.io/${_DOCKER_USERNAME}/ipu-database-controller:latest \
+        -t docker.io/${_DOCKER_USERNAME}/ipu-database-controller:${REVISION_ID} \
+        --cache-from docker.io/${_DOCKER_USERNAME}/ipu-database-controller-builder:${REVISION_ID} \
+        --cache-from docker.io/${_DOCKER_USERNAME}/ipu-database-controller:latest \
+        -f Dockerfile \
+        .
+    waitFor: ['pull-image']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-image'
+    entrypoint: '/bin/bash'
+    args:
+      - '-c'
+      - |
+        docker push docker.io/${_DOCKER_USERNAME}/ipu-database-controller-builder:latest && \
+        docker push docker.io/${_DOCKER_USERNAME}/ipu-database-controller-builder:${REVISION_ID} && \
+        docker push docker.io/${_DOCKER_USERNAME}/ipu-database-controller:latest && \
+        docker push docker.io/${_DOCKER_USERNAME}/ipu-database-controller:${REVISION_ID}
+    waitFor: ['docker-auth', 'build-image']
+
+  # deploy
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'get-cluster-credentials'
+    entrypoint: '/bin/bash'
+    args:
+      - '-c'
+      - |
+        gcloud container clusters get-credentials ipu-project-cluster \
+        --zone=${_ZONE} \
+        --project=${PROJECT_ID}
+    waitFor: ['-']
+
+  - name: 'gcr.io/gcloud-builders/gcloud'
+    id: 'decryption'
+    entrypoint: '/bin/bash'
+    args:
+      - '-c'
+      - |
+        gcloud kms decrypt \
+        --key=helm \
+        --keyring=gcb \
+        --location=global \
+        --plaintext-file=helm/values.yaml\
+        --ciphertext-file=helm/values.yaml.enc
+    waitFor: ['-']
+
+  - name: 'gcr.io/cloud-builders/kubectl'
+    id: 'helm'
+    entrypoint: '/bin/bash'
+    args:
+      - '-c'
+      - |
+        ./helm3-alpha-amd64 init \
+        && \
+        ./helm3-alpha-amd64 lint \
+        -f helm/values.yaml \
+        --set env=prd,image=ipu-database-controller,tag=${REVISION_ID} \
+        && \
+        ./helm3-alpha-amd64 upgrade \
+        -f helm/values.yaml \
+        --set env=prd,image=ipu-database-controller,tag=${REVISION_ID} \
+        database-controller helm/database-controller \
+        || \
+        ./helm3-alpha-amd64 install \
+        -f helm/values.yaml \
+        --set env=prd,image=ipu-database-controller,tag=${REVISION_ID} \
+        database-controller helm/database-controller
+    waitFor: ['push-image', 'get-cluster-credentials', 'decryption']
