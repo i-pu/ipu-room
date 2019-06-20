@@ -11,13 +11,10 @@ way to routing of github-pages, see <https://github.blog/2016-12-05-relative-lin
 ## Deploy
 http://35.247.18.78:31421  
 [google kubernetes engine](https://cloud.google.com/kubernetes-engine/)
+基本的にデプロイはディレクトリ名をタグとして `push` すれば `ci/cd` 走ります．
 ### client
 #### push
-tag: client-cd
-
-### web-socket-server
-#### push
-tag: web-socket-server-cd
+tag: client
 
 ## local development
 ### run client

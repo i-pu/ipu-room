@@ -1,6 +1,6 @@
-import { Plugin, PluginMeta } from '@/model'
+import { PluginPackage } from '@client/model'
 
-module.exports = {
+export default {
   plugin:  {
     template: `<div>
       <v-list id="chat" two-line="two-line" height="50%">
@@ -62,6 +62,4 @@ module.exports = {
     tags: 'a,b,c',
     content: '<html></html>',
   },
-} as {
-  plugin: Plugin, meta: PluginMeta,
-}
+} as PluginPackage

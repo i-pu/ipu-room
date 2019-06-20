@@ -69,6 +69,7 @@ export const compile = async (
       } else {
         hooks[event] = function (this: PluginComponent, ...args: any[]) {
           // emit to server
+          console.log(this.env.instanceId)
           this.$socket.emit('plugin/trigger', {
             roomId: this.env.room.id,
             instanceId: this.env.instanceId,
@@ -131,7 +132,7 @@ export const compile = async (
             from,
           })
         },
-        [`plugin/${plugin.instanceId}/trigger`] (payload: { event: string, args: [] }) {
+        [`plugin/${plugin.instanceId}/trigger`] (payload: { data: { event: string, args: [] } }) {
           // @ts-ignore
           this.callbackFromServer(payload)
         },
@@ -147,7 +148,6 @@ export const compile = async (
           env: properties.env,
         }
       },
-
       mounted () {
         console.log(`[${this.env.instanceId}] active`)
 
