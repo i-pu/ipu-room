@@ -7,6 +7,6 @@ spec:
   selector:
     app: client
   ports:
-    - port: {{ .Values.databaseController.port }}
-      nodePort: {{ .Values.databaseController.nodePort }}
-      targetPort: {{ .Values.databaseController.port }}
+    - port: {{ .Values.client.port }}
+      nodePort: {{ .Values.client.nodePort }}
+      targetPort: {{ .Values.client.port }}
