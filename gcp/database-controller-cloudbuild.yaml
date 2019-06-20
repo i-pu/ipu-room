@@ -1,3 +1,5 @@
+timeout: 4800s
+
 steps:
   - name: 'gcr.io/cloud-builders/docker'
     id: 'docker-auth'
@@ -99,8 +101,6 @@ steps:
         helm/database-controller \
         | kubectl apply -f -
     waitFor: ['push-image', 'get-cluster-credentials', 'decryption']
-
-timeout: 4800s
 
 # ./helm3-alpha-amd64 upgrade \
 # --install \

@@ -1,3 +1,5 @@
+timeout: 1800s
+
 steps:
   - name: 'gcr.io/cloud-builders/docker'
     id: 'docker-auth'
