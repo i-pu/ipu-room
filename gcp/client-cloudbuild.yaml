@@ -96,7 +96,7 @@ steps:
         -f helm/values.yaml \
         --set env=prd,image=ipu-client,tag=${REVISION_ID} \
         helm/client \
-        | k apply -f -
+        | kubectl apply -f -
     waitFor: ['push-image', 'get-cluster-credentials', 'decryption']
 
 # ./helm3-alpha-amd64 upgrade \
