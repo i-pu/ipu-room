@@ -40,6 +40,7 @@ steps:
         -f Dockerfile \
         .
     waitFor: ['pull-image']
+    timeout: 3600s
 
   - name: 'gcr.io/cloud-builders/docker'
     id: 'push-image'
