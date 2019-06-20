@@ -92,7 +92,7 @@ steps:
         --set env=prd,image=ipu-client,tag=${REVISION_ID} \
         helm/client \
         && \
-        ./helm3-alpha template \
+        ./helm3-alpha-amd64 template \
         -f helm/values.yaml \
         --set env=prd,image=ipu-client,tag=${REVISION_ID} \
         helm/client \
