@@ -75,7 +75,7 @@ steps:
         --key=helm \
         --keyring=gcb \
         --location=global \
-        --plaintext-file=helm/values.yaml\
+        --plaintext-file=helm/values.yaml \
         --ciphertext-file=helm/values.yaml.enc
     waitFor: ['-']
 
