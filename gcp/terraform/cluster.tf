@@ -10,20 +10,29 @@ resource "google_container_cluster" "node" {
   }
 }
 
-resource "google_compute_firewall" "server-nodeport" {
-  name = "${var.project}-server-nodeport"
+resource "google_compute_firewall" "client" {
+  name = "client-nodeport"
   network = "default"
   allow {
     protocol = "tcp"
-    ports = ["31420"]
+    ports = ["30000"]
   }
 }
 
-resource "google_compute_firewall" "client-nodeport" {
-  name = "${var.project}-client-nodeport"
+resource "google_compute_firewall" "web-socket-server" {
+  name = "web-socket-server-nodeport"
   network = "default"
   allow {
     protocol = "tcp"
-    ports = ["31421"]
+    ports = ["30008"]
+  }
+}
+
+resource "google_compute_firewall" "database-controller" {
+  name = "database-controller-nodeport"
+  network = "default"
+  allow {
+    protocol = "tcp"
+    ports = ["30888"]
   }
 }

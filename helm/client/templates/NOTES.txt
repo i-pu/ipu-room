@@ -1,11 +1,11 @@
 {{ if eq .Values.env "dev" }}
-database controller is in dev.
-database controller is running [http://localhost:{{ .Values.databaseController.nodePort }}].
+client is in dev.
+client is running [http://localhost:{{ .Values.client.nodePort }}].
 It'll take a little time!
 You can check server state by `kubectl get pod -w`.
 {{ end }}
 {{ if eq .Values.env "prd" }}
-database controller is running prd.
+client is running prd.
 {{ end }}
 
 image: {{ .Values.image }}
