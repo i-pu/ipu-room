@@ -94,14 +94,11 @@ steps:
         helm/database-controller \
         && \
         ./helm3-alpha-amd64 upgrade \
+        --install \
+        --recreate-pods \
         -f helm/values.yaml \
         --set env=prd,image=ipu-database-controller,tag=${REVISION_ID} \
         database-controller helm/database-controller \
-        || \
-        ./helm3-alpha-amd64 install \
-        -f helm/values.yaml \
-        --set env=prd,image=ipu-database-controller,tag=${REVISION_ID} \
-        database-controller helm/database-controller
     waitFor: ['push-image', 'get-cluster-credentials', 'decryption']
 
 timeout: 4800s
