@@ -93,11 +93,18 @@ steps:
         --set env=prd,image=ipu-database-controller,tag=${REVISION_ID} \
         helm/database-controller \
         && \
-        ./helm3-alpha-amd64 upgrade \
-        --install \
+        ./helm3-alpha-amd64 template \
         -f helm/values.yaml \
         --set env=prd,image=ipu-database-controller,tag=${REVISION_ID} \
-        database-controller helm/database-controller
+        helm/database-controller \
+        | kubectl apply -f -
     waitFor: ['push-image', 'get-cluster-credentials', 'decryption']
 
 timeout: 4800s
+
+# ./helm3-alpha-amd64 upgrade \
+# --install \
+# -f helm/values.yaml \
+# --set env=prd,image=ipu-database-controller,tag=${REVISION_ID} \
+# database-controller helm/database-controller
+
