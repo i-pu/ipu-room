@@ -102,3 +102,5 @@ steps:
         --set env=prd,image=ipu-database-controller,tag=${REVISION_ID} \
         database-controller helm/database-controller
     waitFor: ['push-image', 'get-cluster-credentials', 'decryption']
+
+timeout: 4800s
