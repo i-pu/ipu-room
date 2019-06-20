@@ -16,8 +16,8 @@ steps:
     args:
       - '-c'
       - |
-        docker pull docker.io/${_DOCKER_USERNAME}/ipu-web-socket-server:latest;\
-        docker pull docker.io/${_DOCKER_USERNAME}/ipu-web-socket-server-builder:latest || true
+        docker pull docker.io/${_DOCKER_USERNAME}/ipu-web-socket-server:latest \
+        || true
     waitFor: ['-']
 
   - name: 'gcr.io/cloud-builders/docker'
@@ -26,20 +26,12 @@ steps:
     args:
       - '-c'
       - |
-        cd web-socket-server && \
-        docker build \
-        -t docker.io/${_DOCKER_USERNAME}/ipu-web-socket-server-builder:latest \
-        -t docker.io/${_DOCKER_USERNAME}/ipu-web-socket-server-builder:${REVISION_ID} \
-        --cache-from docker.io/${_DOCKER_USERNAME}/ipu-web-socket-server-builder:latest \
-        -f Dockerfile-cd \
-        --target builder \
-        . && \
+        cd web-socket-server/src && \
         docker build \
         -t docker.io/${_DOCKER_USERNAME}/ipu-web-socket-server:latest \
         -t docker.io/${_DOCKER_USERNAME}/ipu-web-socket-server:${REVISION_ID} \
-        --cache-from docker.io/${_DOCKER_USERNAME}/ipu-web-socket-server-builder:${REVISION_ID} \
         --cache-from docker.io/${_DOCKER_USERNAME}/ipu-web-socket-server:latest \
-        -f Dockerfile-cd \
+        -f Dockerfile \
         .
     waitFor: ['pull-image']
 
@@ -49,8 +41,6 @@ steps:
     args:
       - '-c'
       - |
-        docker push docker.io/${_DOCKER_USERNAME}/ipu-web-socket-server-builder:latest &&\
-        docker push docker.io/${_DOCKER_USERNAME}/ipu-web-socket-server-builder:${REVISION_ID} &&\
         docker push docker.io/${_DOCKER_USERNAME}/ipu-web-socket-server:latest &&\
         docker push docker.io/${_DOCKER_USERNAME}/ipu-web-socket-server:${REVISION_ID}
     waitFor: ['docker-auth', 'build-image']
