@@ -25,16 +25,17 @@ if (document.readyState == 'interactive' || document.readyState == 'complete') {
 </script>
 </head>
 
-# Overview
-簡単そうなのでgoogle cloud build を使う．以下は全体図．
+# 全体図
+簡単そうなのでGoogleCloudBuild を使う．以下は全体図．
 ```mermaid
 graph LR
-  GIT[github master] --> GCB[google cloud build]
-  GCB -- push --> DOCKER[docker.io]
-  GCB -- build --> GCB 
-  GCB -- trigger --> HELM[helm]
-  DOCKER -- image --> HELM
-  HELM -- install --> GKE
+  GIT[github with tag] --> GCB 
+  subgraph GCP
+    GCB --> |deploy| GKE
+    GCB --> |trigger| PS[pub/sub]
+    PS --> |push| CF[cloud function]
+  end
+  CF --> |Webhook| SL[slack]
 ```
 
 ## Helm3-alpha
@@ -58,7 +59,8 @@ values.yamlを暗号化して復号化する際の権限の付与が `terraform`
 `release` が存在しなければ `install` をしてくれるので `kubectl apply` と同じと見た
 #### `upgrade --set hoge=hogehoge` ではなにもやらない場合がある
 **バグだった**  
-今の所一回消す必要あり
+今の所一回消す必要あり  
+面倒なので `helm tempalte | kubectl apply -f -` 使う．
 >同じバージョンで `image tag` を変えても `pod image tag` は変わらなかった．
 `deployments.apps` の `image tag` も変わっていなかった．
 `deployments.apps` は更新されない模様．
