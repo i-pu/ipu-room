@@ -35,7 +35,7 @@ import { Room } from '@/model'
 
 @Component<RoomCreateForm>({
   sockets: {
-    'room/make' (data: { room: Room }) {
+    'room/create' (data: { room: Room }) {
       this.$emit('add', data)
     },
   },
@@ -62,9 +62,9 @@ export default class RoomCreateForm extends Vue {
   }
 
   private requestCreateRoom () {
-    this.$socket.emit('room/make', {
+    this.$socket.emit('room/create', {
       roomName: this.roomNameInput,
-      pluginIds: this.selectedPlugins,
+      plugins: this.selectedPlugins,
     })
 
     this.dialog = false

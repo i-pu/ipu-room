@@ -1,5 +1,5 @@
 import Vue, { Component } from 'vue'
-import { Plugin, PluginProperties, PluginComponent, PluginFunctions } from '@/model'
+import { Plugin, PluginProperties, PluginComponent, PluginFunctions, User } from '@/model'
 
 // @ts-ignore
 import VueP5 from 'vue-p5'
@@ -172,7 +172,7 @@ export const compile = async (
         /**
           *  return [User] of mine.
         */
-        $me () {
+        $me (): User {
           // @ts-ignore
           return this.env.room.members.find(m => m.id === this.$socket.id)
         }
