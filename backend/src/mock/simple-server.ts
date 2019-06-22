@@ -18,14 +18,16 @@ import Counter from '../examples/counter'
 // @ts-ignore
 import fetch from 'node-fetch'
 
+const API_ORIGIN = 'http://localhost:3000/api/v1'
+
 const __test__ = async () => {
   // plugin upload test
-  await fetch(`http://localhost:8080/api/v1/market/plugins/counter`)
+  await fetch(`${API_ORIGIN}/market/plugins/counter`)
     .then((res: any) => res.json())
     .then((json: any) => console.log)
 
   // plugin load test
-  await fetch(`http://localhost:8080/api/v1/plugin/load/counter`)
+  await fetch(`${API_ORIGIN}/plugin/load/counter`)
     .then((res: any) => res.json())
     .then(console.log)
     .catch(console.log)
@@ -39,12 +41,12 @@ const handler = router(
     try {
       const pluginId = 'counter'
       // fetch package from market
-      const meta: PluginMeta = await fetch(`http://localhost:8080/api/v1/market/plugins/${pluginId}`)
+      const meta: PluginMeta = await fetch(`${API_ORIGIN}/market/plugins/${pluginId}`)
         .then((res: any) => res.json())
 
       const plugin = await compilePlugin(meta.content)
 
-      send(res, 200, { plugin, meta })
+      return send(res, 200, { plugin, meta })
     } catch (error) {
       send(res, 500, error)
     }
@@ -60,23 +62,24 @@ const handler = router(
   }),
   get('/api/v1/market/plugins', async (req, res) => {
     const metas = Object.values(pluginMarket)
-    send(res, 200, JSON.stringify(metas))
+    return send(res, 200, JSON.stringify(metas))
   }),
   get('/api/v1/market/plugins/:id', async (req, res) => {
     const meta = pluginMarket['counter']
-    send(res, 200, JSON.stringify(meta))
+    return send(res, 200, JSON.stringify(meta))
   }),
   (req, res) => send(res, 404, 'Not Found')
 )
 
 const apiServer = micro(cors()(handler))
-apiServer.listen(8080, () => {
-  console.log(`simple api server running on ${color.green.bold('localhost:8080')}`)
+apiServer.listen(3000, () => {
+  console.log(`simple api server running on ${color.green.bold('localhost:3000')}`)
 })
 
 const socketServer = micro(
   (req, res) => send(res, 200)
 )
+
 const io: Server = SocketIO(socketServer)
 socketServer.listen(1234, () => {
   console.log(`simple socket server running on ${color.green.bold('localhost:1234')}`)
@@ -97,19 +100,19 @@ io.on('connection', (socket) => {
     socket.emit('lobby', { rooms: Object.values(roomList) })
   })
 
-  socket.on('room/make', async ({ roomName, pluginIds }: { roomName: string, pluginIds: string[]}) => {
+  socket.on('room/create', async ({ roomName, plugins }: { roomName: string, plugins: string[]}) => {
     const roomId = uuidv4()
-    console.log(`${color.black.bgWhite('[room/make]')} ${color.green.bold('+')} ${color.yellow(roomName)} (${color.gray(roomId)})`)
+    console.log(`${color.black.bgWhite('[room/create]')} ${color.green.bold('+')} ${color.yellow(roomName)} (${color.gray(roomId)})`)
 
     const pluginPackages: PluginPackage[] = []
-    pluginIds.forEach(async (id: string, i: number) => {
+    plugins.forEach(async (id: string, i: number) => {
       try {
-        const pluginPackage = await fetch(`http://localhost:8080/api/v1/plugin/load/${id}`)
+        const pluginPackage = await fetch(`${API_ORIGIN}/plugin/load/${id}`)
           .then((res: any) => res.json()) as PluginPackage
         pluginPackages.push(pluginPackage)
-        console.log(`${color.black.bgWhite('[plugin/load]')} [${i + 1}/${pluginIds.length}] Plugin ${color.yellow(id)} successfully loaded!!`)
+        console.log(`${color.black.bgWhite('[plugin/load]')} [${i + 1}/${plugins.length}] Plugin ${color.yellow(id)} successfully loaded!!`)
       } catch (error) {
-        console.log(`${color.black.bgRed('[plugin/load]')} [${i + 1}/${pluginIds.length}] Plugin ${color.yellow(id)} failed to load...`)
+        console.log(`${color.black.bgRed('[plugin/load]')} [${i + 1}/${plugins.length}] Plugin ${color.yellow(id)} failed to load...`)
         console.log(error) 
       }
     })
@@ -122,7 +125,7 @@ io.on('connection', (socket) => {
       pluginPackages,
       plugins: [],
     }
-    socket.emit('room/make', { room: roomList[roomId] })
+    socket.emit('room/create', { room: roomList[roomId] })
   })
 
   socket.on('room/enter', ({ roomId }: { roomId: string }) => {

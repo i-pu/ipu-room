@@ -82,7 +82,7 @@ export default class PluginDetail extends Vue {
   private snackbarMessage: string = ''
 
   created () {
-    fetch(`http://localhost:8080/api/v1/market/plugins/counter`)
+    fetch(`http://localhost:3000/api/v1/market/plugins/counter`)
       .then(res => res.json())
       .then((meta: PluginMeta) => {
         console.log('[1/4] fetched plugin package')

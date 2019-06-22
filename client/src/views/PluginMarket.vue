@@ -71,7 +71,7 @@ import Vue from 'vue'
 import _ from 'lodash'
 import Component from 'vue-class-component'
 import { Prop, Watch } from 'vue-property-decorator'
-import { PluginMeta } from '../model'
+import { PluginMeta, PluginPackage } from '../model'
 import PluginUploadForm from '@/components/market/PluginUploadForm.vue'
 
 interface MarketCategory { name: string, icon: string }
@@ -111,13 +111,11 @@ export default class PluginMarket extends Vue {
 
   private pluginOverviews: PluginMeta[] = []
 
-  created () {
-    fetch(`http://localhost:8080/api/v1/market/plugins`)
-      .then(async res => res.json())
-      .then((pluginMetas: PluginMeta[]) => {
-        console.log(pluginMetas)
-        this.pluginOverviews = pluginMetas
-      }).catch(console.log)
+  async created () {
+    const metas: PluginMeta[] = await fetch(`http://localhost:3000/api/v1/market/plugins`)
+      .then(res => res.json())
+      .catch(console.log)
+    this.pluginOverviews = metas
   }
 }
 </script>

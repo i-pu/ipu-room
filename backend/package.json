@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "dev": "ts-node --project ./tsconfig.json src/mock/simple-server.ts"
+    "dev": "ts-node src/mock/simple-server.ts ./node_modules/.bin/micro"
   },
   "dependencies": {
     "@types/node": "^12.0.8",
