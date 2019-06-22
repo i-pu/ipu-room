@@ -1,28 +1,29 @@
 <template lang="pug">
-  v-layout(row wrap)
-    v-toolbar(app)
-      v-toolbar-title.headline.text-uppercase
-        span.pr-3 {{ $store.getters.userName }} さん
-      v-spacer
-      v-btn(color="pink" @click="$router.push('/market')") ストアへ
-      room-create-form(@add="responseCreateRoom")
-      
-    v-flex(
-      v-for="room in rooms" :key="room.id"
-      d-flex xs12 sm6 md3
-    )
-      v-card
-        v-card-title
-          h3.headline {{ room.name }} [{{ room.members.length }} / 6]
-        v-card-text
-          template(v-for="member, i in room.members")
-            v-tooltip.mr-2(top :key="i")
-              template(v-slot:activator="{ on }")
-                v-avatar(v-on="on" size="60")
-                  img(:src="member.avatarUrl")
-              span {{ member.name }}
-        v-card-actions
-          v-btn(color="info" @click="$router.push(`/room/${room.id}`)") 入室
+  v-container(fluid grid-list-md text-xs-center)
+    v-layout(row wrap)
+      v-toolbar(app)
+        v-toolbar-title.headline.text-uppercase
+          span.pr-3 {{ $store.getters.userName }} さん
+        v-spacer
+        v-btn(color="pink" @click="$router.push('/market')") ストアへ
+        room-create-form(@add="responseCreateRoom")
+        
+      v-flex(
+        v-for="room in rooms" :key="room.id"
+        d-flex xs12 sm6 md3
+      )
+        v-card
+          v-card-title
+            h3.headline {{ room.name }} [{{ room.members.length }} / 6]
+          v-card-text
+            template(v-for="member, i in room.members")
+              v-tooltip.mr-2(top :key="i")
+                template(v-slot:activator="{ on }")
+                  v-avatar(v-on="on" size="60")
+                    img(:src="member.avatarUrl")
+                span {{ member.name }}
+          v-card-actions
+            v-btn(color="info" @click="$router.push(`/room/${room.id}`)") 入室
 </template>
 
 <script lang="ts">

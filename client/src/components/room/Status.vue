@@ -4,7 +4,7 @@
       v-layout(row wrap)
         v-flex(xs12)
           v-subheader メンバー
-        v-flex(v-for="i in 6" :key="i" xs2 md2)
+        v-flex(v-for="i in 6" :key="i" xs12 md2)
           v-card.d-flex.align-center(
             v-if="members[i - 1]"
             height="200"

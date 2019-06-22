@@ -1,17 +1,18 @@
 <template lang="pug">
-  v-layout(row wrap v-if="room")
-    v-flex(d-flex xs12 sm12 md12)
-      v-toolbar(dense)
-        v-toolbar-title {{ room.name }}
-        v-spacer
-        settings(:room="room")
-        v-btn(color="error" @click="requestExitRoom") 退出
+  v-container(fluid grid-list-md text-xs-center)
+    v-layout(row wrap v-if="room")
+      v-flex(d-flex xs12 sm12 md12)
+        v-toolbar(dense)
+          v-toolbar-title {{ room.name }}
+          v-spacer
+          settings(:room="room")
+          v-btn(color="error" @click="requestExitRoom") 退出
 
-    desk#desk(:plugins="room.plugins")
+      desk#desk(:plugins="room.plugins")
 
-    v-flex(d-flex xs12 sm12 md12)
-      v-card(white)
-        status#status(:members="room.members")
+      v-flex(d-flex xs12 sm12 md12)
+        v-card(white)
+          status#status(:members="room.members")
 </template>
 
 <script lang="ts">

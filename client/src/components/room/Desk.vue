@@ -1,4 +1,3 @@
-
 <template lang="pug">
   v-layout(row wrap v-if="plugins")
     v-flex(d-flex xs12 sm12 md9

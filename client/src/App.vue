@@ -1,8 +1,7 @@
 <template lang="pug">
   v-app
     v-content
-      v-container(fluid grid-list-md text-xs-center)
-        router-view
+      router-view
 </template>
 
 <script lang="ts">
