@@ -9,10 +9,6 @@
           v-btn(color="error" @click="requestExitRoom") 退出
 
       desk#desk(:plugins="room.plugins")
-
-      v-flex(d-flex xs12 sm12 md12)
-        v-card(white)
-          status#status(:members="room.members")
 </template>
 
 <script lang="ts">
@@ -22,11 +18,10 @@ import { Room, User } from '@/model'
 import { boot } from '@/logic/loader'
 
 import Desk from '@/components/room/Desk.vue'
-import Status from '@/components/room/Status.vue'
 import Settings from '@/components/room/Settings.vue'
 
 @Component<RoomView>({
-  components: { Desk, Status, Settings },
+  components: { Desk, Settings },
   sockets: {
     'room/enter' (data: { room: Room }) {
       this.responseEnterRoom(data)

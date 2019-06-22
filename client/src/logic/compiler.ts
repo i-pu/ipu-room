@@ -175,6 +175,12 @@ export const compile = async (
         $me (): User {
           // @ts-ignore
           return this.env.room.members.find(m => m.id === this.$socket.id)
+        },
+        /**
+         *   return [User[]] members in room
+         */
+        $members (): User[] {
+          return this.env.room.members
         }
       },
       methods: {

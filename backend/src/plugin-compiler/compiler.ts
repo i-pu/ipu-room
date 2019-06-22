@@ -21,8 +21,13 @@ const compileTemplate = async (templateTag: HTMLElement, lang: 'html' | 'pug'): 
     const content = templateTag.querySelector('div')
     return content.toString()
   } else {
-    const fn = compile(templateTag.toString())
-    return fn()
+    try {
+      const fn = compile(templateTag.toString())
+      return fn()
+    }
+     catch (error) {
+       throw error
+     }
   }
 }
 
@@ -79,9 +84,6 @@ export const compilePlugin = async (iplRawString: string): Promise<Plugin> => {
     }
 
     const template = await compileTemplate(templateTag, templateLang as 'html' | 'pug')
-      .catch(error => {
-        throw '[Plugin Compiler] テンプレートのコンパイルに失敗しました'
-      })
 
     const scriptTag = elements.find(element =>
       element.tagName === 'script'  
@@ -99,9 +101,6 @@ export const compilePlugin = async (iplRawString: string): Promise<Plugin> => {
     }
 
     const functions = await compileScript(scriptTag.text, scriptLang as 'js' | 'ts')
-      .catch(error => {
-        throw error
-      })
 
     return { template, functions, instanceId: uuidv4(), config: { enabled: true } }
   } catch (error) {

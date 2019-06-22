@@ -12,11 +12,13 @@ import micro, { send, json } from 'micro'
 import cors from 'micro-cors'
 import { router, post, get } from 'microrouter'
 import { compilePlugin } from '../plugin-compiler/compiler'
-import { sessions, pluginMarket, roomList } from './resources'
+import { sessions, pluginMarket, roomList, activate } from './resources'
 import { PluginMeta, PluginPackage } from '@client/model'
 import Counter from '../examples/counter'
 // @ts-ignore
 import fetch from 'node-fetch'
+
+import Status from '../examples/status'
 
 const API_ORIGIN = 'http://localhost:3000/api/v1'
 
@@ -116,6 +118,15 @@ io.on('connection', (socket) => {
         console.log(error) 
       }
     })
+
+    // default plugin
+    try {
+      pluginPackages.push(await activate(Status))
+      console.log(`${color.black.bgWhite('[plugin/load]')} Plugin ${color.yellow(Status.id)} successfully loaded!!`)
+    } catch (error) {
+      console.log(error)
+      console.log(`${color.black.bgRed('[plugin/load]')} Plugin ${color.yellow(Status.id)} failed to load...`)
+    }
 
     roomList[roomId] = {
       name: roomName,

@@ -11,6 +11,7 @@ export type PluginComponent = ThenArg<ReturnType<typeof compile>> & {
   $send: (event: string, options?: { to: string, broadcast: boolean }, ...args: any[]) => void,
   $socket: Socket,
   $me: User,
+  $members: User[],
   env: PluginProperties['env'],
 }
 
