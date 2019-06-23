@@ -14,9 +14,9 @@ EOF
 
       duration = "60s"
       comparison = "COMPARISON_GT"
-      threshold_value = 10
+      threshold_value = 5
       trigger {
-        count = 2
+        count = 1
       }
 
       aggregations {
@@ -30,10 +30,14 @@ EOF
   notification_channels = [
     google_monitoring_notification_channel.web-hook-error.name
   ]
+
   enabled = true
+
   depends_on = [
-    google_logging_metric.web-socket-server-error]
+    google_logging_metric.web-socket-server-error
+  ]
 }
+
 resource "google_monitoring_notification_channel" "web-hook-error" {
   display_name = "web-hook to send error to slack"
   type = "webhook_basicauth"
