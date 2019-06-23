@@ -84,8 +84,7 @@ export interface Room {
   id: string,
   thumbnailUrl: string,
   members: User[],
-  pluginPackages: PluginPackage[],
-  plugins: PluginInstance[],
+  pluginPackages: PluginPackage[]
 }
 
 /**

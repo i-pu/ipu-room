@@ -1,5 +1,5 @@
 import Vue, { Component } from 'vue'
-import { Plugin, PluginProperties, PluginComponent, PluginFunctions, User } from '@/model'
+import { Plugin, PluginProperties, PluginComponent, PluginFunctions, User, Room } from '@/model'
 
 // @ts-ignore
 import VueP5 from 'vue-p5'
@@ -64,7 +64,15 @@ export const compile = async (
     for (const [event, fn] of Object.entries<
       ((...args: any[]) => void)
     >(plugin.functions as PluginFunctions)) {
-      if (event.startsWith('_')) {
+      console.log(` - ${event} : ${fn.toString()}`)
+      /**
+       *  functions that its name starts with 'event/*', '_*' are special functions.
+       * 
+       *  # Events
+       *  - event/room : fire when room updated.
+       *  - event/member : 
+       */
+      if (event.startsWith('_') || event.startsWith('event/')) {
         hooks[event] = fn
       } else {
         hooks[event] = function (this: PluginComponent, ...args: any[]) {
@@ -92,35 +100,16 @@ export const compile = async (
       components: addonComponents,
       // @ts-ignore
       sockets: {
-        /**
-        *  reponse plugin/sync event
-        *  @event plugin/sync
-        *  @param record: Record<string, any>
-        */
         [`plugin/${plugin.instanceId}/sync`] (this: PluginComponent, { record }: { record: Record<string, any> }) {
           // @ts-ignore
           this.record = record
           console.log('record synced')
         },
-        /**
-        *  response plugin/clone event
-        *  @event plugin/clone
-        *  @param roomId: string
-        *  @param instanceId: string
-        *  @param from: string
-        */
         [`plugin/${plugin.instanceId}/clone`] ({ roomId, instanceId, from }: {
           roomId: string, instanceId: string, from: string,
         }) {
           console.log(`[Plugin] came clone request from ${from}`)
-          /**
-          *  request plugin/clone event
-          *  @event plugin/clone
-          *  @param roomId: string
-          *  @param instanceId: string
-          *  @param record: Record<string, any>
-          *  @param from: string
-          */
+
           // @ts-ignore
           this.$socket.emit('plugin/clone', {
             // @ts-ignore
@@ -153,12 +142,6 @@ export const compile = async (
 
         // if someone exist, sync records
         if (1 < this.env.room.members.length) {
-          /**
-          *  request plugin/sync event
-          *  @event plugin/sync
-          *  @param roomId: string
-          *  @param instanceId: string
-          */
           this.$socket.emit('plugin/sync', {
             roomId: this.env.room.id,
             instanceId: this.env.instanceId,
@@ -189,14 +172,6 @@ export const compile = async (
           return Object.assign({}, this.record)
         },
         $send (event: string, options?: { to: string } | { broadcast: boolean }, ...args: any[]) {
-          /**
-          *  request plugin/trigger event
-          *  @event plugin/trigger
-          *  @param roomId: string
-          *  @param instanceId: string
-          *  @param event: string
-          *  @param args: any[]
-          */
         // @ts-ignore
           this.$socket.emit('plugin/trigger', {
             // @ts-ignore

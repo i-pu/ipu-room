@@ -7,35 +7,44 @@
 import SocketIO, { Server } from 'socket.io'
 import uuidv4 from 'uuid'
 import color from 'colors'
-import micro, { send, json } from 'micro'
+import micro, { send } from 'micro'
 // @ts-ignore
 import cors from 'micro-cors'
 import { router, post, get } from 'microrouter'
-import { compilePlugin } from '../plugin-compiler/compiler'
-import { sessions, pluginMarket, roomList, activate } from './resources'
+import { compilePlugin, activatePlugin } from '../plugin-compiler/compiler'
+import { sessions, pluginMarket, roomList } from './resources'
 import { PluginMeta, PluginPackage } from '@client/model'
 import Counter from '../examples/counter'
+import Status from '../examples/status'
 // @ts-ignore
 import fetch from 'node-fetch'
-
-import Status from '../examples/status'
 
 const API_ORIGIN = 'http://localhost:3000/api/v1'
 
 const __test__ = async () => {
-  // plugin upload test
-  await fetch(`${API_ORIGIN}/market/plugins/counter`)
-    .then((res: any) => res.json())
-    .then((json: any) => console.log)
+  // // plugin upload test
+  // await fetch(`${API_ORIGIN}/market/plugins/counter`)
+  //   .then((res: any) => res.json())
+  //   .then((json: any) => console.log)
 
-  // plugin load test
-  await fetch(`${API_ORIGIN}/plugin/load/counter`)
-    .then((res: any) => res.json())
-    .then(console.log)
-    .catch(console.log)
+  // // plugin load test
+  // await fetch(`${API_ORIGIN}/plugin/load/counter`)
+  //   .then((res: any) => res.json())
+  //   .then(console.log)
+  //   .catch(console.log)
+
+  // make test rooms
+  roomList['xxxx-yyyy-zzz'] = {
+    name: 'Status部屋',
+    id: 'xxxx-yyyy-zzz',
+    // tslint:disable:max-line-length
+    thumbnailUrl: 'https://public.potaufeu.asahi.com/686b-p/picture/12463073/5c4a362cea9cb2f5d90b60e2f2a6c85f.jpg',
+    members: [],
+    pluginPackages: [await activatePlugin(Status)]
+  }
 }
 
-// __test__()
+__test__()
 
 const handler = router(
   // ====== Plugin Compiler API Mock ======
@@ -107,6 +116,9 @@ io.on('connection', (socket) => {
     console.log(`${color.black.bgWhite('[room/create]')} ${color.green.bold('+')} ${color.yellow(roomName)} (${color.gray(roomId)})`)
 
     const pluginPackages: PluginPackage[] = []
+
+    // TODO: default plugin
+
     plugins.forEach(async (id: string, i: number) => {
       try {
         const pluginPackage = await fetch(`${API_ORIGIN}/plugin/load/${id}`)
@@ -119,22 +131,12 @@ io.on('connection', (socket) => {
       }
     })
 
-    // default plugin
-    try {
-      pluginPackages.push(await activate(Status))
-      console.log(`${color.black.bgWhite('[plugin/load]')} Plugin ${color.yellow(Status.id)} successfully loaded!!`)
-    } catch (error) {
-      console.log(error)
-      console.log(`${color.black.bgRed('[plugin/load]')} Plugin ${color.yellow(Status.id)} failed to load...`)
-    }
-
     roomList[roomId] = {
       name: roomName,
       id: roomId,
       thumbnailUrl: '',
       members: [],
-      pluginPackages,
-      plugins: [],
+      pluginPackages
     }
     socket.emit('room/create', { room: roomList[roomId] })
   })

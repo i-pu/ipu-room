@@ -44,6 +44,9 @@ export default {
     initialize () {
       return {}
     },
+    'event/members' (members) {
+      console.log(members)
+    }
   })
 </script>`
 } as PluginMeta

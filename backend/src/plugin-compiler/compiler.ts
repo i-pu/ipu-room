@@ -8,8 +8,17 @@
 import { compileString } from 'typescript-compiler'
 import { parse, NodeType, HTMLElement } from 'node-html-parser'
 import { compile } from 'pug'
-import { Plugin } from '@client/model'
+import { Plugin, PluginMeta, PluginPackage } from '@client/model'
 import uuidv4 from 'uuid'
+
+export const activatePlugin = async (meta: PluginMeta): Promise<PluginPackage> => {
+  try {
+    const plugin = await compilePlugin(meta.content)
+    return { plugin, meta }
+  } catch (error) {
+    throw error
+  }
+}
 
 /**
  * 
