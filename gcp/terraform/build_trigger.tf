@@ -60,7 +60,7 @@ resource "google_cloudbuild_trigger" "database-controller" {
 
 resource "google_cloudbuild_trigger" "functions_stackdriver2slack" {
   trigger_template {
-    tag_name = "stackdriver2stack"
+    tag_name = "stackdriver2slack"
     repo_name = "github_i-pu_ipu"
   }
 
