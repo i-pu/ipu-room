@@ -38,6 +38,11 @@ graph LR
   CF --> |Webhook| SL[slack]
 ```
 
+## service
+基本的にサービスのデプロイはtagにサービス名(ディレクトリ名)をつけてpushするとビルドが走る
+## google cloud functions
+タグにfunction の名前をつけてpushすると更新される
+
 ## Helm3-alpha
 helm 以下のディレクトリにチャートが揃っており，
 互いに共通の変数がディレクトリ直下の`values.yaml`にしまわれている．
