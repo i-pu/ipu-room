@@ -12,11 +12,11 @@ metric.type="logging.googleapis.com/user/${google_logging_metric.web-socket-serv
 resource.type="k8s_container"
 EOF
 
-      duration = "0s"
+      duration = "60s"
       comparison = "COMPARISON_GT"
-      threshold_value = 0.01
+      threshold_value = 10
       trigger {
-        count = 1
+        count = 2
       }
 
       aggregations {
