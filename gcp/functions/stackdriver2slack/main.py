@@ -24,24 +24,25 @@ def entry_point(request):
     incident = request_json['incident']
     slack = slackweb.Slack(url=slack_channel)
     if incident['state'] == 'open':
-        text = ('error happen!\n'
-                'incident_id: {}, resource: {}\n'
-                'policy: {}, condition: {}\n'
-                '{}\n'
-                'summary: {}\n'
-                ).format(
-            incident['incident_id'],
-            incident['resource'],
-            incident['policy_name'],
-            incident['condition_name'],
-            incident['documentation']['content'],
-            incident['summary'],
+        content = ('incident_id: {}, resource: {}\n'
+                   'policy: {}, condition: {}\n'
+                   '{}\n'
+                   'summary: {}\n'
+                   ).format(incident['incident_id'],
+                            incident['resource'],
+                            incident['policy_name'],
+                            incident['condition_name'],
+                            incident['documentation']['content'],
+                            incident['summary'])
+        slack.api_call(
+            "files.upload",
+            content=content,
+            title='error happen!'
         )
 
     elif incident['state'] == 'closed':
         text = 'closed: incident_id: {}'.format(incident['incident_id'])
+        slack.notify(text=text, mrkdwn=True)
 
     else:
         raise Exception('unknown incident state: {}'.format(incident['state']))
-
-    slack.notify(text=text, mrkdwn=True)
