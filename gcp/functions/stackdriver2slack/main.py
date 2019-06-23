@@ -20,7 +20,7 @@ def get_pw(username):
 def entry_point(request):
 
     request_json = request.get_json()
-    for k, v in request_json:
-        print(k, v, flush=True)
+    for i in request_json.items():
+        print(i, flush=True)
     slack = slackweb.Slack(url=slack_channel)
     slack.notify(text='hello, auth: {}'.format(auth.username()))
