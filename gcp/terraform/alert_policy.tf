@@ -28,7 +28,7 @@ EOF
   }
 
   notification_channels = [
-    google_monitoring_notification_channel,
+    google_monitoring_notification_channel.web-hook-error.name
   ]
   enabled = true
   depends_on = [
@@ -52,7 +52,7 @@ EOF
 
 resource "google_monitoring_notification_channel" "web-hook-error" {
   display_name = "web-hook to send error to slack"
-  type = "webhook_basicauth",
+  type = "webhook_basicauth"
 
   labels = {
     password = var.webhook.password
@@ -60,5 +60,5 @@ resource "google_monitoring_notification_channel" "web-hook-error" {
     url = google_cloudfunctions_function.stackdriver2slack.https_trigger_url
   }
 
-  "enabled": true
+  enabled = true
 }
