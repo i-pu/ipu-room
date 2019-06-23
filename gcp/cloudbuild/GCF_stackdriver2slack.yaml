@@ -1,0 +1,18 @@
+timeout: 600s
+
+steps:
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'deploy'
+    entrypoint: '/bin/bash'
+    args:
+      - '-c'
+      - |
+        gcloud functions deploy stackdriver2slack \
+        --runtime python37 \
+        --region us-east1 \
+        --project ipu-project \
+        --entry-point entry_point \
+        --trigger-http \
+        --source=https://source.developers.google.com/projects/ipu-project/repos/github_i-pu_ipu/fixed-aliases/stackdriver2slack/paths/gcp/functions/stackdriver2slack
+
+    waitFor: ['-']
