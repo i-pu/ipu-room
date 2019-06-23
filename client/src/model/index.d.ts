@@ -11,6 +11,7 @@ export type PluginComponent = ThenArg<ReturnType<typeof compile>> & {
   $send: (event: string, options?: { to: string, broadcast: boolean }, ...args: any[]) => void,
   $socket: Socket,
   $me: User,
+  $members: User[],
   env: PluginProperties['env'],
 }
 
@@ -23,7 +24,7 @@ export type PluginComponent = ThenArg<ReturnType<typeof compile>> & {
 */
 
 // compiler internal expression
-export type PluginFunctions = {
+export interface PluginFunctions {
   initialize: ((...args: any) => Record<string, any>)
   [event: string]: (this: PluginComponent, ...args: any) => void
 }
@@ -83,8 +84,7 @@ export interface Room {
   id: string,
   thumbnailUrl: string,
   members: User[],
-  pluginPackages: PluginPackage[],
-  plugins: PluginInstance[],
+  pluginPackages: PluginPackage[]
 }
 
 /**

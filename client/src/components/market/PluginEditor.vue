@@ -54,10 +54,6 @@ export default class PluginEditor extends Vue {
   private syncTemplate = _.debounce(async (e: Event) => {
     this.innerPluginPackage.plugin.template = (e.target as HTMLInputElement).innerText
   }, 1000)
-
-  public async mounted () {
-    
-  }
 }
 </script>
 

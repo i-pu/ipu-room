@@ -1,68 +1,69 @@
 <template lang="pug">
-  v-layout(row wrap)
-    v-navigation-drawer(
-      v-model="drawer"
-      absolute
-    )
-      v-list
-        v-list-group(prepend-icon="home")
-          template(v-slot:activator)
-            v-list-tile
-              v-list-tile-title カテゴリ
+  v-container(fluid grid-list-md text-xs-center)
+    v-layout(row wrap)
+      v-navigation-drawer(
+        v-model="drawer"
+        absolute
+      )
+        v-list
+          v-list-group(prepend-icon="home")
+            template(v-slot:activator)
+              v-list-tile
+                v-list-tile-title カテゴリ
 
-          v-list-tile(
-            v-for="category in categories"
-            :key="category.name"
+            v-list-tile(
+              v-for="category in categories"
+              :key="category.name"
+            )
+              v-list-tile-action
+                v-icon {{ category.icon }}
+              v-list-tile-title {{ category.name }}
+
+          v-list-group(prepend-icon="home")
+            template(v-slot:activator)
+              v-list-tile
+                v-list-tile-title 並び替え
+            v-list-tile(
+              v-for="sortKey in sortKeys"
+              :key="sortKey.name"
+            )
+              v-list-tile-action
+                v-icon {{ sortKey.icon }}
+              v-list-tile-title {{ sortKey.name }}
+
+      v-flex(d-flex xs12 sm12 md12)
+        v-toolbar(app color="light-blue" dark)
+          v-toolbar-side-icon(@click.stop="drawer = !drawer")
+          v-toolbar-title.headline.text-uppercase
+            span.pr-3 マーケット
+
+          v-spacer
+
+          v-text-field(
+            hide-details
+            prepend-icon="search"
+            single-line
+            v-model="searchText"
+            placeholder="名前, タグで検索"
           )
+
+          plugin-upload-form
+        
+        v-list(two-line subheader)
+          v-subheader
+            v-icon.px-2 sort
+            | {{ category.name }}
+            v-icon.px-2 sort_by_alpha
+            | {{ sortKey.name }}
+
+          v-list-tile(avatar ripple @click="$router.push(`/market/${pluginOverview.id}`)" v-for="pluginOverview in pluginOverviews")
+            v-list-tile-avatar
+              img(:src="pluginOverview.thumbnailUrls[0]")
+            v-list-tile-content
+              v-list-tile-title {{ pluginOverview.name }}
+              v-list-tile-sub-title {{ pluginOverview.description | less }}
             v-list-tile-action
-              v-icon {{ category.icon }}
-            v-list-tile-title {{ category.name }}
-
-        v-list-group(prepend-icon="home")
-          template(v-slot:activator)
-            v-list-tile
-              v-list-tile-title 並び替え
-          v-list-tile(
-            v-for="sortKey in sortKeys"
-            :key="sortKey.name"
-          )
-            v-list-tile-action
-              v-icon {{ sortKey.icon }}
-            v-list-tile-title {{ sortKey.name }}
-
-    v-flex(d-flex xs12 sm12 md12)
-      v-toolbar(app color="light-blue" dark)
-        v-toolbar-side-icon(@click.stop="drawer = !drawer")
-        v-toolbar-title.headline.text-uppercase
-          span.pr-3 マーケット
-
-        v-spacer
-
-        v-text-field(
-          hide-details
-          prepend-icon="search"
-          single-line
-          v-model="searchText"
-          placeholder="名前, タグで検索"
-        )
-
-        plugin-upload-form
-      
-      v-list(two-line subheader)
-        v-subheader
-          v-icon.px-2 sort
-          | {{ category.name }}
-          v-icon.px-2 sort_by_alpha
-          | {{ sortKey.name }}
-
-        v-list-tile(avatar ripple @click="$router.push(`/market/${pluginOverview.id}`)" v-for="pluginOverview in pluginOverviews")
-          v-list-tile-avatar
-            img(:src="pluginOverview.thumbnailUrls[0]")
-          v-list-tile-content
-            v-list-tile-title {{ pluginOverview.name }}
-            v-list-tile-sub-title {{ pluginOverview.description | less }}
-          v-list-tile-action
-            v-list-tile-action-text {{ pluginOverview.version }}
+              v-list-tile-action-text {{ pluginOverview.version }}
 
 </template>
 
@@ -71,7 +72,7 @@ import Vue from 'vue'
 import _ from 'lodash'
 import Component from 'vue-class-component'
 import { Prop, Watch } from 'vue-property-decorator'
-import { PluginMeta } from '../model'
+import { PluginMeta, PluginPackage } from '../model'
 import PluginUploadForm from '@/components/market/PluginUploadForm.vue'
 
 interface MarketCategory { name: string, icon: string }
@@ -111,13 +112,11 @@ export default class PluginMarket extends Vue {
 
   private pluginOverviews: PluginMeta[] = []
 
-  created () {
-    fetch(`http://localhost:8080/api/v1/market/plugins`)
-      .then(async res => res.json())
-      .then((pluginMetas: PluginMeta[]) => {
-        console.log(pluginMetas)
-        this.pluginOverviews = pluginMetas
-      }).catch(console.log)
+  public async created () {
+    const metas: PluginMeta[] = await fetch(`${process.env.VUE_APP_API_ORIGIN}/market/plugins`)
+      .then((res) => res.json())
+      .catch(console.log)
+    this.pluginOverviews = metas
   }
 }
 </script>

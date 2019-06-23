@@ -23,7 +23,7 @@
 
 **● userId**: *`string`*
 
-*Defined in [store.ts:8](https://github.com/i-pu/ipu/blob/b5e98fa/client/src/store.ts#L8)*
+*Defined in [store.ts:8](https://github.com/i-pu/ipu/blob/2ce6c72/client/src/store.ts#L8)*
 
 ___
 <a id="username"></a>
@@ -32,7 +32,7 @@ ___
 
 **● userName**: *`string`*
 
-*Defined in [store.ts:7](https://github.com/i-pu/ipu/blob/b5e98fa/client/src/store.ts#L7)*
+*Defined in [store.ts:7](https://github.com/i-pu/ipu/blob/2ce6c72/client/src/store.ts#L7)*
 
 ___
 

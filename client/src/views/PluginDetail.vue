@@ -1,50 +1,51 @@
 <template lang="pug">
-  v-layout(row wrap v-if="loaded")
-    v-toolbar(app)
-      v-btn(icon to="/market")
-        v-icon arrow_back
-      v-toolbar-title.headline.text-uppercase
-        span.pr-3 {{ pluginMeta.name }} の詳細
-      v-spacer
-    v-flex(xs12 d-flex)
-      v-carousel(hide-delimiters height="300")
-        v-carousel-item(
-          v-for="src, i in pluginMeta.thumbnailUrls"
-          :key="i"
-          :src="src"
+  v-container(fluid grid-list-md text-xs-center)
+    v-layout(row wrap v-if="loaded")
+      v-toolbar(app)
+        v-btn(icon to="/market")
+          v-icon arrow_back
+        v-toolbar-title.headline.text-uppercase
+          span.pr-3 {{ pluginMeta.name }} の詳細
+        v-spacer
+      v-flex(xs12 d-flex)
+        v-carousel(hide-delimiters height="300")
+          v-carousel-item(
+            v-for="src, i in pluginMeta.thumbnailUrls"
+            :key="i"
+            :src="src"
+          )
+      v-list(two-line subheader)
+        v-subheader 基本情報
+        v-list-tile(
+          v-for="value, key in pluginMeta"
         )
-    v-list(two-line subheader)
-      v-subheader 基本情報
-      v-list-tile(
-        v-for="value, key in pluginMeta"
-      )
-        v-list-tile-content
-          v-list-tile-title {{ key }}
-          v-list-tile-sub-title(v-if="key !== 'tags'") {{ value }}
-          v-list-tile-sub-title(v-else)
-            v-chip(
-              v-for="tag in value.split(',')"
-              label
-              color="pink"
-              text-color="white"
-            )
-              v-icon(left) label
-              | {{ tag }}
+          v-list-tile-content
+            v-list-tile-title {{ key }}
+            v-list-tile-sub-title(v-if="key !== 'tags'") {{ value }}
+            v-list-tile-sub-title(v-else)
+              v-chip(
+                v-for="tag in value.split(',')"
+                label
+                color="pink"
+                text-color="white"
+              )
+                v-icon(left) label
+                | {{ tag }}
 
-    //- PluginEditor(
-    //-   :pluginPackage="pluginPackage"
-    //-   @refresh="refresh"
-    //-   @toast="toast"
-    //- )
+      //- PluginEditor(
+      //-   :pluginPackage="pluginPackage"
+      //-   @refresh="refresh"
+      //-   @toast="toast"
+      //- )
 
-    v-flex(d-flex xs12 sm12 md6)
-      v-card(white flat fluid)
-        v-card-title.grey--text(icon) Plugin
-        component(v-if="instance" :is="instance.component")
-        v-snackbar(
-          v-model="snackbar"
-          :timeout="2000"
-        ) {{ snackbarMessage }}
+      v-flex(d-flex xs12 sm12 md6)
+        v-card(white flat fluid)
+          v-card-title.grey--text(icon) Plugin
+          component(v-if="instance" :is="instance.component")
+          v-snackbar(
+            v-model="snackbar"
+            :timeout="2000"
+          ) {{ snackbarMessage }}
 </template>
 
 <script lang="ts">
@@ -67,7 +68,7 @@ import { boot } from '@/logic/loader'
       console.log('[3/4] enter room')
       this.room = room
       this.refresh()
-    }
+    },
   },
 })
 export default class PluginDetail extends Vue {
@@ -81,18 +82,18 @@ export default class PluginDetail extends Vue {
   private snackbar: boolean = false
   private snackbarMessage: string = ''
 
-  created () {
-    fetch(`http://localhost:8080/api/v1/market/plugins/counter`)
-      .then(res => res.json())
+  public created () {
+    fetch(`http://localhost:3000/api/v1/market/plugins/counter`)
+      .then((res) => res.json())
       .then((meta: PluginMeta) => {
         console.log('[1/4] fetched plugin package')
         this.pluginMeta = meta
         this.loaded = true
       })
 
-    this.$socket.emit('room/make', { 
-      roomName: '部屋', 
-      pluginIds: [ 'counter' ] 
+    this.$socket.emit('room/make', {
+      roomName: '部屋',
+      pluginIds: [ 'counter' ],
     })
   }
 

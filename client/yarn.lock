@@ -8195,6 +8195,11 @@ pkg-up@^2.0.0:
   dependencies:
     find-up "^2.1.0"
 
+playing-card-signature@^0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/playing-card-signature/-/playing-card-signature-0.0.6.tgz#ab3f720b86231c8f5acf6a12a7dfa4869f90bf1e"
+  integrity sha512-85/Iut4bgPpNVTOPUa+wOOGQCZo0KqEcjMZWe4QrAGKCxs6ASzqNBgRXY4MmbP0gHqg4xnVnBCqjISt8Lvp/Iw==
+
 pn@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/pn/-/pn-1.1.0.tgz#e2f4cef0e219f463c179ab37463e4e1ecdccbafb"
@@ -10878,6 +10883,13 @@ vue-p5@^0.7.1:
   integrity sha512-seUVCxqVyw2VvxviZ94b6Z7rEgBefDIc8xuyts0VcgTpqRqQ6TbYV6yDKf8N0EC0U43jBOkOIUwcJU8zj6tQhQ==
   dependencies:
     p5 "^0.7.2"
+
+vue-playing-card@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/vue-playing-card/-/vue-playing-card-0.0.3.tgz#d671f84a94f087a614182c53f4b1c63f066c151e"
+  integrity sha512-wuizt3ZT83ONqhuk4WWhB97D9+I3sux9u96Jyj0ndtmDRebrIOqFJa4mJDr9DAG2au3o7yKKmiJAb5+4zUJvgA==
+  dependencies:
+    playing-card-signature "^0.0.6"
 
 vue-prism-editor@^0.2.1:
   version "0.2.1"

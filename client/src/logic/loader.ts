@@ -6,7 +6,7 @@ import { compile } from '@/logic/compiler'
 */
 export const boot = async ({ plugin, meta }: PluginPackage, options: { room: Room }): Promise<PluginInstance> => {
   if (plugin.instanceId === '') {
-    throw 'Plugin instance id must be required'
+    throw new Error('Plugin instance id must be required')
   }
 
   try {
@@ -18,10 +18,8 @@ export const boot = async ({ plugin, meta }: PluginPackage, options: { room: Roo
     const initializeFn = plugin.functions.initialize
 
     if (!initializeFn) {
-      throw 'Plugin initializer not found'
+      throw new Error('Plugin initializer not found')
     }
-
-    console.log(initializeFn())
     const properties: PluginProperties = {
       record: initializeFn(),
       env: { instanceId: plugin.instanceId, ...options },

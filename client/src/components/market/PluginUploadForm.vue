@@ -121,11 +121,11 @@ export default class PluginUploadForm extends Vue {
   public requestUploadPlugin () {
     this.meta.author = this.$store.getters.userName
     console.log(Object.assign({}, this.meta))
-    fetch(`http://localhost:8080/api/v1/market/plugins`, {
+    fetch(`${process.env.VUE_APP_API_ORIGIN}/market/plugins`, {
       method: 'POST',
-      body: JSON.stringify(this.meta)
+      body: JSON.stringify(this.meta),
     })
-      .then(res => res.json())
+      .then((res) => res.json())
       .then((payload: { state: boolean }) => {
         this.responseCreatePlugin(payload)
       })

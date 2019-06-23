@@ -31,7 +31,7 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Prop } from 'vue-property-decorator'
-import { Room } from '@/model'
+import { Room, PluginPackage, PluginMeta } from '@/model'
 
 @Component<RoomCreateForm>({
   sockets: {
@@ -49,16 +49,11 @@ export default class RoomCreateForm extends Vue {
   private selectedPlugins: string[] = []
 
   private fetchPluginData () {
-    this.pluginIds = [
-      'counter-0123-abcdef-4567',
-      'paint-xxxx-12345678',
-    ]
-    // TODO
-    // fetch(`${process.env.VUE_APP_API_ORIGIN}/plugin`)
-    //   .then((res) => res.json())
-    //   .then(({ plugins }: { plugins: Array<{ id: string }>}) => {
-    //     this.plugins = plugins.map((plugin) => plugin.id)
-    //   })
+    fetch(`${process.env.VUE_APP_API_ORIGIN}/market/plugins`)
+      .then((res) => res.json())
+      .then((metas: PluginMeta[]) => {
+        this.pluginIds = metas.map((meta) => meta.name)
+      })
   }
 
   private requestCreateRoom () {

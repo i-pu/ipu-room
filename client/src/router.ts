@@ -3,6 +3,7 @@ import Router, { Route } from 'vue-router'
 import store from '@/store'
 
 import Top from '@/views/Top.vue'
+import About from '@/views/About.vue'
 import Lobby from '@/views/Lobby.vue'
 import Room from '@/views/Room.vue'
 import PluginMarket from '@/views/PluginMarket.vue'
@@ -18,6 +19,11 @@ const router = new Router({
       path: '/',
       name: 'Top',
       component: Top,
+    },
+    {
+      path: '/about',
+      name: 'About',
+      component: About,
     },
     {
       path: '/lobby',
@@ -42,12 +48,12 @@ const router = new Router({
   ],
 })
 
-router.beforeEach((to, from, next) => {
-  if (from.path !== '/' && !store.getters.userId) {
-    next('/')
-  } else {
-    next()
-  }
-})
+// router.beforeEach((to, from, next) => {
+//   if (from.path !== '/' && !store.getters.userId) {
+//     next('/')
+//   } else {
+//     next()
+//   }
+// })
 
 export default router
