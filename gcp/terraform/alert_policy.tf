@@ -34,6 +34,18 @@ EOF
   depends_on = [
     google_logging_metric.web-socket-server-error]
 }
+resource "google_monitoring_notification_channel" "web-hook-error" {
+  display_name = "web-hook to send error to slack"
+  type = "webhook_basicauth"
+
+  labels = {
+    password = var.webhook.password
+    username = var.webhook.username
+    url = google_cloudfunctions_function.stackdriver2slack.https_trigger_url
+  }
+
+  enabled = true
+}
 
 resource "google_logging_metric" "web-socket-server-error" {
   name = "k8s_container/web-socket-server"
@@ -50,15 +62,3 @@ EOF
   }
 }
 
-resource "google_monitoring_notification_channel" "web-hook-error" {
-  display_name = "web-hook to send error to slack"
-  type = "webhook_basicauth"
-
-  labels = {
-    password = var.webhook.password
-    username = var.webhook.username
-    url = google_cloudfunctions_function.stackdriver2slack.https_trigger_url
-  }
-
-  enabled = true
-}
