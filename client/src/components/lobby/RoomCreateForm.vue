@@ -52,7 +52,7 @@ export default class RoomCreateForm extends Vue {
     fetch(`${process.env.VUE_APP_API_ORIGIN}/market/plugins`)
       .then((res) => res.json())
       .then((metas: PluginMeta[]) => {
-        this.pluginIds = metas.map(meta => meta.name)
+        this.pluginIds = metas.map((meta) => meta.name)
       })
   }
 

@@ -18,11 +18,27 @@ import _ from 'lodash'
 
 @Component
 export default class Desk extends Vue {
+
+  private get pluginIds (): string[] {
+    return this.plugins.map((instance) => instance.properties.env.instanceId)
+  }
   @Prop() private room!: Room
   private plugins: PluginInstance[] = []
 
-  private get pluginIds (): string[] {
-    return this.plugins.map(instance => instance.properties.env.instanceId)
+  public mounted () {
+    this.bootPlugins()
+  }
+
+  public async bootPlugins () {
+    for (const pluginPackage of this.room.pluginPackages) {
+      try {
+        const instance = await boot(pluginPackage, { room: this.room })
+        // push reactively
+        this.plugins.push(instance)
+      } catch (error) {
+        console.error(error)
+      }
+    }
   }
 
   private getInstance (instanceId: string): Vue | null {
@@ -46,24 +62,8 @@ export default class Desk extends Vue {
     this.invokePluginsFunction('event/members', members)
   }
 
-  mounted() {
-    this.bootPlugins()
-  }
-
-  public async bootPlugins () {
-    for (const pluginPackage of this.room.pluginPackages) {
-      try {
-        const instance = await boot(pluginPackage, { room: this.room })
-        // push reactively
-        this.plugins.push(instance)
-      } catch (error) {
-        console.error(error)
-      }
-    }
-  }
-
   private invokePluginsFunction (event: string, ...args: any[]) {
-    this.pluginIds.forEach(id => this.invokePluginFunction(id, event, ...args))
+    this.pluginIds.forEach((id) => this.invokePluginFunction(id, event, ...args))
   }
 
   private invokePluginFunction (instanceId: string, event: string, ...args: any[]) {

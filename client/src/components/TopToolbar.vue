@@ -26,6 +26,6 @@ import { Prop } from 'vue-property-decorator'
 
 @Component
 export default class TopToolbar extends Vue {
-  
+
 }
 </script>

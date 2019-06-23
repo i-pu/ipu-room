@@ -123,9 +123,9 @@ export default class PluginUploadForm extends Vue {
     console.log(Object.assign({}, this.meta))
     fetch(`${process.env.VUE_APP_API_ORIGIN}/market/plugins`, {
       method: 'POST',
-      body: JSON.stringify(this.meta)
+      body: JSON.stringify(this.meta),
     })
-      .then(res => res.json())
+      .then((res) => res.json())
       .then((payload: { state: boolean }) => {
         this.responseCreatePlugin(payload)
       })

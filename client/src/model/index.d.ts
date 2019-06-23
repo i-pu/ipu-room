@@ -24,7 +24,7 @@ export type PluginComponent = ThenArg<ReturnType<typeof compile>> & {
 */
 
 // compiler internal expression
-export type PluginFunctions = {
+export interface PluginFunctions {
   initialize: ((...args: any) => Record<string, any>)
   [event: string]: (this: PluginComponent, ...args: any) => void
 }

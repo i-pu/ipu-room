@@ -112,9 +112,9 @@ export default class PluginMarket extends Vue {
 
   private pluginOverviews: PluginMeta[] = []
 
-  async created () {
+  public async created () {
     const metas: PluginMeta[] = await fetch(`${process.env.VUE_APP_API_ORIGIN}/market/plugins`)
-      .then(res => res.json())
+      .then((res) => res.json())
       .catch(console.log)
     this.pluginOverviews = metas
   }

@@ -28,7 +28,7 @@ import { Watch } from 'vue-property-decorator';
       this.room = room
     },
     'room/update' ({ room }: { room: Room }) {
-      if (!this.room) return
+      if (!this.room) { return }
       this.room.members = room.members
     },
     'room/exit' (data: {}) {

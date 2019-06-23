@@ -68,7 +68,7 @@ import { boot } from '@/logic/loader'
       console.log('[3/4] enter room')
       this.room = room
       this.refresh()
-    }
+    },
   },
 })
 export default class PluginDetail extends Vue {
@@ -82,18 +82,18 @@ export default class PluginDetail extends Vue {
   private snackbar: boolean = false
   private snackbarMessage: string = ''
 
-  created () {
+  public created () {
     fetch(`http://localhost:3000/api/v1/market/plugins/counter`)
-      .then(res => res.json())
+      .then((res) => res.json())
       .then((meta: PluginMeta) => {
         console.log('[1/4] fetched plugin package')
         this.pluginMeta = meta
         this.loaded = true
       })
 
-    this.$socket.emit('room/make', { 
-      roomName: '部屋', 
-      pluginIds: [ 'counter' ] 
+    this.$socket.emit('room/make', {
+      roomName: '部屋',
+      pluginIds: [ 'counter' ],
     })
   }
 

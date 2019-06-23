@@ -33,7 +33,7 @@ const installModules = async () => {
   // vuetify
   const vuetifyAddons: Record<string, any> = await import('vuetify/lib')
   Object.entries(vuetifyAddons)
-    .filter(([componentName, _]) => componentName[0] === 'V')
+    .filter(([componentName, __]) => componentName[0] === 'V')
     .forEach(([componentName, component]) => {
       modules[componentName] = component
     })
@@ -74,10 +74,10 @@ export const compile = async (
       console.log(` - ${event} : ${fn.toString()}`)
       /**
        *  functions that its name starts with 'event/*', '_*' are special functions.
-       * 
+       *
        *  # Events
        *  - event/room : fire when room updated.
-       *  - event/member : 
+       *  - event/member :
        */
       if (event.startsWith('_') || event.startsWith('event/')) {
         hooks[event] = fn
@@ -92,7 +92,7 @@ export const compile = async (
               event,
               args,
             },
-            options: {}
+            options: {},
           })
         }
         hooks[`__callback__${event}`] = fn
@@ -170,14 +170,14 @@ export const compile = async (
         */
         $me (): User {
           // @ts-ignore
-          return this.env.room.members.find(m => m.id === this.$socket.id)
+          return this.env.room.members.find((m) => m.id === this.$socket.id)
         },
         /**
          *   return [User[]] members in room
          */
         $members (): User[] {
           return this.env.room.members
-        }
+        },
       },
       methods: {
         $cloneRecord (): Record<string, any> {
@@ -193,9 +193,9 @@ export const compile = async (
             instanceId: this.env.instanceId,
             data: {
               event,
-              args
+              args,
             },
-            options
+            options,
           })
           // @ts-ignore
           console.log(`${this.env.instanceId} ${event}`)

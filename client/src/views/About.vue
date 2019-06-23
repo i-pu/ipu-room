@@ -38,7 +38,7 @@ import { Prop } from 'vue-property-decorator'
 import TopToolbar from '@/components/TopToolbar.vue'
 
 @Component<About>({
-  components: { TopToolbar }
+  components: { TopToolbar },
 })
 export default class About extends Vue {
 

@@ -22,7 +22,7 @@
 
 ▸ **boot**(__namedParameters: *`object`*, options: *`object`*): `Promise`<`PluginInstance`>
 
-*Defined in [logic/loader.ts:7](https://github.com/i-pu/ipu/blob/b5e98fa/client/src/logic/loader.ts#L7)*
+*Defined in [logic/loader.ts:7](https://github.com/i-pu/ipu/blob/2ce6c72/client/src/logic/loader.ts#L7)*
 
 Initialize plugin with record and compile Vue Component
 
@@ -42,7 +42,7 @@ ___
 
 ▸ **compile**(plugin: *`Plugin`*, properties: *`PluginProperties`*): `Promise`<`any`>
 
-*Defined in [logic/compiler.ts:55](https://github.com/i-pu/ipu/blob/b5e98fa/client/src/logic/compiler.ts#L55)*
+*Defined in [logic/compiler.ts:62](https://github.com/i-pu/ipu/blob/2ce6c72/client/src/logic/compiler.ts#L62)*
 
 Compiles a plugin-package, and converts Vue component.
 
