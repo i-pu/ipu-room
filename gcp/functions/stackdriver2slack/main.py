@@ -31,6 +31,7 @@ def entry_point(request):
             'pretext': incident['summary'],
             'author_name': incident['incident_id'],
             'title': incident['policy_name'],
+            'title_link': incident['url'],
             'text': incident['documentation']['content'],
             'color': '#ff0000',
             'footer': incident['state'],
@@ -40,6 +41,8 @@ def entry_point(request):
     elif incident['state'] == 'closed':
         attachments = [{
             'author_name': incident['incident_id'],
+            'title': incident['policy_name'],
+            'title_link': incident['url'],
             'color': '#36a64f',
             'footer': incident['state'],
             'ts': incident['ended_at'],

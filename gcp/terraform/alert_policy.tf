@@ -12,9 +12,9 @@ metric.type="logging.googleapis.com/user/${google_logging_metric.web-socket-serv
 resource.type="k8s_container"
 EOF
 
-      duration = "0s"
+      duration = "60s"
       comparison = "COMPARISON_GT"
-      threshold_value = 0.1
+      threshold_value = 5
       trigger {
         count = 1
       }
@@ -30,10 +30,14 @@ EOF
   notification_channels = [
     google_monitoring_notification_channel.web-hook-error.name
   ]
+
   enabled = true
+
   depends_on = [
-    google_logging_metric.web-socket-server-error]
+    google_logging_metric.web-socket-server-error
+  ]
 }
+
 resource "google_monitoring_notification_channel" "web-hook-error" {
   display_name = "web-hook to send error to slack"
   type = "webhook_basicauth"
