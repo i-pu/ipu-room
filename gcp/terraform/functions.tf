@@ -11,7 +11,7 @@ resource "google_cloudfunctions_function" "stackdriver2slack" {
   entry_point           = "entry_point"
 
   source_repository {
-    url = "https://source.developers.google.com/projects/${var.project}/repos/github_i-pu_ipu/fixed-aliases/stackdriver2slack/paths/gcp/functions/web-hook-error"
+    url = "https://source.developers.google.com/projects/${var.project}/repos/github_i-pu_ipu/fixed-aliases/stackdriver2slack-tag/paths/gcp/functions/web-hook-error"
   }
 
   environment_variables = {
