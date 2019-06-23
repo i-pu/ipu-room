@@ -28,10 +28,11 @@ EOF
   }
 
   notification_channels = [
-    google_monitoring_notification_channel.email.id,
+    google_monitoring_notification_channel,
   ]
   enabled = true
-  depends_on = [google_logging_metric.web-socket-server-error]
+  depends_on = [
+    google_logging_metric.web-socket-server-error]
 }
 
 resource "google_logging_metric" "web-socket-server-error" {
@@ -49,10 +50,15 @@ EOF
   }
 }
 
-resource "google_monitoring_notification_channel" "email" {
-  display_name = "kafu email"
-  type = "email"
+resource "google_monitoring_notification_channel" "web-hook-error" {
+  display_name = "web-hook to send error to slack"
+  type = "webhook_basicauth",
+
   labels = {
-    email_address = "kafu.h1998@gmail.com"
+    password = var.webhook.password
+    username = var.webhook.username
+    url = google_cloudfunctions_function.stackdriver2slack.https_trigger_url
   }
+
+  "enabled": true
 }
