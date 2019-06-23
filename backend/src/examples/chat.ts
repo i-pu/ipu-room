@@ -1,8 +1,21 @@
-import { PluginPackage } from '@client/model'
+import { PluginMeta } from '@client/model'
 
 export default {
-  plugin:  {
-    template: `<div>
+  id: 'chat-0123-abcdef-4567',
+  name: 'チャット',
+  thumbnailUrls: [
+    'https://cdn3.iconfinder.com/data/icons/social-messaging-ui-color-line/254000/01-512.png',
+    'https://cdn.vuetifyjs.com/images/carousel/squirrel.jpg',
+    'https://cdn.vuetifyjs.com/images/carousel/sky.jpg',
+    'https://cdn.vuetifyjs.com/images/carousel/bird.jpg',
+  ],
+  description: 'これはプラグインですこれはプラグインですこれはプラグインです',
+  author: 'wakame-tech',
+  version: 'v0.0.1',
+  tags: 'コミュニケーション',
+  content: `
+<template>
+<div>
       <v-list id="chat" two-line="two-line" height="50%">
         <v-subheader>チャット</v-subheader>
         <template v-for="comment, i in record.comments">
@@ -28,38 +41,26 @@ export default {
           </v-flex>
         </v-layout>
       </v-container>
-    </div>`,
-    functions: `({
-      initialize () {
-        return {
-          comments: [],
-          chatInput: ''
-        }
-      },
-      comment (text) {
-        this.record.comments.push({
-          type: 'comment',
-          avatar: this.$me.avatarUrl,
-          commentId: Math.random().toString(),
-          userName: this.$me.name,
-          userId: this.$me.id,
-          text: text
-        })
+    </div>
+</template>
+<script>
+  ({
+    initialize () {
+      return {
+        comments: [],
+        chatInput: ''
       }
-    })`,
-    instanceId: '',
-    config: {
-      enabled: true,
     },
-  },
-  meta: {
-    id: 'chat',
-    // plugin name
-    name: 'chat',
-    thumbnailUrls: ['https://avatars3.githubusercontent.com/u/50242068?s=200&v=4'],
-    description: 'aaa',
-    author: 'wakame-tech',
-    tags: 'a,b,c',
-    content: '<html></html>',
-  },
-} as PluginPackage
+    comment (text) {
+      this.record.comments.push({
+        type: 'comment',
+        avatar: this.$me.avatarUrl,
+        commentId: Math.random().toString(),
+        userName: this.$me.name,
+        userId: this.$me.id,
+        text: text
+      })
+    }
+  })
+</script>`
+} as PluginMeta

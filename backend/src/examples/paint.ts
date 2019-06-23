@@ -1,56 +1,56 @@
 // ========================
 //  Example plugin paint
 // ========================
-import { PluginPackage } from '@client/model'
+import { PluginMeta } from '@client/model'
 
 export default {
-  plugin: {
-    // tslint:disable-next-line
-    template: `<div><vue-p5 @setup="_setup" @draw="_draw" @mousedragged="_dragged" @mousereleased="_released"></vue-p5></div>`,
-    functions: `({
-      initialize () {
-        return { lines: [], buffer: [] }
-      },
-      _setup (sketch) {
-        sketch.createCanvas(600, 600)
-      },
-      _draw (sketch) {
-        for (const line of this.record.lines) {
-          sketch.line(line.px, line.py, line.x, line.y);
-        }
-      },
-      _dragged (p) {
-        const l = { x: p.mouseX, y: p.mouseY, px: p.pmouseX, py: p.pmouseY }
-        this.record.lines.push(l)
-        this.record.buffer.push(l)
-        if (this.record.buffer.length > 10) {
-          this.$send('onDraw', this.record.buffer, this.$socket.id)
-          this.record.buffer = []
-        }
-      },
-      _released (p) {
+  id: 'playingcard-0123-abcdef-4567',
+  name: 'ペイント',
+  thumbnailUrls: [
+    'https://image.flaticon.com/icons/svg/67/67745.svg',
+    'https://cdn.vuetifyjs.com/images/carousel/squirrel.jpg',
+    'https://cdn.vuetifyjs.com/images/carousel/sky.jpg',
+    'https://cdn.vuetifyjs.com/images/carousel/bird.jpg',
+  ],
+  description: 'これはプラグインですこれはプラグインですこれはプラグインです',
+  author: 'wakame-tech',
+  version: 'v0.0.1',
+  tags: '娯楽',
+  content: `
+<template>
+  <div><vue-p5 @setup="_setup" @draw="_draw" @mousedragged="_dragged" @mousereleased="_released"></vue-p5></div>
+</template>
+<script>
+  ({
+    initialize () {
+      return { lines: [], buffer: [] }
+    },
+    _setup (sketch) {
+      sketch.createCanvas(600, 600)
+    },
+    _draw (sketch) {
+      for (const line of this.record.lines) {
+        sketch.line(line.px, line.py, line.x, line.y);
+      }
+    },
+    _dragged (p) {
+      const l = { x: p.mouseX, y: p.mouseY, px: p.pmouseX, py: p.pmouseY }
+      this.record.lines.push(l)
+      this.record.buffer.push(l)
+      if (this.record.buffer.length > 10) {
         this.$send('onDraw', this.record.buffer, this.$socket.id)
         this.record.buffer = []
-      },
-      onDraw (buffer, id) {
-        if (this.$socket.id !== id) {
-          this.record.lines.push(...buffer)
-        }
-      },
-    })`,
-    instanceId: 'a',
-    config: {
-      enabled: true,
+      }
     },
-  },
-  meta: {
-    id: 'paint-xxxx-12345678',
-    // plugin name
-    name: 'counter',
-    thumbnailUrls: ['https://avatars3.githubusercontent.com/u/50242068?s=200&v=4'],
-    description: 'aaa',
-    author: 'wakame-tech',
-    tags: 'a,b,c',
-    content: '<html></html>',
-  },
-} as PluginPackage
+    _released (p) {
+      this.$send('onDraw', this.record.buffer, this.$socket.id)
+      this.record.buffer = []
+    },
+    onDraw (buffer, id) {
+      if (this.$socket.id !== id) {
+        this.record.lines.push(...buffer)
+      }
+    },
+  })
+</script>`
+} as PluginMeta

@@ -14,12 +14,18 @@ import { router, post, get } from 'microrouter'
 import { compilePlugin, activatePlugin } from '../plugin-compiler/compiler'
 import { sessions, pluginMarket, roomList } from './resources'
 import { PluginMeta, PluginPackage } from '@client/model'
-import Counter from '../examples/counter'
-import Status from '../examples/status'
+
 // @ts-ignore
 import fetch from 'node-fetch'
 
 const API_ORIGIN = 'http://localhost:3000/api/v1'
+
+import Counter from '../examples/counter'
+import Chat from '../examples/chat'
+import Player from '../examples/player'
+import Paint from '../examples/paint'
+import PlayingCard from '../examples/playingcard'
+import Status from '../examples/status'
 
 const __test__ = async () => {
   // // plugin upload test
@@ -34,13 +40,20 @@ const __test__ = async () => {
   //   .catch(console.log)
 
   // make test rooms
-  roomList['xxxx-yyyy-zzz'] = {
-    name: 'Status部屋',
-    id: 'xxxx-yyyy-zzz',
+  roomList['xxxx-yyyy-zz'] = {
+    name: 'トランプ',
+    id: 'xxxx-yyyy-zz',
     // tslint:disable:max-line-length
     thumbnailUrl: 'https://public.potaufeu.asahi.com/686b-p/picture/12463073/5c4a362cea9cb2f5d90b60e2f2a6c85f.jpg',
     members: [],
-    pluginPackages: [await activatePlugin(Status)]
+    pluginPackages: [
+      await activatePlugin(PlayingCard),
+      await activatePlugin(Counter),
+      await activatePlugin(Status),
+      await activatePlugin(Player),
+      await activatePlugin(Paint),
+      await activatePlugin(Chat),
+    ]
   }
 }
 
@@ -55,7 +68,7 @@ const handler = router(
       const meta: PluginMeta = await fetch(`${API_ORIGIN}/market/plugins/${pluginId}`)
         .then((res: any) => res.json())
 
-      const plugin = await compilePlugin(meta.content)
+      const plugin = await compilePlugin(meta)
 
       return send(res, 200, { plugin, meta })
     } catch (error) {

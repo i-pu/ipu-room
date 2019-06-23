@@ -14,7 +14,7 @@ import color from 'colors'
 
 export const activatePlugin = async (meta: PluginMeta): Promise<PluginPackage> => {
   try {
-    const plugin = await compilePlugin(meta.content)
+    const plugin = await compilePlugin(meta)
     return { plugin, meta }
   } catch (error) {
     throw error
@@ -23,17 +23,38 @@ export const activatePlugin = async (meta: PluginMeta): Promise<PluginPackage> =
 
 /**
  * 
- * @param template 
+ * @param template '<template>...</template>' will be given
  * @param lang 
  */
-const compileTemplate = async (templateTag: HTMLElement, lang: 'html' | 'pug'): Promise<string> => {
+const compileTemplate = async (templateString: string, lang: 'html' | 'pug'): Promise<string> => {
   if (lang === 'html') {
-    const content = templateTag.querySelector('div')
-    return content.toString()
+    const template = parse(templateString).childNodes[0]
+    const rootElements = template.childNodes.filter(node =>
+      node.nodeType === NodeType.ELEMENT_NODE
+    )
+    if (rootElements.length !== 1) {
+      throw 'root element must be only one element'
+    }
+    const rootElement = rootElements[0] as HTMLElement
+
+    console.log(`${color.black.bgWhite('[compiler]')} plugin structure`)
+    console.log(rootElement.structure)
+
+    return rootElement.toString()
   } else {
     try {
-      const fn = compile(templateTag.toString())
-      return fn()
+      // pug compile
+      const html = compile(templateString)()
+      const template = parse(html).childNodes[0]
+      if (template.childNodes.length !== 1 || template.childNodes[0].nodeType !== NodeType.ELEMENT_NODE) {
+        throw 'root element must be only one element'
+      }
+      const rootElement: HTMLElement = (template as HTMLElement).firstChild as HTMLElement
+
+      console.log(`${color.black.bgWhite('[compiler]')} plugin structure`)
+      console.log(rootElement.structure)
+
+      return rootElement.toString()
     }
      catch (error) {
        throw error
@@ -68,7 +89,9 @@ const compileScript = async (script: string, lang: 'js' | 'ts'): Promise<string>
  * 
  * @param iplRawString 
  */
-export const compilePlugin = async (iplRawString: string): Promise<Plugin> => {
+export const compilePlugin = async (meta: PluginMeta): Promise<Plugin> => {
+  console.log(`${color.black.bgWhite('[compiler]')} try to compile ${color.yellow.bold(meta.name)}`)
+  const iplRawString = meta.content
   try {
     const plugin = parse(iplRawString, { script: true })
     const elements: HTMLElement[] = plugin.childNodes
@@ -88,7 +111,7 @@ export const compilePlugin = async (iplRawString: string): Promise<Plugin> => {
       throw `${color.black.bgRed('[compiler]')} テンプレートのlangが不正です`
     }
 
-    const template = await compileTemplate(templateTag, templateLang as 'html' | 'pug')
+    const template = await compileTemplate(templateTag.toString(), templateLang as 'html' | 'pug')
 
     const scriptTag = elements.find(element =>
       element.tagName === 'script'  
@@ -105,11 +128,6 @@ export const compilePlugin = async (iplRawString: string): Promise<Plugin> => {
     }
 
     const functions = await compileScript(scriptTag.text, scriptLang as 'js' | 'ts')
-
-    console.log(`${color.black.bgWhite('[compiler]')} plugin structure`)
-    for (const element of elements) {
-      console.log(element.structure)
-    }
 
     console.log(`${color.black.bgWhite('[compiler]')} compile succesfully! template: ${color.yellow.bold(templateLang)}, script: ${color.yellow.bold(scriptLang)}`)
 

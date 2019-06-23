@@ -1,8 +1,13 @@
 import Vue, { Component } from 'vue'
 import { Plugin, PluginProperties, PluginComponent, PluginFunctions, User, Room } from '@/model'
 
+import _, { LoDashStatic } from 'lodash'
 // @ts-ignore
 import VueP5 from 'vue-p5'
+// @ts-ignore
+import VuePlayingCard from 'vue-playing-card'
+// TODO: global install -> local install
+Vue.use(VuePlayingCard)
 
 /**
 * [TODO] Import dynamically additional components are used in a plugin.
@@ -37,6 +42,8 @@ const installModules = async () => {
   modules.player = (await import('vue-youtube')).Youtube
 
   modules.VueP5 = VueP5
+
+  // modules.VuePlayingCard = VuePlayingCard
 
   return modules
 }
@@ -152,6 +159,12 @@ export const compile = async (
         }
       },
       computed: {
+        /**
+         *  support Lodash
+         */
+        _ (): LoDashStatic {
+          return _
+        },
         /**
           *  return [User] of mine.
         */

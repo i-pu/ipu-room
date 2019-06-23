@@ -5,26 +5,20 @@
 // =========================
 
 import { Room, PluginMeta } from '@client/model'
+
 import Counter from '../examples/counter'
-// import Chat from '@plugin/chat'
-// import Player from '@plugin/player'
-// import Paint from '@plugin/paint'
+import Chat from '../examples/chat'
+import Player from '../examples/player'
+import Paint from '../examples/paint'
+import PlayingCard from '../examples/playingcard'
+import Status from '../examples/status'
 
 // roomId -> room
-export const roomList: Record<string, Room> = {
-  'xxxx-yyyy-zzzz': {
-    name: 'プラグインなし',
-    id: 'xxxx-yyyy-zzzz',
-    // tslint:disable:max-line-length
-    thumbnailUrl: 'https://public.potaufeu.asahi.com/686b-p/picture/12463073/5c4a362cea9cb2f5d90b60e2f2a6c85f.jpg',
-    members: [],
-    pluginPackages: []
-  }
-}
+export const roomList: Record<string, Room> = {}
 
 // plugin-id -> pluginMeta
 export const pluginMarket: Record<string, PluginMeta> = {
-  'counter': Counter,
+  Counter, Chat, Player, Paint, PlayingCard, Status
 }
 
 // socketId -> roomId

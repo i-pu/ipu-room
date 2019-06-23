@@ -14,6 +14,8 @@ import { Prop, Watch } from 'vue-property-decorator'
 import { Room, PluginInstance, PluginPackage, User } from '@/model'
 import { boot } from '@/logic/loader'
 
+import _ from 'lodash'
+
 @Component
 export default class Desk extends Vue {
   @Prop() private room!: Room

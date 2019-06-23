@@ -3,6 +3,7 @@
     v-toolbar(app v-if="$vuetify.breakpoint.sm || $vuetify.breakpoint.xs")
       v-toolbar-side-icon
       v-toolbar-title.headline(@click="$router.push('/')") ipu-room
+      v-btn(flat @click="$router.push('/market')") ストアへ
       v-spacer
       v-btn(large icon color="primary")
         v-icon person
