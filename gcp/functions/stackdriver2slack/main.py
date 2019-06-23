@@ -33,7 +33,7 @@ def entry_point(request):
                     incident['policy_name'],
                     incident['condition_name'],
                 ),
-                '{}\n'.format(incident['document']['content']),
+                '{}\n'.format(incident['documentation']['content']),
                 'summary: {}\n'.format(incident['summary']),
                 )
     elif incident['state'] == 'closed':
