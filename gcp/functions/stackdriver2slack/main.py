@@ -1,12 +1,14 @@
+import os
+
 from flask_httpauth import HTTPBasicAuth
 import slackweb
 
 auth = HTTPBasicAuth()
 
 users = {
-    "john": "hello",
-    "susan": "bye"
+    os.getenv('BASICAUTH_USERNAME'): os.getenv('BASICAUTH_PASSWORD'),
 }
+slack_channel = os.getenv('SLACK_CHANNEL')
 
 @auth.get_password
 def get_pw(username):

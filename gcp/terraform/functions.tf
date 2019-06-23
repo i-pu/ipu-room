@@ -17,6 +17,6 @@ resource "google_cloudfunctions_function" "stackdriver2slack" {
   environment_variables = {
     BASICAUTH_USERNAME = var.webhook.username
     BASICAUTH_PASSWORD = var.webhook.password
-    SLACK_CHANNELL = var.slack
+    SLACK_CHANNEL = var.slack
   }
 }
