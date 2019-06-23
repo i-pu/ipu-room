@@ -12,9 +12,6 @@ slack_channel = os.getenv('SLACK_CHANNEL')
 
 @auth.get_password
 def get_pw(username):
-    print(username, flush=True)
-    print(users, flush=True)
-    print(slack_channel, flush=True)
     if username in users:
         return users.get(username)
     return None
