@@ -1,6 +1,6 @@
 <template lang="pug">
   v-layout(row wrap)
-    v-flex(d-flex xs12 sm12 md9
+    v-flex(d-flex xs12 sm12 md6
       v-for="{ component, properties } in plugins"
     )
       v-card(white fluid)
@@ -66,10 +66,9 @@ export default class Desk extends Vue {
 
   private invokePluginFunction (instanceId: string, event: string, ...args: any[]) {
     const instance = this.getInstance(instanceId) as Record<string, any>
+    console.log(typeof instance[event])
     if (instance && instance[event] && typeof instance[event] === 'function') {
       instance[event](...args)
-    } else {
-      console.warn(`[Desk] ${instanceId} ${event} did not successed.`)
     }
   }
 }

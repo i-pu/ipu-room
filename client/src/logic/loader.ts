@@ -20,8 +20,6 @@ export const boot = async ({ plugin, meta }: PluginPackage, options: { room: Roo
     if (!initializeFn) {
       throw 'Plugin initializer not found'
     }
-
-    console.log(initializeFn())
     const properties: PluginProperties = {
       record: initializeFn(),
       env: { instanceId: plugin.instanceId, ...options },

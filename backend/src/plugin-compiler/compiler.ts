@@ -10,6 +10,7 @@ import { parse, NodeType, HTMLElement } from 'node-html-parser'
 import { compile } from 'pug'
 import { Plugin, PluginMeta, PluginPackage } from '@client/model'
 import uuidv4 from 'uuid'
+import color from 'colors'
 
 export const activatePlugin = async (meta: PluginMeta): Promise<PluginPackage> => {
   try {
@@ -73,23 +74,18 @@ export const compilePlugin = async (iplRawString: string): Promise<Plugin> => {
     const elements: HTMLElement[] = plugin.childNodes
       .filter((node): node is HTMLElement => node.nodeType === NodeType.ELEMENT_NODE)
 
-    for (const element of elements) {
-      console.log(element.structure)
-    }
-
     // find <template> ? </template>
     const templateTag = elements.find(element => 
       element.tagName === 'template'
     )
 
     if (!templateTag) {
-      throw '[Plugin Compiler] テンプレートが見つかりません'
+      throw `${color.black.bgRed('[compiler]')} テンプレートが見つかりません`
     }
 
     const templateLang = templateTag.attributes['lang'] || 'html'
-    console.log(`template: ${templateLang}`)
     if (!['html', 'pug'].includes(templateLang)) {
-      throw '[Plugin Compiler] 言語が不正です'
+      throw `${color.black.bgRed('[compiler]')} テンプレートのlangが不正です`
     }
 
     const template = await compileTemplate(templateTag, templateLang as 'html' | 'pug')
@@ -99,20 +95,27 @@ export const compilePlugin = async (iplRawString: string): Promise<Plugin> => {
     )
 
     if (!scriptTag) {
-      throw '[Plugin Compiler] スクリプトが見つかりません'
+      throw `${color.black.bgRed('[compiler]')} スクリプトが見つかりません`
     }
 
     // now support js(default), ts
     const scriptLang = scriptTag.attributes['lang'] || 'js'
-    console.log(`script: ${scriptLang}`)
     if (!['js', 'ts'].includes(scriptLang)) {
-      throw '[Plugin Compiler] 言語が不正です'
+      throw `${color.black.bgRed('[compiler]')} スクリプトのlangが不正です`
     }
 
     const functions = await compileScript(scriptTag.text, scriptLang as 'js' | 'ts')
 
+    console.log(`${color.black.bgWhite('[compiler]')} plugin structure`)
+    for (const element of elements) {
+      console.log(element.structure)
+    }
+
+    console.log(`${color.black.bgWhite('[compiler]')} compile succesfully! template: ${color.yellow.bold(templateLang)}, script: ${color.yellow.bold(scriptLang)}`)
+
     return { template, functions, instanceId: uuidv4(), config: { enabled: true } }
   } catch (error) {
+    console.log(`${color.black.bgRed('[compiler] Error')}`)
     console.error(error)
     throw error
   }
