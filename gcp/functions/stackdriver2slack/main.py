@@ -23,26 +23,29 @@ def entry_point(request):
     request_json = request.get_json()
     incident = request_json['incident']
     slack = slackweb.Slack(url=slack_channel)
+    import pprint
+    pprint.pprint(incident)
+
     if incident['state'] == 'open':
-        content = ('incident_id: {}, resource: {}\n'
-                   'policy: {}, condition: {}\n'
-                   '{}\n'
-                   'summary: {}\n'
-                   ).format(incident['incident_id'],
-                            incident['resource'],
-                            incident['policy_name'],
-                            incident['condition_name'],
-                            incident['documentation']['content'],
-                            incident['summary'])
-        slack.api_call(
-            "files.upload",
-            content=content,
-            title='error happen!'
-        )
+        attachments = [{
+            'pretext': incident['summary'],
+            'author_name': incident['incident_id'],
+            'title': incident['policy_name'],
+            'text': incident['documentation']['content'],
+            'color': '#ff0000',
+            'footer': incident['state'],
+            'ts': incident['started_at'],
+        }]
 
     elif incident['state'] == 'closed':
-        text = 'closed: incident_id: {}'.format(incident['incident_id'])
-        slack.notify(text=text, mrkdwn=True)
+        attachments = [{
+            'author_name': incident['incident_id'],
+            'color': '#36a64f',
+            'footer': incident['state'],
+            'ts': incident['ended_at'],
+        }]
 
     else:
         raise Exception('unknown incident state: {}'.format(incident['state']))
+
+    slack.notify(attachments=attachments)
