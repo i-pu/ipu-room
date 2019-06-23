@@ -12,7 +12,7 @@ resource "google_cloudbuild_trigger" "web-socket-server" {
     _ZONE = var.zone
   }
 
-  filename = "gcp/web-socket-server-cloudbuild.yaml"
+  filename = "gcp/cloudbuild/web-socket-server.yaml"
 }
 
 resource "google_cloudbuild_trigger" "client" {
@@ -27,7 +27,7 @@ resource "google_cloudbuild_trigger" "client" {
     _ZONE = var.zone
   }
 
-  filename = "gcp/client-cloudbuild.yaml"
+  filename = "gcp/cloudbuild/client.yaml"
 }
 
 resource "google_cloudbuild_trigger" "postgres" {
@@ -40,7 +40,7 @@ resource "google_cloudbuild_trigger" "postgres" {
     _ZONE = var.zone
   }
 
-  filename = "gcp/postgres-cloudbuild.yaml"
+  filename = "gcp/cloudbuild/postgres.yaml"
 }
 
 resource "google_cloudbuild_trigger" "database-controller" {
@@ -55,5 +55,14 @@ resource "google_cloudbuild_trigger" "database-controller" {
     _ZONE = var.zone
   }
 
-  filename = "gcp/database-controller-cloudbuild.yaml"
+  filename = "gcp/cloudbuild/database-controller.yaml"
+}
+
+resource "google_cloudbuild_trigger" "functions_stackdriver2slack" {
+  trigger_template {
+    tag_name = "stackdriver2stack"
+    repo_name = "github_i-pu_ipu"
+  }
+
+  filename = "gcp/cloudbuild/GCF_stackdriver2slack.yaml"
 }

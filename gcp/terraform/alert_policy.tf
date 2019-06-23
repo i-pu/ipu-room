@@ -12,11 +12,11 @@ metric.type="logging.googleapis.com/user/${google_logging_metric.web-socket-serv
 resource.type="k8s_container"
 EOF
 
-      duration = "0s"
+      duration = "60s"
       comparison = "COMPARISON_GT"
-      threshold_value = 0.01
+      threshold_value = 10
       trigger {
-        count = 1
+        count = 2
       }
 
       aggregations {
@@ -28,10 +28,23 @@ EOF
   }
 
   notification_channels = [
-    google_monitoring_notification_channel.email.id,
+    google_monitoring_notification_channel.web-hook-error.name
   ]
   enabled = true
-  depends_on = [google_logging_metric.web-socket-server-error]
+  depends_on = [
+    google_logging_metric.web-socket-server-error]
+}
+resource "google_monitoring_notification_channel" "web-hook-error" {
+  display_name = "web-hook to send error to slack"
+  type = "webhook_basicauth"
+
+  labels = {
+    password = var.webhook.password
+    username = var.webhook.username
+    url = google_cloudfunctions_function.stackdriver2slack.https_trigger_url
+  }
+
+  enabled = true
 }
 
 resource "google_logging_metric" "web-socket-server-error" {
@@ -49,10 +62,3 @@ EOF
   }
 }
 
-resource "google_monitoring_notification_channel" "email" {
-  display_name = "kafu email"
-  type = "email"
-  labels = {
-    email_address = "kafu.h1998@gmail.com"
-  }
-}
