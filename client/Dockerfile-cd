@@ -7,7 +7,8 @@ COPY package.json .
 RUN yarn install
 COPY . .
 
-RUN echo "VUE_APP_SOCKET_ORIGIN=http://35.247.18.78:30008\nVUE_APP_API_ORIGIN=http://35.247.18.78:30888/api/v1" > .env.production && \
+RUN echo "VUE_APP_SOCKET_ORIGIN=http://35.247.18.78:30008" > .env.production && \
+    echo "VUE_APP_API_ORIGIN=http://35.247.18.78:30888/api/v1" >> .env.production && \
     yarn build
 
 
