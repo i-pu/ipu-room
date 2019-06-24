@@ -1,14 +1,14 @@
 FROM node:8.11.3-alpine as builder
-ENV API_ORIGIN http://35.247.18.78:30008
 WORKDIR /app
+
 RUN apk update && \
     yarn global add @vue/cli
 COPY package.json .
 RUN yarn install
 COPY . .
 
-RUN sed -i -e '/^VUE_APP_API_ORIGIN/s/=.*$/=${API_ORIGIN}/' .env.production
-RUN yarn build
+RUN echo "VUE_APP_SOCKET_ORIGIN=http://35.247.18.78:30008\nVUE_APP_API_ORIGIN=http://35.247.18.78:30888/api/v1" > .env.production && \
+    yarn build
 
 
 FROM nginx:1.15-alpine as deploy
