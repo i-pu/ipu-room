@@ -16,12 +16,9 @@
       "node"
     ],
     "paths": {
-      "@": [
-        "./../client/src"
-      ],
-      "@client/*": [
-        "./../client/src/*"
-      ],
+      "@*": [
+        "src/*"
+      ]
     }
   },
   "include": [

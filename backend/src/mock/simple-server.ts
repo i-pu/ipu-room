@@ -11,21 +11,21 @@ import micro, { send } from 'micro'
 // @ts-ignore
 import cors from 'micro-cors'
 import { router, post, get } from 'microrouter'
-import { compilePlugin, activatePlugin } from '../plugin-compiler/compiler'
-import { sessions, pluginMarket, roomList } from './resources'
-import { PluginMeta, PluginPackage } from '@client/model'
+import { compilePlugin, activatePlugin } from '@plugin-compiler/compiler'
+import { sessions, pluginMarket, roomList } from '@mock/resources'
+import { PluginMeta, PluginPackage } from '@model'
 
 // @ts-ignore
 import fetch from 'node-fetch'
 
 const API_ORIGIN = 'http://localhost:3000/api/v1'
 
-import Counter from '../examples/counter'
-import Chat from '../examples/chat'
-import Player from '../examples/player'
-import Paint from '../examples/paint'
-import PlayingCard from '../examples/playingcard'
-import Status from '../examples/status'
+import Counter from '@examples/counter'
+import Chat from '@examples/chat'
+import Player from '@examples/player'
+import Paint from '@examples/paint'
+import PlayingCard from '@examples/playingcard'
+import Status from '@examples/status'
 
 const __test__ = async () => {
   // // plugin upload test
