@@ -2,7 +2,7 @@
 
 resource "google_cloudbuild_trigger" "web-socket-server" {
   trigger_template {
-    tag_name = "web-socket-server"
+    branch_name = "web-socket-server"
     repo_name = "github_i-pu_ipu"
   }
 
@@ -17,7 +17,7 @@ resource "google_cloudbuild_trigger" "web-socket-server" {
 
 resource "google_cloudbuild_trigger" "client" {
   trigger_template {
-    tag_name = "client"
+    branch_name = "client"
     repo_name = "github_i-pu_ipu"
   }
 
@@ -32,7 +32,7 @@ resource "google_cloudbuild_trigger" "client" {
 
 resource "google_cloudbuild_trigger" "postgres" {
   trigger_template {
-    tag_name = "postgres"
+    branch_name = "postgres"
     repo_name = "github_i-pu_ipu"
   }
 
@@ -45,7 +45,7 @@ resource "google_cloudbuild_trigger" "postgres" {
 
 resource "google_cloudbuild_trigger" "database-controller" {
   trigger_template {
-    tag_name = "database-controller"
+    branch_name = "database-controller"
     repo_name = "github_i-pu_ipu"
   }
 
@@ -60,7 +60,7 @@ resource "google_cloudbuild_trigger" "database-controller" {
 
 resource "google_cloudbuild_trigger" "functions_stackdriver2slack" {
   trigger_template {
-    tag_name = "stackdriver2stack"
+    branch_name = "stackdriver2slack"
     repo_name = "github_i-pu_ipu"
   }
 

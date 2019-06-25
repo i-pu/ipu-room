@@ -84,11 +84,13 @@ steps:
         --set env=prd,image=ipu-web-socket-server,tag=${REVISION_ID} \
         helm/web-socket-server \
         && \
+        ( \
         ./helm3-alpha-amd64 template \
         -f helm/values.yaml \
         --set env=prd,image=ipu-web-socket-server,tag=${REVISION_ID} \
         helm/web-socket-server \
-        | kubectl apply -f -
+        | kubectl apply -f - \
+        )
     waitFor: ['push-image', 'get-cluster-credentials', 'decryption']
 
 # ./helm3-alpha-amd64 upgrade \

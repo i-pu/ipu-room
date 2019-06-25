@@ -2,7 +2,7 @@
 set -ex
 
 ./helm3-alpha uninstall web-socket-server || true
-docker build -t kafuhamada/web-socket-server web-socket-server/src/
+docker build -t kafuhamada/ipu-web-socket-server web-socket-server/src/
 
 ./helm3-alpha install \
 -f helm/values.yaml \
