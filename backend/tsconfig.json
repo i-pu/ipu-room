@@ -12,19 +12,21 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "baseUrl": ".",
+    "outDir": "./dist",
     "types": [
       "node"
     ],
     "paths": {
       "@*": [
-        "src/*"
+        "./src/*"
       ]
     }
   },
   "include": [
-    "src/**/*.ts"
+    "./src/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "./node_modules",
+    "./src/examples/**"
   ]
 }

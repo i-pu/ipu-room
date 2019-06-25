@@ -2,7 +2,7 @@
 //  Example plugin player
 // ========================
 
-import { PluginMeta } from '@model'
+import { PluginMeta } from '@/model'
 
 export default {
   id: 'playingcard-0123-abcdef-4567',

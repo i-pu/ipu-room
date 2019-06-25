@@ -1,7 +1,7 @@
 // ==========================
 //  Example plugin counter
 // ========================
-import { PluginMeta } from '@model'
+import { PluginMeta } from '@/model'
 
 export default {
   id: 'counter-0123-abcdef-4567',

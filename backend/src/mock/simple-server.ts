@@ -57,7 +57,7 @@ const __test__ = async () => {
   }
 }
 
-__test__()
+// __test__()
 
 const handler = router(
   // ====== Plugin Compiler API Mock ======
