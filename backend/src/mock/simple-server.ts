@@ -37,7 +37,6 @@ const __test__ = async () => {
   //     .then((res: Response) => res.json())
 
   //   console.log(uploadedMeta)
-
   //   // plugin fetch meta test
   //   const fetchedPluginMeta: PluginMeta = await fetch(`${API_ORIGIN}/market/plugins/${uploadedMeta.id}`)
   //     .then((res: Response) => res.json())
@@ -149,7 +148,7 @@ const handler = router(
   (req, res) => send(res, 404, { message: 'Not Found' })
 )
 
-const apiServer = micro(cors()(handler))
+export const apiServer = micro(cors()(handler))
 apiServer.listen(3000, () => {
   console.log(`simple api server running on ${color.green.bold('localhost:3000')}`)
 })

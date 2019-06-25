@@ -14,13 +14,14 @@
     "baseUrl": ".",
     "outDir": "./dist",
     "types": [
-      "node"
+      "node",
+      "jest"
     ],
     "paths": {
       "@*": [
         "./src/*"
       ]
-    }
+    },
   },
   "include": [
     "./src/**/*.ts"
