@@ -1,7 +1,8 @@
 {
   "scripts": {
     "start": "npx ts-node -r tsconfig-paths/register src/mock/simple-server.ts",
-    "dev": "ts-node -r tsconfig-paths/register  src/mock/simple-server.ts"
+    "dev": "ts-node -r tsconfig-paths/register  src/mock/simple-server.ts",
+    "doc": "rm -r ../docs/backend; typedoc . --options ./typedoc.js --theme markdown"
   },
   "dependencies": {
     "@types/node": "^12.0.8",
@@ -37,6 +38,8 @@
     "tsconfig-paths": "^3.8.0",
     "tslib": "^1.10.0",
     "tspath": "^1.3.7",
+    "typedoc": "^0.14.2",
+    "typedoc-plugin-markdown": "^2.0.6",
     "typescript": "^3.5.2"
   }
 }

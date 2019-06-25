@@ -7,7 +7,7 @@
 import SocketIO, { Server } from 'socket.io'
 import uuidv4 from 'uuid'
 import color from 'colors'
-import micro, { send } from 'micro'
+import micro, { send, json } from 'micro'
 // @ts-ignore
 import cors from 'micro-cors'
 import { router, post, get } from 'microrouter'
@@ -28,43 +28,66 @@ import PlayingCard from '@examples/playingcard'
 import Status from '@examples/status'
 
 const __test__ = async () => {
-  // // plugin upload test
-  // await fetch(`${API_ORIGIN}/market/plugins/counter`)
-  //   .then((res: any) => res.json())
-  //   .then((json: any) => console.log)
+  // try {
+  //   // plugin upload test
+  //   const { state, uploadedMeta }: { state: boolean, uploadedMeta: PluginMeta } = await fetch(`${API_ORIGIN}/market/plugins`, {
+  //     method: 'POST',
+  //     body: JSON.stringify(Counter)
+  //   })
+  //     .then((res: Response) => res.json())
 
-  // // plugin load test
-  // await fetch(`${API_ORIGIN}/plugin/load/counter`)
-  //   .then((res: any) => res.json())
-  //   .then(console.log)
-  //   .catch(console.log)
+  //   console.log(uploadedMeta)
+
+  //   // plugin fetch meta test
+  //   const fetchedPluginMeta: PluginMeta = await fetch(`${API_ORIGIN}/market/plugins/${uploadedMeta.id}`)
+  //     .then((res: Response) => res.json())
+
+  //   console.log(`fetched: ${fetchedPluginMeta.name}`)
+
+  //   // plugin load test
+  //   const pluginPackage: PluginPackage = await fetch(`${API_ORIGIN}/plugin/load/${uploadedMeta.id}`)
+  //     .then((res: Response) => res.json())
+
+  // //   console.log(pluginPackage)
+  // } catch (error) {
+  //   console.log(error)
+  // }
 
   // make test rooms
-  roomList['xxxx-yyyy-zz'] = {
-    name: 'トランプ',
-    id: 'xxxx-yyyy-zz',
-    // tslint:disable:max-line-length
-    thumbnailUrl: 'https://public.potaufeu.asahi.com/686b-p/picture/12463073/5c4a362cea9cb2f5d90b60e2f2a6c85f.jpg',
-    members: [],
-    pluginPackages: [
-      await activatePlugin(PlayingCard),
-      await activatePlugin(Counter),
-      await activatePlugin(Status),
-      await activatePlugin(Player),
-      await activatePlugin(Paint),
-      await activatePlugin(Chat),
-    ]
-  }
+  // roomList['xxxx-yyyy-zz'] = {
+  //   name: 'トランプ',
+  //   id: 'xxxx-yyyy-zz',
+  //   // tslint:disable:max-line-length
+  //   thumbnailUrl: 'https://public.potaufeu.asahi.com/686b-p/picture/12463073/5c4a362cea9cb2f5d90b60e2f2a6c85f.jpg',
+  //   members: [],
+  //   pluginPackages: [
+  //     await activatePlugin(PlayingCard),
+  //     await activatePlugin(Counter),
+  //     await activatePlugin(Status),
+  //     await activatePlugin(Player),
+  //     await activatePlugin(Paint),
+  //     await activatePlugin(Chat),
+  //   ]
+  // }
 }
 
-// __test__()
+__test__()
 
 const handler = router(
   // ====== Plugin Compiler API Mock ======
+
+  /**
+   *  fetch plugin metadata from the plugin market,
+   *  and compile plugin.
+   * 
+   *  @return pluginPackage return 200 Ok and PluginPackage.
+   *  @return error return 500 and error object.
+   */
   get('/api/v1/plugin/load/:id', async (req, res) => {
     try {
-      const pluginId = 'counter'
+      const pluginId = req.params.id
       // fetch package from market
+      console.log(`${color.black.bgWhite('[plugin/load]')} Loading Plugin ${color.yellow(pluginId)}`)
       const meta: PluginMeta = await fetch(`${API_ORIGIN}/market/plugins/${pluginId}`)
         .then((res: any) => res.json())
 
@@ -72,27 +95,58 @@ const handler = router(
 
       return send(res, 200, { plugin, meta })
     } catch (error) {
-      send(res, 500, error)
+      console.log(`${color.black.bgRed('[plugin/load]')} Plugin failed to load ...`)
+      console.log(error)
+      send(res, 500, { error })
     }
   }),
 
   // ====== Api Mock =======
+
+  /**
+   *  upload plugin API as [meta: PluginMeta].
+   * 
+   *  @return state: boolean
+   */
   post('/api/v1/market/plugins', async (req, res) => {
-    // const pluginMeta: PluginMeta = await json(req) as PluginMeta
-    const pluginMeta = Counter as PluginMeta
-    pluginMeta.id = 'counter' // uuidv4()
-    pluginMarket[pluginMeta.id] = pluginMeta
-    return send(res, 200, JSON.stringify({ state: true }))
+    try {
+      const pluginMeta: PluginMeta = await json(req) as PluginMeta
+      pluginMeta.id = uuidv4()
+      pluginMarket[pluginMeta.id] = pluginMeta
+
+      console.log(`${color.black.bgWhite('[market/plugins]')} Upload ${color.yellow(pluginMeta.name)} as ${color.yellow(pluginMeta.id)}`)
+
+      return send(res, 200, JSON.stringify({ 
+        state: true,
+        uploadedMeta: pluginMeta
+      }))
+    } catch (error) {
+      return send(res, 500, { error })
+    }
   }),
+
+  /**
+   *  returns plugin metadata of plugins.
+   */
   get('/api/v1/market/plugins', async (req, res) => {
     const metas = Object.values(pluginMarket)
     return send(res, 200, JSON.stringify(metas))
   }),
+
+  /**
+   *  returns plugin metadata which plugin id is [id].
+   * 
+   *  @param id plugin id
+   */
   get('/api/v1/market/plugins/:id', async (req, res) => {
-    const meta = pluginMarket['counter']
-    return send(res, 200, JSON.stringify(meta))
+    const pluginId = req.params.id
+    if (Object.keys(pluginId)) {
+      return send(res, 200, JSON.stringify(pluginMarket[pluginId]))
+    } else {
+      return send(res, 403, { error: `plugin id ${pluginId} was not found.` })
+    }
   }),
-  (req, res) => send(res, 404, 'Not Found')
+  (req, res) => send(res, 404, { message: 'Not Found' })
 )
 
 const apiServer = micro(cors()(handler))
@@ -190,13 +244,6 @@ io.on('connection', (socket) => {
     socket.emit('room/enter', { room })
     socket.in(roomId).broadcast.emit('room/update', { room })
   })
-
-  // since v2
-  // socket.on('room/event/join', ({}) => {})
-  // socket.on('room/event/leave', ({}) => {})
-
-  // socket.on('plugin/event/load', ({}) => {})
-  // socket.on('plugin/event/destroy', ({}) => {})
 
   socket.on('plugin/trigger', ({ roomId, instanceId, data, options }: {
     roomId: string, instanceId: string, data: { event: string, args: any[] }, options: {}

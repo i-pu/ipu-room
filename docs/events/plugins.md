@@ -1,7 +1,7 @@
 # Plugin Events
 
 [準拠しているコード](https://github.com/i-pu/ipu/blob/%2348/client/src/mock/simple-server.ts)
-aaaaaaaaaaa
+
 # `plugin/register`
 ## client to server
 - name: string
