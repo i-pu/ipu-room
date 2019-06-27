@@ -2,6 +2,8 @@
 extern crate failure;
 #[macro_use]
 extern crate diesel;
+#[macro_use]
+extern crate log;
 
 use actix_web::{
     App, HttpServer,

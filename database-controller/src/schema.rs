@@ -1,4 +1,13 @@
 table! {
+    active_plugins (id) {
+        id -> Varchar,
+        plugin_id -> Varchar,
+        room_id -> Varchar,
+        enabled -> Bool,
+    }
+}
+
+table! {
     plugins (id) {
         id -> Varchar,
         name -> Varchar,
@@ -10,14 +19,6 @@ table! {
 }
 
 table! {
-    users (id) {
-        id -> Varchar,
-        name -> Varchar,
-        room_id -> Nullable<Varchar>,
-    }
-}
-
-table! {
     rooms (id) {
         id -> Varchar,
         name -> Varchar,
@@ -25,10 +26,16 @@ table! {
 }
 
 table! {
-    active_plugins (id) {
+    users (id) {
         id -> Varchar,
-        plugin_id -> Varchar,
-        room_id -> Varchar,
-        enabled -> Bool,
+        name -> Varchar,
+        room_id -> Nullable<Varchar>,
     }
 }
+
+allow_tables_to_appear_in_same_query!(
+    active_plugins,
+    plugins,
+    rooms,
+    users,
+);
