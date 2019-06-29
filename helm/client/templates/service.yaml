@@ -1,12 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: client
+  name: {{ .Values.client.service.name }}
 spec:
-  type: NodePort
+  type: {{ .Values.client.service.type }}
   selector:
-    app: client
+    app: {{ .Chart.Name }}
   ports:
     - port: {{ .Values.client.port }}
-      nodePort: {{ .Values.client.nodePort }}
       targetPort: {{ .Values.client.port }}
+      {{- if .Values.client.nordePort }}
+      nodePort: {{ .Values.webSocketServer.nodePort }}
+      {{- end }}

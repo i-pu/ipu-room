@@ -19,20 +19,20 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          image: {{ .Values.docker.username }}/{{ .Values.image }}:{{ .Values.tag }}
+          image: nginx:1.15
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: {{ .Values.client.port }}
+            - containerPort: {{ .Values.reverseProxy.port }}
           resources:
             requests:
               memory: 5Mi
-              cpu: 0m
+              cpu: 1m
           volumeMounts:
             - mountPath: /etc/nginx/conf.d
-              name: {{ .Chart.Name }}-nginx-config
+              name: {{ .Chart.Name }}-file-configmap
           readinessProbe:
             httpGet:
-              port: {{ .Values.client.port }}
+              port: {{ .Values.reverseProxy.port }}
               path: /
             successThreshold: 1
             initialDelaySeconds: 30
@@ -40,9 +40,9 @@ spec:
             timeoutSeconds: 3
 
       volumes:
-        - name: {{ .Chart.Name }}-nginx-config
+        - name: {{ .Chart.Name }}-file-configmap
           configMap:
-            name: {{ .Chart.Name }}-nginx-config
+            name: {{ .Chart.Name }}-file-configmap
             items:
               - key: default.conf
                 path: default.conf

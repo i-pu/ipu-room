@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Chart.Name }}-web-socket-server
+  name: {{ .Chart.Name }}
   labels:
-    app: web-socket-server
+    app: {{ .Chart.Name }}
 spec:
   strategy:
     type: RollingUpdate
@@ -13,19 +13,19 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: web-socket-server
+      app: {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        app: web-socket-server
+        app: {{ .Chart.Name }}
     spec:
       containers:
-        - name: web-socket-server
+        - name: {{ .Chart.Name }}
           image: {{ .Values.docker.username }}/{{ .Values.image }}:{{ .Values.tag }}
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
-                name: {{ .Chart.Name }}-web-socket-server-env-config
+                name: {{ .Chart.Name }}-env-config
           ports:
             - containerPort: {{ .Values.webSocketServer.port }}
           resources:
@@ -45,13 +45,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: web-socket-server
+  name: {{ .Values.webSocketServer.service.name }}
 spec:
   selector:
-    app: web-socket-server
-  type: NodePort
+    app: {{ .Chart.Name }}
+  type: {{ .Values.webSocketServer.service.type }}
   ports:
     - port: {{ .Values.webSocketServer.port }}
-      nodePort: {{ .Values.webSocketServer.nodePort }}
       targetPort: {{ .Values.webSocketServer.port }}
+      {{- if .Values.webSocketServer.nodePort }}
+      nodePort: {{ .Values.webSocketServer.nodePort }}
+      {{- end }}
 
