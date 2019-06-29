@@ -44,7 +44,7 @@ server{
         proxy_set_header        X-Forwarded-Server      $host;
     }
 
-    location = / {
+    location ^~ / {
         proxy_pass    http://upstream-{{ .Values.client.service.name }};
         # proxy_pass    http://{{ .Values.client.service.name }};
         proxy_redirect          off;
