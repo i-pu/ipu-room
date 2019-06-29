@@ -1,5 +1,3 @@
-use failure;
-
 pub mod plugin;
 pub mod user;
 pub mod room;

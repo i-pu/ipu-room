@@ -10,7 +10,6 @@ use diesel::{
 };
 
 use crate::model::{User, State};
-use std::panic::resume_unwind;
 
 type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
