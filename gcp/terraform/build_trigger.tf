@@ -30,18 +30,18 @@ resource "google_cloudbuild_trigger" "client" {
   filename = "gcp/cloudbuild/client.yaml"
 }
 
-resource "google_cloudbuild_trigger" "postgres" {
-  trigger_template {
-    branch_name = "postgres"
-    repo_name = "github_i-pu_ipu"
-  }
-
-  substitutions = {
-    _ZONE = var.zone
-  }
-
-  filename = "gcp/cloudbuild/postgres.yaml"
-}
+# resource "google_cloudbuild_trigger" "postgres" {
+#   trigger_template {
+#     branch_name = "postgres"
+#     repo_name = "github_i-pu_ipu"
+#   }
+#
+#   substitutions = {
+#     _ZONE = var.zone
+#   }
+#
+#   filename = "gcp/cloudbuild/postgres.yaml"
+# }
 
 resource "google_cloudbuild_trigger" "database-controller" {
   trigger_template {
@@ -72,5 +72,10 @@ resource "google_cloudbuild_trigger" "reverse-proxy" {
     branch_name = "reverse-proxy"
     repo_name = "github_i-pu_ipu"
   }
+
+  substitutions = {
+    _ZONE = var.zone
+  }
+
   filename = "gcp/cloudbuild/reverse-proxy.yaml"
 }
