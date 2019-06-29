@@ -66,3 +66,11 @@ resource "google_cloudbuild_trigger" "functions_stackdriver2slack" {
 
   filename = "gcp/cloudbuild/GCF_stackdriver2slack.yaml"
 }
+
+resource "google_cloudbuild_trigger" "reverse-proxy" {
+  trigger_template {
+    branch_name = "reverse-proxy"
+    repo_name = "github_i-pu_ipu"
+  }
+  filename = "gcp/cloudbuild/reverse-proxy.yaml"
+}

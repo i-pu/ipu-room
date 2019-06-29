@@ -1,5 +1,8 @@
 #!/bin/bash
+
 set -ex
+
+cd ..
 
 ./helm3-alpha uninstall postgres || true
 

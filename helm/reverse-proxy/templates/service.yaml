@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}
+spec:
+  selector:
+    app: {{ .Chart.Name }}
+  type: NodePort
+  ports:
+    - port: {{ .Values.reverseProxy.port }}
+      nodePort: {{ .Values.reverseProxy.nodePort }}
+      targetPort: {{ .Values.reverseProxy.port }}
+

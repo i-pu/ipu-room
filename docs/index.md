@@ -58,7 +58,10 @@ graph LR
 👉 [I-Plugin Specs](other/plugin-spec.md)
 
 ## サーバー
+👉 [API](server/main.md)
+
 👉 [Socket Event Spec (Plugin)](events/plugins.md)
+
 👉 [Socket Event Spec (Other)](events/others.md)
 
 ## ci-cd

@@ -1,14 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Chart.Name }}-web-socket-server-env-config
+  name: {{ .Chart.Name }}-env-config
 data:
   PORT: "{{ .Values.webSocketServer.port }}"
   DC_PORT: "{{ .Values.databaseController.port }}"
-  DC_URL: "{{ .Values.databaseController.serviceName }}"
-  {{ if eq .Values.env "dev" }}
-  IPU_ENV: dev
-  {{ end }}
-  {{ if eq .Values.env "prd" }}
-  IPU_ENV: prd
-  {{ end }}
+  DC_URL: "{{ .Values.databaseController.service.name }}"
+  IPU_ENV: {{ .Values.env }}

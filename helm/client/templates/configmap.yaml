@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: nginx-config
+  name: {{ .Chart.Name }}-nginx-config
 data:
   default.conf: |
     server {
