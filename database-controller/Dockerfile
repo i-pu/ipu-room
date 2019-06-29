@@ -11,8 +11,11 @@ RUN apt-get update && \
 COPY Cargo.toml ./
 
 RUN RUSTFLAGS=-Clinker=musl-gcc cargo build --release --target=x86_64-unknown-linux-musl
+# こっちはハイフンでいいが消す意味中田
 RUN rm -rf /usr/src/database-controller/target/x86_64-unknown-linux-musl/release/database-controller
-RUN rm -f /usr/src/database-controller/target/x86_64-unknown-linux-musl/release/deps/database-controller*
+# ハイフンはアンダーバーにするdatabase_controller-[16進数]*を消す
+# こっちのファイルを消すともう一度ビルドが走る
+RUN rm -f /usr/src/database-controller/target/x86_64-unknown-linux-musl/release/deps/database_controller*
 RUN rm -rf src/
 
 COPY src src/
