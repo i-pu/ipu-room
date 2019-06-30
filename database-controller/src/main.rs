@@ -20,6 +20,7 @@ mod v1;
 mod v2;
 mod schema;
 mod model;
+mod json_log;
 
 
 fn main() -> std::io::Result<()> {
@@ -38,7 +39,7 @@ fn main() -> std::io::Result<()> {
 
     let mut log_builder = env_logger::Builder::from_default_env();
     log_builder
-        .format(v1::json_log_formatter)
+        .format(json_log::json_log_formatter)
         .init();
 
     // env_logger::init();
