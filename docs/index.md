@@ -31,21 +31,27 @@ if (document.readyState == 'interactive' || document.readyState == 'complete') {
 graph LR
 
   subgraph GKE
+    N[nginx] --> S[web-socket-server]
+    N --> R
+    N --> H[html, js]
     S --> R[rust]
-    R --> S
     R --> P[postgres]
     S --> C[node.js]
     C -.-> |コンパイル| C
-    C --> S
   end
 
   subgraph クライアント
-    C1[client1] --> S[web-socket-server]   
-    C2[client2] --> S
-    C3[client3] --> S
+    C1[client1] --> N
+    C2[client2] --> N
+    C3[client3] --> N
   end
 
 ```
+
+## 共通API
+👉 [Socket Event Spec (Plugin)](events/plugins.md)
+
+👉 [Socket Event Spec (Other)](events/others.md)
 
 ## クライアント
 ### 画面構成
@@ -58,11 +64,8 @@ graph LR
 👉 [I-Plugin Specs](other/plugin-spec.md)
 
 ## サーバー
-👉 [API](server/main.md)
+### 構成
+👉 [Server docs](server/main.md)
 
-👉 [Socket Event Spec (Plugin)](events/plugins.md)
-
-👉 [Socket Event Spec (Other)](events/others.md)
-
-## ci-cd
+### ci-cd
 👉 [ci-cd の構成](ci-cd/main.md)
