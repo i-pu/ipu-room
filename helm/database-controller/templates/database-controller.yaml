@@ -19,6 +19,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
+          # local開発のときに
           image: {{ .Values.docker.username}}/{{ .Values.image }}:{{ .Values.tag }}
           imagePullPolicy: IfNotPresent
           ports:

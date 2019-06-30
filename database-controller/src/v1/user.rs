@@ -23,7 +23,7 @@ pub fn get_users(query: web::Query<UserQuery>, pool: web::Data<Pool>)
                  -> Result<web::Json<Vec<User>>, failure::Error> {
     use crate::schema::users;
     let user_query = query.into_inner();
-    debug!("{}", serde_json::to_string(&user_query)?);
+    info!("{{user_query: {}}}", serde_json::to_string(&user_query)?);
     let users =
         if let Some(ref room_id) = user_query.room_id {
             users::dsl::users
@@ -33,7 +33,7 @@ pub fn get_users(query: web::Query<UserQuery>, pool: web::Data<Pool>)
             users::dsl::users.load(&pool.get()?)?
         };
 
-    debug!("{}", serde_json::to_string(&users)?);
+    info!("{{users: {}}}", serde_json::to_string(&users)?);
     Ok(web::Json(users))
 }
 
@@ -43,7 +43,7 @@ pub fn get_user(path: web::Path<String>, pool: web::Data<Pool>)
     let id = path.into_inner();
     let user = users.find(&id).first(&pool.get()?)?;
 
-    debug!("{}", serde_json::to_string(&user)?);
+    info!("{{user: {}}}", serde_json::to_string(&user)?);
     Ok(web::Json(user))
 }
 
@@ -55,7 +55,7 @@ pub fn post_user(json: web::Json<User>, pool: web::Data<Pool>)
             .values(&json.0)
             .get_result(&pool.get()?)?;
 
-    debug!("{}", serde_json::to_string(&user)?);
+    info!("{{user: {}}}", serde_json::to_string(&user)?);
     Ok(web::Json(user))
 }
 
@@ -66,7 +66,7 @@ pub fn put_user(json: web::Json<User>, pool: web::Data<Pool>)
         .set(&json.0)
         .get_result(&pool.get()?)?;
 
-    debug!("{}", serde_json::to_string(&new_user)?);
+    info!("{{user: {}}}", serde_json::to_string(&new_user)?);
     Ok(web::Json(new_user))
 }
 

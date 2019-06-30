@@ -6,10 +6,10 @@ data:
   IPU_ENV: {{ .Values.env }}
   DATABASE_URL: postgresql://{{ .Values.postgres.user }}:{{ .Values.postgres.password }}@{{ .Values.postgres.hostname }}:5432/{{ .Values.postgres.db }}
   {{- if eq .Values.env "dev" }}
-  RUST_LOG: actix_web=debug
+  RUST_LOG: actix_web=debug,database_controller=debug
   {{- end }}
   {{- if eq .Values.env "prd" }}
-  RUST_LOG: actix_web=info
+  RUST_LOG: actix_web=info,database_controller=debug
   {{- end }}
   PORT: "{{ .Values.databaseController.port }}"
   RUST_BACKTRACE: "1"

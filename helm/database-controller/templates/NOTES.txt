@@ -1,12 +1,11 @@
-{{ if eq .Values.env "dev" }}
+{{- if eq .Values.env "dev" }}
 database controller is in dev.
 database controller is running [http://localhost:{{ .Values.databaseController.nodePort }}].
 It'll take a little time!
 You can check server state by `kubectl get pod -w`.
-{{ end }}
-{{ if eq .Values.env "prd" }}
+{{- end }}
+{{- if eq .Values.env "prd" }}
 database controller is running prd.
-{{ end }}
-
+{{- end }}
 image: {{ .Values.image }}
 tag: {{ .Values.tag }}
