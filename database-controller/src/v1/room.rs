@@ -15,7 +15,7 @@ pub fn get_all_rooms(pool: web::Data<Pool>)
     use crate::schema::rooms;
     let rooms = rooms::dsl::rooms.load(&pool.get()?)?;
 
-    debug!("{}", serde_json::to_string(&rooms)?);
+    info!("{{rooms: {}}}", serde_json::to_string(&rooms)?);
     Ok(web::Json(rooms))
 }
 
@@ -25,7 +25,7 @@ pub fn get_room(path: web::Path<String>, pool: web::Data<Pool>)
     let id = path.into_inner();
     let room = rooms::dsl::rooms.find(&id).first(&pool.get()?)?;
 
-    debug!("{}", serde_json::to_string(&room)?);
+    info!("{{room: {}}}", serde_json::to_string(&room)?);
     Ok(web::Json(room))
 }
 
@@ -38,7 +38,7 @@ pub fn post_room(json: web::Json<Room>, pool: web::Data<Pool>)
         .values(&json.0)
         .get_result(&pool.get()?)?;
 
-    debug!("{}", serde_json::to_string(&room)?);
+    info!("{{room: {}}}", serde_json::to_string(&room)?);
     Ok(web::Json(room))
 }
 
@@ -51,6 +51,6 @@ pub fn put_room(json: web::Json<Room>, pool: web::Data<Pool>)
         .set(json.0)
         .get_result(&pool.get()?)?;
 
-    debug!("{}", serde_json::to_string(&new_room)?);
+    info!("{{room: {}}}", serde_json::to_string(&new_room)?);
     Ok(web::Json(new_room))
 }

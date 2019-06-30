@@ -16,7 +16,7 @@ pub fn get_all_plugins(pool: web::Data<Pool>)
     use crate::schema::plugins;
     let plugins = plugins::dsl::plugins.load(&pool.get()?)?;
 
-    debug!("{}", serde_json::to_string(&plugins)?);
+    info!("{{plugins: {}}}", serde_json::to_string(&plugins)?);
     Ok(web::Json(plugins))
 }
 
@@ -25,7 +25,7 @@ pub fn get_plugin(path: web::Path<String>, pool: web::Data<Pool>)
     use crate::schema::plugins::dsl::plugins;
     let plugin = plugins.find(path.into_inner()).first(&pool.get()?)?;
 
-    debug!("{}", serde_json::to_string(&plugin)?);
+    info!("{{plugin: {}}}", serde_json::to_string(&plugin)?);
     Ok(web::Json(plugin))
 }
 
@@ -38,7 +38,7 @@ pub fn post_plugin(json: web::Json<Plugin>, pool: web::Data<Pool>)
         .values(&json.0)
         .get_result(&pool.get()?)?;
 
-    debug!("{}", serde_json::to_string(&plugin)?);
+    info!("{{plugin: {}}}", serde_json::to_string(&plugin)?);
     Ok(web::Json(plugin))
 }
 
@@ -51,6 +51,6 @@ pub fn put_plugin(json: web::Json<Plugin>, pool: web::Data<Pool>)
         .set(json.0)
         .get_result(&pool.get()?)?;
 
-    debug!("{}", serde_json::to_string(&plugin)?);
+    info!("{{plugin: {}}}", serde_json::to_string(&plugin)?);
     Ok(web::Json(plugin))
 }

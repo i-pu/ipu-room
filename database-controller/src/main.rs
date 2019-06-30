@@ -28,15 +28,20 @@ fn main() -> std::io::Result<()> {
         dotenv::dotenv().ok();
     }
 
-    let port = std::env::var("PORT").expect("PORT must be set");
-
+    let port = std::env::var("PORT")
+        .expect("PORT must be set");
     let database_url = std::env::var("DATABASE_URL")
         .expect("DATABASE_URL must be set");
     let manager = ConnectionManager::<PgConnection>::new(database_url);
     let pool = Pool::builder()
         .build(manager).expect("Fail to create pool");
-    env_logger::init();
 
+    let mut log_builder = env_logger::Builder::from_default_env();
+    log_builder
+        .format(v1::json_log_formatter)
+        .init();
+
+    // env_logger::init();
 
     // todo: delete も作る
     HttpServer::new(move || {
@@ -44,8 +49,8 @@ fn main() -> std::io::Result<()> {
             .data(pool.clone())
             .wrap(middleware::Logger::new("%a %s %r"))
 
-            // .service(web::resource("/api/v1/sample")
-            //     .route(web::get().to(v1::sample)))
+            .service(web::resource("/api/v1/sample")
+                .route(web::get().to(v1::sample)))
             .service(web::resource("/api/v1/healthz")
                 .route(web::get().to(v1::healthz)))
 

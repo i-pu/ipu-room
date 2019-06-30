@@ -18,6 +18,8 @@ pub struct ActivePluginQuery {
     room_id: Option<String>,
 }
 
+// todo: ロギングの仕方変更する
+
 pub fn get_active_plugins(query: web::Query<ActivePluginQuery>, pool: web::Data<Pool>)
                           -> web::Json<Vec<ActivePlugin>>
 {
