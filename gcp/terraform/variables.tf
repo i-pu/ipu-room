@@ -12,4 +12,6 @@ variable "webhook" {
   type = "map"
 }
 
+variable "repository" {}
+
 variable "slack" {}
