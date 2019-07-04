@@ -1,7 +1,7 @@
 # IPU-ROOM (仮称)
 [![Build Status](https://travis-ci.org/i-pu/ipu.svg?branch=master)](https://travis-ci.org/i-pu/ipu) (大嘘)
 
-[ipu-room](http://35.247.18.78:30000)
+[ipu-room](http://34.83.135.173)
 
 ## Change Logs
 
