@@ -15,3 +15,5 @@ variable "webhook" {
 variable "repository" {}
 
 variable "slack" {}
+
+variable "gke_address" {}
