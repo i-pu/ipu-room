@@ -1,10 +1,10 @@
 import requests
 
-from ..config import app
+from ..config import flask_app
 
 
 class Plugin:
-    url = 'http://' + app.config['DC_URL'] + ':' + app.config['DC_PORT'] + '/api/v1/plugins'
+    url = 'http://' + flask_app.config['DC_URL'] + ':' + flask_app.config['DC_PORT'] + '/api/v1/plugins'
 
     @classmethod
     def get(cls, plugin_id=None):

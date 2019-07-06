@@ -19,24 +19,24 @@ class Prd(object):
     DC_URL = os.getenv('DC_URL')
 
 
-app = Flask(__name__)
-CORS(app)
-socketio = SocketIO(app)
+flask_app = Flask(__name__)
+CORS(flask_app)
+socketio = SocketIO(flask_app)
 
 
 def create_app(env):
     if env == 'prd':
-        app.config.from_object(Prd)
+        flask_app.config.from_object(Prd)
     elif env == 'dev':
-        app.config.from_object(Dev)
+        flask_app.config.from_object(Dev)
     else:
         raise Exception("env must be set!")
 
     # init
-    # with app.app_context():
-    #     init_db(app)
+    # with flask_app.flask_app_context():
+    #     init_db(flask_app)
 
     from . import socketio_handler
     from . import handler
 
-    return app, socketio
+    return flask_app, socketio

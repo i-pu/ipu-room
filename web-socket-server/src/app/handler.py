@@ -1,6 +1,6 @@
-from .config import app
+from .config import flask_app
 
 
-@app.route('/healthz')
+@flask_app.route('/healthz')
 def hello():
     return 'healthz'
