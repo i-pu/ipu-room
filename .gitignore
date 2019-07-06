@@ -32,7 +32,6 @@ yarn-error.log*
 # python
 __pycache__/
 *.py[cod]
-.python-version
 .venv
 
 # terraform
