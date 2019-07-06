@@ -1,1 +1,1 @@
-from .config import create_app, socketio, app
+from .config import create_app, socketio, flask_app

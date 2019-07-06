@@ -1,10 +1,10 @@
 import requests
 
-from ..config import app
+from ..config import flask_app
 
 
 class User:
-    url = 'http://' + app.config['DC_URL'] + ':' + app.config['DC_PORT'] + '/api/v1/users'
+    url = 'http://' + flask_app.config['DC_URL'] + ':' + flask_app.config['DC_PORT'] + '/api/v1/users'
 
     @classmethod
     def get(cls, user_id=None, room_id=None, **kwargs):
