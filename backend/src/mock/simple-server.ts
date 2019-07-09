@@ -109,7 +109,16 @@ const handler = router(
    */
   post('/api/v1/market/plugins', async (req, res) => {
     try {
-      const pluginMeta: PluginMeta = await json(req) as PluginMeta
+      const maybePluginMeta: object = await json(req)
+
+      console.log(maybePluginMeta)
+
+      if (!maybePluginMeta) {
+        throw 'invalid meta'
+      }
+
+      const pluginMeta = maybePluginMeta as PluginMeta
+
       pluginMeta.id = uuidv4()
       pluginMarket[pluginMeta.id] = pluginMeta
 
