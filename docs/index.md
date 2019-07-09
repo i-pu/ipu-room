@@ -1,3 +1,6 @@
+<script src="mermaid.full.min.js"></script>
+
+
 # ドキュメント
 ## 全体図
 
