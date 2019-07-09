@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Chart.Name }}-database-controller
+  name: {{ .Chart.Name }}
 spec:
   replicas: 1
   strategy:
@@ -11,21 +11,22 @@ spec:
       maxSurge: 1
   selector:
     matchLabels:
-      app: database-controller
+      app: {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        app: database-controller
+        app: {{ .Chart.Name }}
     spec:
       containers:
-        - name: database-controller
+        - name: {{ .Chart.Name }}
+          # local開発のときに
           image: {{ .Values.docker.username}}/{{ .Values.image }}:{{ .Values.tag }}
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: {{ .Values.databaseController.port }}
           envFrom:
             - configMapRef:
-                name: {{ .Chart.Name }}-dc-env-config
+                name: {{ .Chart.Name }}-env-config
           readinessProbe:
             initialDelaySeconds: 10
             failureThreshold: 1
@@ -39,13 +40,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.databaseController.serviceName }}
+  name: {{ .Values.databaseController.service.name }}
 spec:
-  type: NodePort
+  type: {{ .Values.databaseController.service.type }}
   selector:
-    app: database-controller
+    app: {{ .Chart.Name }}
   ports:
     - port: {{ .Values.databaseController.port }}
-      nodePort: {{ .Values.databaseController.nodePort }}
       targetPort: {{ .Values.databaseController.port }}
+      {{ if .Values.databaseController.nodePort }}
+      nodePort: {{ .Values.databaseController.nodePort }}
+      {{ end }}
 

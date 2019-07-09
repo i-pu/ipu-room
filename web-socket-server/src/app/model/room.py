@@ -1,7 +1,7 @@
 import requests
 from uuid import uuid4
 
-from ..config import app
+from ..config import flask_app
 from .user import User
 from .active_plugin import ActivePlugin
 from .plugin import Plugin
@@ -9,7 +9,7 @@ from ..plugin_compiler import compiler
 
 
 class Room:
-    url = 'http://' + app.config['DC_URL'] + ':' + app.config['DC_PORT'] + '/api/v1/rooms'
+    url = 'http://' + flask_app.config['DC_URL'] + ':' + flask_app.config['DC_PORT'] + '/api/v1/rooms'
 
     @classmethod
     def get(cls, room_id=None, **kwargs):

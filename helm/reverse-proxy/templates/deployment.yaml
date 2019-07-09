@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ipu-client
+  name: {{ .Chart.Name }}
 spec:
   strategy:
     type: RollingUpdate
@@ -11,28 +11,28 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: client
+      app: {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        app: client
+        app: {{ .Chart.Name }}
     spec:
       containers:
-        - name: nginx-client
-          image: docker.io/DOCKER_USERNAME/ipu-client:TAG
+        - name: {{ .Chart.Name }}
+          image: nginx:1.15
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8000
+            - containerPort: {{ .Values.reverseProxy.port }}
           resources:
             requests:
               memory: 5Mi
-              cpu: 0m
+              cpu: 1m
           volumeMounts:
             - mountPath: /etc/nginx/conf.d
-              name: nginx-config
+              name: {{ .Chart.Name }}-file-configmap
           readinessProbe:
             httpGet:
-              port: 8000
+              port: {{ .Values.reverseProxy.port }}
               path: /
             successThreshold: 1
             initialDelaySeconds: 30
@@ -40,9 +40,9 @@ spec:
             timeoutSeconds: 3
 
       volumes:
-        - name: nginx-config
+        - name: {{ .Chart.Name }}-file-configmap
           configMap:
-            name: nginx-config
+            name: {{ .Chart.Name }}-file-configmap
             items:
               - key: default.conf
                 path: default.conf

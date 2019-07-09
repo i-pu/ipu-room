@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-file-configmap
+data:
+  default.conf: |
+    {{- include "default.conf" . | nindent 4 }}

@@ -1,12 +1,12 @@
-from app import create_app
 import os
+
+from app import create_app
 
 env = os.getenv('IPU_ENV')
 port = os.getenv('PORT')
-app, socketio = create_app(env)
+webapp, socketio = create_app(env)
 
-if __name__ == '__main__':
-    if env == 'dev':
-        socketio.run(app, debug=True, port=int(port), host='0.0.0.0')
-    else:
-        socketio.run(app, debug=False, port=int(port), host='0.0.0.0')
+if env == 'dev':
+    socketio.run(webapp, debug=True, port=int(port), host='0.0.0.0')
+else:
+    socketio.run(webapp, debug=False, port=int(port), host='0.0.0.0')

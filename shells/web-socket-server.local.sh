@@ -1,5 +1,9 @@
 #!/bin/bash
+
 set -ex
+
+cd $(cd $(dirname $0);pwd)
+cd ..
 
 ./helm3-alpha uninstall web-socket-server || true
 docker build -t kafuhamada/ipu-web-socket-server web-socket-server/src/

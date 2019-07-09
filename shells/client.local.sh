@@ -2,6 +2,9 @@
 
 set -ex
 
+cd $(cd $(dirname $0);pwd)
+cd ..
+
 ./helm3-alpha uninstall client || true
 docker build -t kafuhamada/ipu-client -f client/Dockerfile-cd client
 

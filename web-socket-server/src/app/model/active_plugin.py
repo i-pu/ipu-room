@@ -1,10 +1,10 @@
 import requests
 
-from ..config import app
+from ..config import flask_app
 
 
 class ActivePlugin:
-    url = 'http://' + app.config['DC_URL'] + ':' + app.config['DC_PORT'] + '/api/v1/active_plugins'
+    url = 'http://' + flask_app.config['DC_URL'] + ':' + flask_app.config['DC_PORT'] + '/api/v1/active_plugins'
 
     @classmethod
     def get(cls, active_plugin_id=None, room_id=None, **kwargs):

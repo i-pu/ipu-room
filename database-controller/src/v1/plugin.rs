@@ -1,4 +1,4 @@
-use actix_web::{web};
+use actix_web::web;
 use diesel::{
     r2d2::{self, ConnectionManager},
     pg::PgConnection,
@@ -6,48 +6,51 @@ use diesel::{
     RunQueryDsl,
 };
 
-use crate::model::{Plugin};
+use crate::model::Plugin;
 
 type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
 
-pub fn get_all_plugins(pool: web::Data<Pool>) -> web::Json<Vec<Plugin>> {
-    use crate::schema::plugins::dsl::plugins;
-    web::Json(plugins.load(&pool.get().unwrap()).unwrap())
+pub fn get_all_plugins(pool: web::Data<Pool>)
+                       -> Result<web::Json<Vec<Plugin>>, failure::Error> {
+    use crate::schema::plugins;
+    let plugins = plugins::dsl::plugins.load(&pool.get()?)?;
+
+    info!("{{plugins: {}}}", serde_json::to_string(&plugins)?);
+    Ok(web::Json(plugins))
 }
 
-pub fn get_plugin(path: web::Path<String>, pool: web::Data<Pool>) -> web::Json<Plugin> {
+pub fn get_plugin(path: web::Path<String>, pool: web::Data<Pool>)
+                  -> Result<web::Json<Plugin>, failure::Error> {
     use crate::schema::plugins::dsl::plugins;
-    web::Json(plugins.find(path.into_inner()).first(&pool.get().unwrap()).unwrap())
+    let plugin = plugins.find(path.into_inner()).first(&pool.get()?)?;
+
+    info!("{{plugin: {}}}", serde_json::to_string(&plugin)?);
+    Ok(web::Json(plugin))
 }
 
 /// create plugin
 pub fn post_plugin(json: web::Json<Plugin>, pool: web::Data<Pool>)
-                   -> web::Json<Plugin>
+                   -> Result<web::Json<Plugin>, failure::Error>
 {
-    /// todo: 返り値をResult にする
     use crate::schema::plugins::dsl::plugins;
-    let p: Plugin =
-        diesel::insert_into(plugins)
-            .values(&json.0)
-            .get_result(&pool.get().unwrap())
-            .unwrap();
+    let plugin: Plugin = diesel::insert_into(plugins)
+        .values(&json.0)
+        .get_result(&pool.get()?)?;
 
-    println!("{:#?}", p);
-    web::Json(p)
+    info!("{{plugin: {}}}", serde_json::to_string(&plugin)?);
+    Ok(web::Json(plugin))
 }
 
 /// update plugin
 pub fn put_plugin(json: web::Json<Plugin>, pool: web::Data<Pool>)
-                  -> web::Json<Plugin>
+                  -> Result<web::Json<Plugin>, failure::Error>
 {
-    use crate::schema::plugins::{dsl::*};
-    let mut p: Plugin = json.0;
-    p = diesel::update(plugins.find(p.id.clone()))
-            .set(p)
-            .get_result(&pool.get().unwrap())
-            .unwrap();
+    use crate::schema::plugins::dsl::{plugins, id};
+    let plugin = diesel::update(plugins.find(json.id.clone()))
+        .set(json.0)
+        .get_result(&pool.get()?)?;
 
-    println!("{:#?}", p);
-    web::Json(p)
+    info!("{{plugin: {}}}", serde_json::to_string(&plugin)?);
+    Ok(web::Json(plugin))
 }

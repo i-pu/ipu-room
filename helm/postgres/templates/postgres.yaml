@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Chart.Name }}-postgres
+  name: {{ .Chart.Name }}
 spec:
   strategy:
     type: RollingUpdate
@@ -11,18 +11,18 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: postgres
+      app: {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        app: postgres
+        app: {{ .Chart.Name }}
     spec:
       containers:
-        - name: postgres
+        - name: {{ .Chart.Name }}
           image: postgres
           envFrom:
             - configMapRef:
-                name: {{ .Chart.Name }}-postgres-env-config
+                name: {{ .Chart.Name }}-env-config
           ports:
             - containerPort: 5432
           resources:
@@ -35,7 +35,7 @@ spec:
       volumes:
         - name: docker-entrypoint-initdb
           configMap:
-            name: {{ .Chart.Name }}-postgres-file-config
+            name: {{ .Chart.Name }}-file-config
             items:
               - key: init.sql
                 path: init.sql
@@ -47,7 +47,7 @@ metadata:
   name: {{ .Values.postgres.hostname }}
 spec:
   selector:
-    app: postgres
+    app: {{ .Chart.Name }}
   ports:
     - port: 5432
       targetPort: 5432

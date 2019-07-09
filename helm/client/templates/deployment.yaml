@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: client
+  name: {{ .Chart.Name }}
 spec:
   strategy:
     type: RollingUpdate
@@ -11,14 +11,14 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: client
+      app: {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        app: client
+        app: {{ .Chart.Name }}
     spec:
       containers:
-        - name: client
+        - name: {{ .Chart.Name }}
           image: {{ .Values.docker.username }}/{{ .Values.image }}:{{ .Values.tag }}
           imagePullPolicy: IfNotPresent
           ports:
@@ -29,7 +29,7 @@ spec:
               cpu: 0m
           volumeMounts:
             - mountPath: /etc/nginx/conf.d
-              name: nginx-config
+              name: {{ .Chart.Name }}-nginx-config
           readinessProbe:
             httpGet:
               port: {{ .Values.client.port }}
@@ -40,9 +40,9 @@ spec:
             timeoutSeconds: 3
 
       volumes:
-        - name: nginx-config
+        - name: {{ .Chart.Name }}-nginx-config
           configMap:
-            name: nginx-config
+            name: {{ .Chart.Name }}-nginx-config
             items:
               - key: default.conf
                 path: default.conf

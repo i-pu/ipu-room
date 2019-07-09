@@ -3,24 +3,23 @@ WORKDIR /src
 RUN apk update
 
 RUN apk --no-cache add build-base
-RUN apk --no-cache add postgresql-dev
-RUN apk --no-cache add postgresql
-
-# sqlalchemy
-RUN python3 -m pip install psycopg2
 
 # usgi
 RUN apk --no-cache add gcc linux-headers
 
-COPY requirements.txt ./
-RUN python3 -m pip install -r requirements.txt
+# poetry
+RUN pip install --no-cache-dir "poetry==0.12.17"
 
-COPY . ./
+COPY pyproject.toml poetry.lock ./
 
-ENTRYPOINT [ "./entry.sh" ]
+RUN poetry config settings.virtualenvs.create false && \
+    poetry config settings.virtualenvs.in-project true && \
+    poetry install --no-interaction --no-dev
 
+COPY app app
+COPY entry.sh server.py ./
+
+ENTRYPOINT ["./entry.sh"]
 # see issue https://github.com/miguelgrinberg/Flask-SocketIO/issues/909
 # CMD [ "uwsgi" , "--ini" , "uwsgi.ini" ]
-USER nobody
-
-CMD ["python" , "server.py"]
+CMD ["poetry", "run", "python3", "server.py"]
