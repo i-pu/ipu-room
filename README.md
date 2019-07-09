@@ -6,7 +6,7 @@
 ## Change Logs
 
 ## Document
-Docs deployed at [here](https://i-pu.github.io/ipu/index.html) 🎉🎉🎉 
+Docs deployed at [here](https://i-pu.github.io/ipu-room/index.html) 🎉🎉🎉 
 
 way to routing of github-pages, see <https://github.blog/2016-12-05-relative-links-for-github-pages/>
 
