@@ -68,5 +68,8 @@ graph LR
 ### 構成
 👉 [Server docs](server/main.md)
 
+### database-controller
+👉 [rust server docs](database-controller/main.md)
+
 ### ci-cd
 👉 [ci-cd の構成](ci-cd/main.md)
