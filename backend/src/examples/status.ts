@@ -1,7 +1,7 @@
 // ==========================
 //  degault status plugin
 // ========================
-import { PluginMeta } from '@client/model'
+import { PluginMeta } from '@/model'
 
 export default {
   id: 'status-0123-abcdef-4567',

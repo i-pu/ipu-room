@@ -8,7 +8,7 @@
 import { compileString } from 'typescript-compiler'
 import { parse, NodeType, HTMLElement } from 'node-html-parser'
 import { compile } from 'pug'
-import { Plugin, PluginMeta, PluginPackage } from '@client/model'
+import { Plugin, PluginMeta, PluginPackage } from '@model'
 import uuidv4 from 'uuid'
 import color from 'colors'
 

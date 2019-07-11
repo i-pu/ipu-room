@@ -1,4 +1,4 @@
-import { PluginMeta } from '@client/model'
+import { PluginMeta } from '@/model'
 
 export default {
   id: 'chat-0123-abcdef-4567',

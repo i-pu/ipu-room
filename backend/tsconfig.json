@@ -12,22 +12,22 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "baseUrl": ".",
+    "outDir": "./dist",
     "types": [
-      "node"
+      "node",
+      "jest"
     ],
     "paths": {
-      "@": [
-        "./../client/src"
-      ],
-      "@client/*": [
-        "./../client/src/*"
-      ],
-    }
+      "@*": [
+        "./src/*"
+      ]
+    },
   },
   "include": [
-    "src/**/*.ts"
+    "./src/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "./node_modules",
+    "./src/examples/**"
   ]
 }

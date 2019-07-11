@@ -7,7 +7,9 @@ import io from 'socket.io-client'
 import 'vuetify/dist/vuetify.min'
 import '@fortawesome/fontawesome-free/css/all.css'
 
-Vue.use(VueSocketIO, io(process.env.VUE_APP_SOCKET_ORIGIN!!))
+Vue.use(VueSocketIO, io(process.env.VUE_APP_SOCKET_ORIGIN!!, {
+  path: process.env.VUE_APP_SOCKET_PATH
+}))
 Vue.config.productionTip = false
 
 import App from './App.vue'
