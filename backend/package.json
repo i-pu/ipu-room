@@ -3,7 +3,8 @@
     "start": "npx ts-node -r tsconfig-paths/register src/mock/simple-server.ts",
     "dev": "ts-node -r tsconfig-paths/register  src/mock/simple-server.ts",
     "doc": "rm -r ../docs/backend; typedoc . --options ./typedoc.js --theme markdown",
-    "test": "jest --runInBand"
+    "test": "jest --runInBand",
+    "blueprint": "aglio --theme-variables slate -i ./../docs/_blueprints/load.md -o ./../docs/backend/load.html"
   },
   "dependencies": {
     "@types/node": "^12.0.8",
