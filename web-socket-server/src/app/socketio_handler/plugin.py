@@ -17,15 +17,23 @@ mylogger.setLevel(DEBUG)
 @utils.check_user
 @utils.function_info_wrapper
 def plugin_register(data):
-    json = model.Plugin.create(str(uuid4()),
-                               data['name'],
+    """
+    テスト用に残しておく
+    Parameters
+    ----------
+    data
+
+    Returns
+    -------
+
+    """
+    json = model.Plugin.create(data['name'],
                                data['description'],
                                data['author'],
                                data['tags'],
                                data['content'])
     print(json, flush=True)
 
-    res_data = None
     if 'id' in json:
         res_data = {'state': True, **json}
     else:

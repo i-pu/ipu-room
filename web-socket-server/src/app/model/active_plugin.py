@@ -8,7 +8,6 @@ class ActivePlugin:
 
     @classmethod
     def get(cls, active_plugin_id=None, room_id=None, **kwargs):
-        res = None
         if active_plugin_id is not None and room_id is not None:
             raise Exception('active_plugin_id and room_id cant be set at once'
                             'active_plugin_id: {}, room_id: {}'.format(active_plugin_id, room_id))

@@ -8,7 +8,6 @@ class Plugin:
 
     @classmethod
     def get(cls, plugin_id=None):
-        res = None
         if plugin_id is None:
             res = requests.get(cls.url)
         else:
@@ -20,9 +19,8 @@ class Plugin:
         return res.json()
 
     @classmethod
-    def create(cls, plugin_id, name, description, author, tags, content):
-        res = requests.post(cls.url, json={'id': plugin_id,
-                                           'name': name,
+    def create(cls, name, description, author, tags, content):
+        res = requests.post(cls.url, json={'name': name,
                                            'description': description,
                                            'author': author,
                                            'tags': tags,
