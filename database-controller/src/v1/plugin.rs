@@ -43,12 +43,13 @@ pub fn post_plugin(json: web::Json<Plugin>, pool: web::Data<Pool>)
 }
 
 /// update plugin
-pub fn put_plugin(json: web::Json<Plugin>, pool: web::Data<Pool>)
+pub fn put_plugin(json: web::Json<Plugin>, path: web::Path<String>, pool: web::Data<Pool>)
                   -> Result<web::Json<Plugin>, failure::Error>
 {
     use crate::schema::plugins::dsl::{plugins, id};
-    let plugin = diesel::update(plugins.find(json.id.clone()))
-        .set(json.0)
+    let mut plugin = Plugin {id: path.into_inner(), .. json.0.clone()};
+    let plugin = diesel::update(plugins.find(plugin.id.clone()))
+        .set(plugin)
         .get_result(&pool.get()?)?;
 
     info!("{{plugin: {}}}", serde_json::to_string(&plugin)?);

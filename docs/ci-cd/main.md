@@ -29,7 +29,7 @@ if (document.readyState == 'interactive' || document.readyState == 'complete') {
 簡単そうなのでGoogleCloudBuild を使う．以下は全体図．
 ```mermaid
 graph LR
-  GIT[github with tag] --> GCB 
+  GIT[github] --> GCB 
   subgraph GCP
     GCB --> |deploy| GKE
     GCB --> |trigger| PS[pub/sub]
@@ -39,9 +39,10 @@ graph LR
 ```
 
 ## service
-基本的にサービスのデプロイはtagにサービス名(ディレクトリ名)をつけてpushするとビルドが走る
+基本的にサービスのデプロイはbranch名とサービス名(ディレクトリ名)が1対1に対応している
+branchにpushしたりmergeするとビルドが走る
 ## google cloud functions
-タグにfunction の名前をつけてpushすると更新される
+function の名前のブランチにpushすると更新される
 
 ## Helm3-alpha
 helm 以下のディレクトリにチャートが揃っており，

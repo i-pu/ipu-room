@@ -48,6 +48,7 @@ graph LR
   end
 
 ```
+![Plugin Sequence](https://i.imgur.com/EA0WOuu.png)
 
 ## 共通API
 👉 [Socket Event Spec (Plugin)](events/plugins.md)
@@ -76,4 +77,4 @@ graph LR
 
 ## バックエンド
 ### API仕様
-👉 [Compiler Plugin API](backend/load.html)
+👉 [Compiler Plugin API](backend/compile.html)

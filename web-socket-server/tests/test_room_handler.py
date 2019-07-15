@@ -3,14 +3,14 @@ import sys, os
 import unittest
 import socketio
 
-from config import url
+from config import url, socketio_path
 
 
 class TestSocketIOHandler(unittest.TestCase):
 
     def setUp(self):
         self.client = socketio.Client()
-        self.client.connect(url)
+        self.client.connect(url, socketio_path=socketio_path)
 
         self.data = None
         self.expected = None
@@ -27,9 +27,11 @@ class TestSocketIOHandler(unittest.TestCase):
             self.data = data
 
         self.client.emit('visit', {'userName': 'room/create user'})
+        self.client.sleep(0.3)
         self.client.emit('lobby')
+        self.client.sleep(0.3)
         self.client.emit('room/create', {'roomName': 'some room', 'plugins': []})
-        self.client.sleep(1)
+        self.client.sleep(0.3)
 
         self.assertTrue('room' in self.data)
         self.assertTrue('id' in self.data['room'])
@@ -49,10 +51,11 @@ class TestSocketIOHandler(unittest.TestCase):
             self.data = data
 
         self.client.emit('visit', {'userName': 'room/enter user'})
+        self.client.sleep(0.3)
         self.client.emit('room/create', {'roomName': 'room/enter room', 'plugins': []})
-        self.client.sleep(1)
+        self.client.sleep(0.3)
         self.client.emit('room/enter', {'roomId': self.data})
-        self.client.sleep(1)
+        self.client.sleep(0.3)
 
         self.assertTrue('room' in self.data)
         self.assertTrue('id' in self.data['room'])
@@ -76,6 +79,7 @@ class TestSocketIOHandler(unittest.TestCase):
             content = f.read()
 
         self.client.emit('visit', {'userName': 'room_with_plugin'})
+        self.client.sleep(0.3)
         self.client.emit('plugin/register',
                          {'name': 'counter',
                           'description': 'counter',
@@ -83,9 +87,9 @@ class TestSocketIOHandler(unittest.TestCase):
                           'tags': 'official',
                           'content': content})
 
-        self.client.sleep(1)
+        self.client.sleep(0.3)
         self.client.emit('room/create', {'roomName': 'some_room', 'plugins': [self.data['id']]})
-        self.client.sleep(1)
+        self.client.sleep(0.3)
 
         self.assertTrue('room' in self.data)
         self.assertTrue('plugins' in self.data['room'])
@@ -124,18 +128,20 @@ class TestSocketIOHandler(unittest.TestCase):
         with open(file_name, mode='r') as f:
             content = f.read()
 
+        self.client.sleep(0.3)
         self.client.emit('visit', {'userName': 'room_with_plugin'})
+        self.client.sleep(0.3)
         self.client.emit('plugin/register',
                          {'name': 'counter',
                           'description': 'counter',
                           'author': 'k',
                           'tags': 'official',
                           'content': content})
-        self.client.sleep(1)
+        self.client.sleep(0.3)
         self.client.emit('room/create', {'roomName': 'some_room', 'plugins': [self.data['id']]})
-        self.client.sleep(1)
+        self.client.sleep(0.3)
         self.client.emit('room/enter', {'roomId': self.data['room']['id']})
-        self.client.sleep(1)
+        self.client.sleep(0.3)
 
         self.assertTrue('room' in self.data)
         self.assertTrue('plugins' in self.data['room'])
@@ -158,7 +164,7 @@ class TestSocketIOHandler(unittest.TestCase):
     def test_room_enter_update_detection(self):
         print('\n', sys._getframe().f_code.co_name, flush=True)
         self.client2 = socketio.Client()
-        self.client2.connect(url)
+        self.client2.connect(url, socketio_path=socketio_path)
 
         @self.client.on('room/create')
         def room_enter(data):
@@ -169,17 +175,16 @@ class TestSocketIOHandler(unittest.TestCase):
             self.data = data
 
         self.client.emit('visit', {'userName': 'update_detection'})
-        self.client.sleep(1)
+        self.client.sleep(0.3)
         self.client.emit('room/create', {'roomName': 'some room', 'plugins': []})
-        self.client.sleep(1)
+        self.client.sleep(0.3)
         self.client.emit('room/enter', {'roomId': self.data['room']['id']})
-        self.client.sleep(1)
+        self.client.sleep(0.3)
 
         self.client2.emit('visit', {'userName': 'update_detection2'})
-        self.client.sleep(1)
+        self.client.sleep(0.3)
         self.client2.emit('room/enter', {'roomId': self.data['room']['id']})
-
-        self.client2.sleep(1)
+        self.client2.sleep(0.3)
 
         self.assertTrue('room' in self.data)
         self.assertTrue('id' in self.data['room'])
@@ -193,7 +198,7 @@ class TestSocketIOHandler(unittest.TestCase):
         print('\n', sys._getframe().f_code.co_name, flush=True)
 
         self.client2 = socketio.Client()
-        self.client2.connect(url)
+        self.client2.connect(url, socketio_path=socketio_path)
 
         @self.client.on('room/create')
         def room_enter(data):
@@ -208,18 +213,18 @@ class TestSocketIOHandler(unittest.TestCase):
             print('\ncalled exit\n', flush=True)
 
         self.client.emit('visit', {'userName': 'exit_detection'})
-        self.client.sleep(1)
+        self.client.sleep(0.3)
         self.client.emit('room/create', {'roomName': 'some room', 'plugins': []})
-        self.client.sleep(1)
+        self.client.sleep(0.3)
         self.client.emit('room/enter', {'roomId': self.data['room']['id']})
-        self.client.sleep(1)
+        self.client.sleep(0.3)
 
         self.client2.emit('visit', {'userName': 'exit_detection2'})
-        self.client.sleep(1)
+        self.client2.sleep(0.3)
         self.client2.emit('room/enter', {'roomId': self.data['room']['id']})
-        self.client.sleep(1)
+        self.client2.sleep(0.3)
         self.client2.emit('room/exit')
-        self.client2.sleep(1)
+        self.client2.sleep(0.3)
 
         self.assertTrue('room' in self.data)
         self.assertTrue('id' in self.data['room'])
