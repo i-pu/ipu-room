@@ -9,9 +9,10 @@ services:
     volumes:
       - ".:/src"
     working_dir: /src
+    environment:
+      - API_ORIGIN="localhost:3000"
     command: [sh, -c, npm install && npm start]
     ports:
-      - "1234:1234"
       - "3000:3000"
     stdin_open: true
     tty: true
