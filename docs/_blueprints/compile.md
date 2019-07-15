@@ -1,13 +1,14 @@
-## プラグインのコンパイル [/api/v1/plugin/load/{id}]
+## プラグインのコンパイル [/api/v1/plugin/compile]
  
-### プラグインコンパイラAPI [GET]
+### プラグインコンパイラAPI [POST]
  
 #### 処理概要
  
-* プラグインIDが `id` のプラグインをコンパイルし, `PluginPackage` を返却します
- 
+* JSONで渡された `PluginMeta` をコンパイルし `PluginPackage` を返却します
+
 + Parameters
-    + id: 85826f18-3bc9-4cb7-ab6b-27d9e8a016ee (string, required) - プラグインの `id`
+
+    なし
  
 + Response 200 (application/json)
  
