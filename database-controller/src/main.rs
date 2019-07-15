@@ -72,10 +72,10 @@ fn main() -> std::io::Result<()> {
 
             .service(web::resource("/api/v1/plugins")
                 .route(web::get().to(v1::plugin::get_all_plugins))
-                .route(web::post().to(v1::plugin::post_plugin))
-                .route(web::put().to(v1::plugin::put_plugin)))
+                .route(web::post().to(v1::plugin::post_plugin)))
             .service(web::resource("/api/v1/plugins/{id}")
-                .route(web::get().to(v1::plugin::get_plugin)))
+                .route(web::get().to(v1::plugin::get_plugin))
+                .route(web::put().to(v1::plugin::put_plugin)))
 
             .service(web::resource("/api/v1/active_plugins")
                 .route(web::get().to(v1::active_plugin::get_active_plugins))
