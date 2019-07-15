@@ -1,0 +1,17 @@
+version: '2'
+services:
+  node:
+    build:
+      context: .
+    image: node:11.15.0-alpine
+    container_name: mock-server
+    hostname: node
+    volumes:
+      - ".:/src"
+    working_dir: /src
+    command: [sh, -c, npm install && npm start]
+    ports:
+      - "1234:1234"
+      - "3000:3000"
+    stdin_open: true
+    tty: true
