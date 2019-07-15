@@ -5,7 +5,7 @@
         v-toolbar-title.headline.text-uppercase
           span.pr-3 {{ $store.getters.userName }} さん
         v-spacer
-        v-btn(color="pink" @click="$router.push('/market')") ストアへ
+        v-btn(color="blue" @click="$router.push('/market')") ストアへ
         room-create-form(@add="responseCreateRoom")
         
       v-flex(

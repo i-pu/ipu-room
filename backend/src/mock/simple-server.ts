@@ -18,7 +18,16 @@ import { PluginMeta, PluginPackage } from '@model'
 // @ts-ignore
 import fetch from 'node-fetch'
 
-const API_ORIGIN = 'http://localhost:3000/api/v1'
+// Mock API Origin
+const API_ORIGIN_PORT = 3000
+const API_ORIGIN = `http://localhost:${API_ORIGIN_PORT}`
+
+// Socket Mock
+const SOCKET_ORIGIN_PORT = 1234
+const SOCKET_ORIGIN = `http://localhost:${SOCKET_ORIGIN_PORT}`
+
+// Compiler API Origin
+const BACKEND_ORIGIN = 'http://localhost:3001'
 
 import Counter from '@examples/counter'
 import Chat from '@examples/chat'
@@ -70,38 +79,9 @@ const __test__ = async () => {
   // }
 }
 
-__test__()
+// __test__()
 
 const handler = router(
-  // ====== Plugin Compiler API Mock ======
-
-  /**
-   *  fetch plugin metadata from the plugin market,
-   *  and compile plugin.
-   * 
-   *  @return pluginPackage return 200 Ok and PluginPackage.
-   *  @return error return 500 and error object.
-   */
-  get('/api/v1/plugin/load/:id', async (req, res) => {
-    try {
-      const pluginId = req.params.id
-      // fetch package from market
-      console.log(`${color.black.bgWhite('[plugin/load]')} Loading Plugin ${color.yellow(pluginId)}`)
-      const meta: PluginMeta = await fetch(`${API_ORIGIN}/market/plugins/${pluginId}`)
-        .then((res: any) => res.json())
-
-      const plugin = await compilePlugin(meta)
-
-      return send(res, 200, { plugin, meta })
-    } catch (error) {
-      console.log(`${color.black.bgRed('[plugin/load]')} Plugin failed to load ...`)
-      console.log(error)
-      send(res, 500, { error })
-    }
-  }),
-
-  // ====== Api Mock =======
-
   /**
    *  upload plugin API as [meta: PluginMeta].
    * 
@@ -148,7 +128,7 @@ const handler = router(
    */
   get('/api/v1/market/plugins/:id', async (req, res) => {
     const pluginId = req.params.id
-    if (Object.keys(pluginId)) {
+    if (Object.keys(pluginMarket).includes(pluginId)) {
       return send(res, 200, JSON.stringify(pluginMarket[pluginId]))
     } else {
       return send(res, 403, { error: `plugin id ${pluginId} was not found.` })
@@ -158,8 +138,8 @@ const handler = router(
 )
 
 export const apiServer = micro(cors()(handler))
-apiServer.listen(3000, () => {
-  console.log(`simple api server running on ${color.green.bold('localhost:3000')}`)
+apiServer.listen(API_ORIGIN_PORT, () => {
+  console.log(`simple api server running on ${color.green.bold(API_ORIGIN)}`)
 })
 
 const socketServer = micro(
@@ -167,8 +147,8 @@ const socketServer = micro(
 )
 
 const io: Server = SocketIO(socketServer)
-socketServer.listen(1234, () => {
-  console.log(`simple socket server running on ${color.green.bold('localhost:1234')}`)
+socketServer.listen(SOCKET_ORIGIN_PORT, () => {
+  console.log(`simple socket server running on ${color.green.bold(SOCKET_ORIGIN)}`)
 })
 
 io.on('connection', (socket) => {
@@ -196,8 +176,19 @@ io.on('connection', (socket) => {
 
     plugins.forEach(async (id: string, i: number) => {
       try {
-        const pluginPackage = await fetch(`${API_ORIGIN}/plugin/load/${id}`)
-          .then((res: any) => res.json()) as PluginPackage
+        const pluginMeta: PluginMeta = await fetch(`${API_ORIGIN}/api/v1/market/plugins/${id}`)
+          .then((res: Response) => res.json())
+
+        console.log(`${color.black.bgWhite('[plugin/fetch]')} [${i + 1}/${plugins.length}] Plugin ${color.yellow(id)} fetched`)
+
+        console.log(pluginMeta)
+
+        const pluginPackage = await fetch(`${BACKEND_ORIGIN}/plugin/compile`, {
+          method: 'POST',
+          body: JSON.stringify(pluginMeta)
+        })
+          .then((res: Response) => res.json()) as PluginPackage
+
         pluginPackages.push(pluginPackage)
         console.log(`${color.black.bgWhite('[plugin/load]')} [${i + 1}/${plugins.length}] Plugin ${color.yellow(id)} successfully loaded!!`)
       } catch (error) {
