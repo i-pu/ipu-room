@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.docker.username }}/{{ .Values.image }}:{{ .Values.tag }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.backend.port }}
+          resources:
+            requests:
+              memory: 1Mi
+              cpu: 0m
+          envFrom:
+            - configMapRef:
+                name: {{ .Chart.Name }}-env-config
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.backend.port }}
+            successThreshold: 1
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
