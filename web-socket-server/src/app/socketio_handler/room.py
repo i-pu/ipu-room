@@ -3,8 +3,9 @@ from uuid import uuid4
 
 from flask_socketio import join_room, leave_room
 from flask import request
+import requests
 
-from ..config import socketio
+from ..config import socketio, flask_app
 from .. import utils
 from .. import model
 

@@ -8,15 +8,21 @@ from flask_cors import CORS
 class Dev(object):
     DEBUG = True
     SECRET_KEY = 'dev'
+    ENV = 'dev'
     DC_PORT = os.getenv('DC_PORT')
     DC_URL = os.getenv('DC_URL')
+    BACKEND_URL = os.getenv('BACKEND_URL')
+    BACKEND_PORT = os.getenv('BACKEND_PORT')
 
 
 class Prd(object):
     DEBUG = False
     SECRET_KEY = 'prd'
+    ENV = 'prd'
     DC_PORT = os.getenv('DC_PORT')
     DC_URL = os.getenv('DC_URL')
+    BACKEND_URL = os.getenv('BACKEND_URL')
+    BACKEND_PORT = os.getenv('BACKEND_PORT')
 
 
 flask_app = Flask(__name__)

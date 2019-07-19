@@ -83,8 +83,9 @@ class TestSocketIOHandler(unittest.TestCase):
         self.client.emit('plugin/register',
                          {'name': 'counter',
                           'description': 'counter',
-                          'author': 'k',
-                          'tags': 'official',
+                          'thumbnailUrls': [],
+                          'author': 'integration test',
+                          'tags': ['test'],
                           'content': content})
 
         self.client.sleep(0.3)
@@ -105,6 +106,7 @@ class TestSocketIOHandler(unittest.TestCase):
         self.assertTrue('id' in self.data['room']['plugins'][0]['meta'])
         self.assertTrue('name' in self.data['room']['plugins'][0]['meta'])
         self.assertTrue('description' in self.data['room']['plugins'][0]['meta'])
+        self.assertTrue('thumbnailUrls' in self.data['room']['plugins'][0]['meta'])
         self.assertTrue('author' in self.data['room']['plugins'][0]['meta'])
         self.assertTrue('tags' in self.data['room']['plugins'][0]['meta'])
         self.assertTrue('content' in self.data['room']['plugins'][0]['meta'])
@@ -134,8 +136,9 @@ class TestSocketIOHandler(unittest.TestCase):
         self.client.emit('plugin/register',
                          {'name': 'counter',
                           'description': 'counter',
+                          'thumbnailUrls': [],
                           'author': 'k',
-                          'tags': 'official',
+                          'tags': ['test'],
                           'content': content})
         self.client.sleep(0.3)
         self.client.emit('room/create', {'roomName': 'some_room', 'plugins': [self.data['id']]})
@@ -157,6 +160,7 @@ class TestSocketIOHandler(unittest.TestCase):
         self.assertTrue('id' in self.data['room']['plugins'][0]['meta'])
         self.assertTrue('name' in self.data['room']['plugins'][0]['meta'])
         self.assertTrue('description' in self.data['room']['plugins'][0]['meta'])
+        self.assertTrue('thumbnailUrls' in self.data['room']['plugins'][0]['meta'])
         self.assertTrue('author' in self.data['room']['plugins'][0]['meta'])
         self.assertTrue('tags' in self.data['room']['plugins'][0]['meta'])
         self.assertTrue('content' in self.data['room']['plugins'][0]['meta'])

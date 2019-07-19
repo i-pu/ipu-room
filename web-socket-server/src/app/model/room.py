@@ -72,4 +72,13 @@ class Room:
                                        },
                             'meta': {**plugin_meta}})
 
-        return members, plugins
+        compiled_plugins = []
+        for plugin in plugins:
+            res = requests.post(
+                f'http://{flask_app.config["BACKEND_URL"]}:{flask_app.config["BACKEND_PORT"]}/api/v1/plugin/compile',
+                json=plugin)
+            res.close()
+            cp = res.json()['properties']
+            compiled_plugins.append(cp)
+
+        return members, compiled_plugins

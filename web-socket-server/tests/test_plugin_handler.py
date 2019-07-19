@@ -32,8 +32,9 @@ class TestSocketIOHandler(unittest.TestCase):
         self.client.emit('plugin/register',
                          {'name': 'plugin name',
                           'description': 'plugin description',
+                          'thumbnailUrls': [],
                           'author': 'plugin author',
-                          'tags': 'plugin tags',
+                          'tags': ['test'],
                           'content': 'plugin content'})
         self.client.sleep(0.3)
 
@@ -62,8 +63,9 @@ class TestSocketIOHandler(unittest.TestCase):
         self.client.emit('plugin/register',
                          {'name': 'counter',
                           'description': 'counter',
+                          'thumbnailUrls': [],
                           'author': 'k',
-                          'tags': 'official',
+                          'tags': ['test'],
                           'content': content})
 
         self.client.sleep(0.3)
@@ -126,8 +128,9 @@ class TestSocketIOHandler(unittest.TestCase):
         self.client.emit('plugin/register',
                          {'name': 'counter',
                           'description': 'counter',
+                          'thumbnailUrls': [],
                           'author': 'k',
-                          'tags': 'official',
+                          'tags': ['test'],
                           'content': content})
         self.client.sleep(0.3)
         self.client.emit('room/create', {'roomName': 'plugin/clone', 'plugins': [self.data['id']]})
