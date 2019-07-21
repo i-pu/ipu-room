@@ -12,8 +12,6 @@ variable "webhook" {
   type = "map"
 }
 
-variable "repository" {}
-
 variable "slack" {}
 
 variable "gke_address" {}

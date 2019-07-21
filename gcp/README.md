@@ -9,3 +9,8 @@
 - gcp alert policy 
     - <https://cloud.google.com/monitoring/alerts/policies-in-json>  
 しきい値のタイプのアラートポリシーはconditionThreshold という
+
+## google sourcerepo repositoryの注意点
+すべての権限をrevokeして，全てのアカウントをログアウトしてから作成する
+普通にやるとできない
+[see also](https://serverfault.com/questions/966583/mirror-github-to-cloud-source-repositories)
