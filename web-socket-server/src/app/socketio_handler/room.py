@@ -3,8 +3,9 @@ from uuid import uuid4
 
 from flask_socketio import join_room, leave_room
 from flask import request
+import requests
 
-from ..config import socketio
+from ..config import socketio, flask_app
 from .. import utils
 from .. import model
 
@@ -22,6 +23,7 @@ def room_create(data):
     plugin_ids = data['plugins']
 
     room = model.Room.create(str(uuid4()), room_name)
+    mylogger.debug(room)
 
     members = []
     active_plugins = []

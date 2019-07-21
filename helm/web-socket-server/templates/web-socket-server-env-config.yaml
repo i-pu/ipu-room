@@ -7,3 +7,5 @@ data:
   DC_PORT: "{{ .Values.databaseController.port }}"
   DC_URL: "{{ .Values.databaseController.service.name }}"
   IPU_ENV: {{ .Values.env }}
+  BACKEND_URL: "{{ .Values.backend.service.name }}"
+  BACKEND_PORT: "{{ .Values.backend.port }}"

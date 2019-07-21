@@ -20,10 +20,10 @@ pub fn get_all_plugins(pool: web::Data<Pool>)
     Ok(web::Json(plugins))
 }
 
-pub fn get_plugin(path: web::Path<String>, pool: web::Data<Pool>)
+pub fn get_plugin(id_path: web::Path<String>, pool: web::Data<Pool>)
                   -> Result<web::Json<Plugin>, failure::Error> {
     use crate::schema::plugins::dsl::plugins;
-    let plugin = plugins.find(path.into_inner()).first(&pool.get()?)?;
+    let plugin = plugins.find(id_path.into_inner()).first(&pool.get()?)?;
 
     info!("{{plugin: {}}}", serde_json::to_string(&plugin)?);
     Ok(web::Json(plugin))
@@ -43,11 +43,11 @@ pub fn post_plugin(json: web::Json<Plugin>, pool: web::Data<Pool>)
 }
 
 /// update plugin
-pub fn put_plugin(json: web::Json<Plugin>, path: web::Path<String>, pool: web::Data<Pool>)
+pub fn put_plugin(json: web::Json<Plugin>, id_path: web::Path<String>, pool: web::Data<Pool>)
                   -> Result<web::Json<Plugin>, failure::Error>
 {
     use crate::schema::plugins::dsl::{plugins, id};
-    let mut plugin = Plugin {id: path.into_inner(), .. json.0.clone()};
+    let mut plugin = Plugin {id: id_path.into_inner(), .. json.0.clone()};
     let plugin = diesel::update(plugins.find(plugin.id.clone()))
         .set(plugin)
         .get_result(&pool.get()?)?;

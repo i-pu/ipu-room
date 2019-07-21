@@ -37,6 +37,7 @@ pub struct Plugin {
 #[serde(rename_all = "camelCase")]
 #[changeset_options(treat_none_as_null="true")]
 pub struct User {
+    // user id is socket id
     // todo: skip
     pub id: String,
     pub name: String,
