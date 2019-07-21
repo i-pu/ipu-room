@@ -79,25 +79,14 @@ class Room:
             # TODO: tagsはstringで帰ってきているので一時的に空配列にする
             plugin_meta['thumbnailUrls'] = []
             plugin_meta['tags'] = []
-            template, functions = compiler(plugin_meta['content'])
-            mylogger.debug(f'template<{type(template)}>: {template}')
-            mylogger.debug(f'functions<{type(functions)}: {functions}')
-            plugins.append({'plugin': {'template': template,
-                                       'functions': functions,
-                                       'instanceId': ap['id'],
-                                       'config': {'enabled': ap['enabled']}
-                                       },
-                            'meta': {**plugin_meta}})
 
-        compiled_plugins = []
-        for plugin in plugins:
-            mylogger.debug(f'{plugin}')
             res = requests.post(
                 f'http://{flask_app.config["BACKEND_URL"]}:{flask_app.config["BACKEND_PORT"]}/api/v1/plugin/compile',
-                json=plugin)
+                json=plugin_meta
+            )
             res.close()
-            mylogger.debug(f'{res.json}')
-            cp = res.json()['properties']
-            compiled_plugins.append(cp)
+            mylogger.debug(f'{pprint.pformat(res.json())}')
+            cp = res.json()
+            plugins.append(cp)
 
-        return members, compiled_plugins
+        return members, plugins

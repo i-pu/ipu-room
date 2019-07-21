@@ -18,12 +18,12 @@ def test_visit():
     client.emit('visit', {'userName': 'alis'})
     client.sleep(0.3)
 
+    client.disconnect()
+
     assert 'user' in client.response
     assert 'id' in client.response['user']
     assert 'name' in client.response['user']
     assert 'roomId' in client.response['user']
-
-    client.disconnect()
 
 
 def test_lobby():
@@ -39,6 +39,6 @@ def test_lobby():
     client.emit('lobby')
     client.sleep(0.3)
 
-    assert 'rooms' in client.response
-
     client.disconnect()
+
+    assert 'rooms' in client.response
