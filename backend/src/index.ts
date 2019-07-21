@@ -41,6 +41,6 @@ const handler = router(
 )
 
 export const apiServer = micro(cors()(handler))
-apiServer.listen(3001, () => {
+apiServer.listen(3000, () => {
   console.log(`compiler service running on ${color.green.bold(process.env.API_ORIGIN!!)}`)
 })
