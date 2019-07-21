@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "API_ORIGIN=http://localhost:3000 npx ts-node -r tsconfig-paths/register src/index.ts",
+    "start": "API_ORIGIN=http://localhost:3001 npx ts-node -r tsconfig-paths/register src/index.ts",
     "dev": "ts-node -r tsconfig-paths/register  src/mock/simple-server.ts",
     "doc": "rm -r ../docs/backend; typedoc . --options ./typedoc.js --theme markdown",
     "test": "jest --runInBand",

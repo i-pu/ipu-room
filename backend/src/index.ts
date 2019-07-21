@@ -26,13 +26,16 @@ const handler = router(
       // fetch package from market
       const meta: PluginMeta = await json(req) as PluginMeta
 
+      console.log('meta:')
+      console.log(meta)
+
       const plugin = await compilePlugin(meta)
 
-      return send(res, 200, { plugin, meta })
+      return send(res, 200, JSON.stringify({ plugin, meta }))
     } catch (error) {
-      console.log(`${color.black.bgRed('[plugin/load]')} Plugin failed to load ...`)
+      console.log(`${color.black.bgRed('[plugin/compile]')} Occur internal error`)
       console.log(error)
-      send(res, 500, { error })
+      send(res, 500, JSON.stringify({ error }))
     }
   }),
 )
