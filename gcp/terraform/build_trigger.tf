@@ -1,9 +1,7 @@
-# Repository must be created beforehand
-
 resource "google_cloudbuild_trigger" "web-socket-server" {
   trigger_template {
+    repo_name = google_sourcerepo_repository.ipu-room.name
     branch_name = "web-socket-server"
-    repo_name = var.repository
   }
 
   substitutions = {
@@ -18,7 +16,7 @@ resource "google_cloudbuild_trigger" "web-socket-server" {
 resource "google_cloudbuild_trigger" "client" {
   trigger_template {
     branch_name = "client"
-    repo_name = var.repository
+    repo_name = google_sourcerepo_repository.ipu-room.name
   }
 
   substitutions = {
@@ -46,7 +44,7 @@ resource "google_cloudbuild_trigger" "client" {
 resource "google_cloudbuild_trigger" "database-controller" {
   trigger_template {
     branch_name = "database-controller"
-    repo_name = var.repository
+    repo_name = google_sourcerepo_repository.ipu-room.name
   }
 
   substitutions = {
@@ -61,7 +59,7 @@ resource "google_cloudbuild_trigger" "database-controller" {
 resource "google_cloudbuild_trigger" "functions_stackdriver2slack" {
   trigger_template {
     branch_name = "stackdriver2slack"
-    repo_name = var.repository
+    repo_name = google_sourcerepo_repository.ipu-room.name
   }
 
   filename = "gcp/cloudbuild/GCF_stackdriver2slack.yaml"
@@ -70,7 +68,7 @@ resource "google_cloudbuild_trigger" "functions_stackdriver2slack" {
 resource "google_cloudbuild_trigger" "reverse-proxy" {
   trigger_template {
     branch_name = "reverse-proxy"
-    repo_name = var.repository
+    repo_name = google_sourcerepo_repository.ipu-room.name
   }
 
   substitutions = {
@@ -83,7 +81,7 @@ resource "google_cloudbuild_trigger" "reverse-proxy" {
 resource "google_cloudbuild_trigger" "backend" {
   trigger_template {
     branch_name = "backend"
-    repo_name = var.repository
+    repo_name = google_sourcerepo_repository.ipu-room.name
   }
 
   substitutions = {
