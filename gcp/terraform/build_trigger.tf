@@ -79,3 +79,18 @@ resource "google_cloudbuild_trigger" "reverse-proxy" {
 
   filename = "gcp/cloudbuild/reverse-proxy.yaml"
 }
+
+resource "google_cloudbuild_trigger" "backend" {
+  trigger_template {
+    branch_name = "backend"
+    repo_name = var.repository
+  }
+
+  substitutions = {
+    _DOCKER_USERNAME = lookup(var.docker_secret, "username")
+    _DOCKER_PASSWORD = lookup(var.docker_secret, "password")
+    _ZONE = var.zone
+  }
+
+  filename = "gcp/cloudbuild/backend.yaml"
+}
