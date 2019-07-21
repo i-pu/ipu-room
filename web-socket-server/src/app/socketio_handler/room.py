@@ -23,6 +23,7 @@ def room_create(data):
     plugin_ids = data['plugins']
 
     room = model.Room.create(str(uuid4()), room_name)
+    mylogger.debug(room)
 
     members = []
     active_plugins = []

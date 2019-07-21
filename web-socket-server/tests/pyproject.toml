@@ -10,6 +10,7 @@ python-socketio = "*"
 requests = "*"
 
 [tool.poetry.dev-dependencies]
+pytest = "^5.0"
 
 [build-system]
 requires = ["poetry>=0.12"]

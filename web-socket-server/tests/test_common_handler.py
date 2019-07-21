@@ -6,42 +6,39 @@ import socketio
 from config import url, socketio_path
 
 
-class TestSocketIOHandler(unittest.TestCase):
+def test_visit():
+    client = socketio.Client()
+    client.connect(url, socketio_path=socketio_path)
 
-    def setUp(self):
-        self.client = socketio.Client()
-        self.client.connect(url, socketio_path=socketio_path)
+    @client.on('visit')
+    def visit(res):
+        client.response = res
+        pass
 
-        self.data = None
-        self.expected = None
-        self.actual = None
+    client.emit('visit', {'userName': 'alis'})
+    client.sleep(0.3)
 
-    def tearDown(self):
-        self.client.disconnect()
+    assert 'user' in client.response
+    assert 'id' in client.response['user']
+    assert 'name' in client.response['user']
+    assert 'roomId' in client.response['user']
 
-    def test_visit(self):
-        print('\n', sys._getframe().f_code.co_name, flush=True)
-        @self.client.on('visit')
-        def visit(data):
-            self.data = data
+    client.disconnect()
 
-        self.client.emit('visit', {'userName': 'alis'})
-        self.client.sleep(0.3)
 
-        self.assertTrue('user' in self.data)
-        self.assertTrue('id' in self.data['user'])
-        self.assertTrue('name' in self.data['user'])
-        self.assertTrue('roomId' in self.data['user'])
+def test_lobby():
+    client = socketio.Client()
+    client.connect(url, socketio_path=socketio_path)
 
-    def test_lobby(self):
-        print('\n', sys._getframe().f_code.co_name, flush=True)
-        @self.client.on('lobby')
-        def lobby(data):
-            self.data = data
+    @client.on('lobby')
+    def lobby(res):
+        client.response = res
 
-        self.client.emit('visit', {'userName': 'lobby user'})
-        self.client.sleep(0.3)
-        self.client.emit('lobby')
-        self.client.sleep(0.3)
+    client.emit('visit', {'userName': 'lobby user'})
+    client.sleep(0.3)
+    client.emit('lobby')
+    client.sleep(0.3)
 
-        self.assertTrue('rooms' in self.data)
+    assert 'rooms' in client.response
+
+    client.disconnect()

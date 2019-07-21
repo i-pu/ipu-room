@@ -34,6 +34,8 @@ def check_user(handler):
     @wraps(handler)
     def wrapped(*args, **kwargs):
         mylogger.debug('check user')
+        mylogger.debug(f'{request.sid}')
+        mylogger.debug(request.sid)
         user = User.get(request.sid, None)
         if user is None:
             raise RuntimeError("user.id: {} is not defined.".format(request.sid))
@@ -56,7 +58,7 @@ def byte_data_to_dict(handler):
 
         mylogger.debug('data type is {}'.format(type(data)))
         if (type(data) is not dict) and (data is not None):
-            mylogger.debug('therefor change to dict')
+            mylogger.error('why ? therefor change to dict')
             data = json.loads(data)
 
         mylogger.debug('data: {}'.format(data))

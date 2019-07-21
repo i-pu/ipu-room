@@ -1,240 +1,247 @@
-import sys, os
+import os
+import sys
 
-import unittest
 import socketio
 
 from config import url, socketio_path
 
 
-class TestSocketIOHandler(unittest.TestCase):
+def test_room_create_no_plugin():
+    client = socketio.Client()
+    client.connect(url, socketio_path=socketio_path)
 
-    def setUp(self):
-        self.client = socketio.Client()
-        self.client.connect(url, socketio_path=socketio_path)
+    @client.on('room/create')
+    def room_create(res):
+        client.response = res
 
-        self.data = None
-        self.expected = None
-        self.actual = None
+    client.emit('visit', {'userName': 'room/create'})
+    client.sleep(0.3)
+    client.emit('lobby')
+    client.sleep(0.3)
+    client.emit('room/create', {'roomName': 'room/create', 'plugins': []})
+    client.sleep(0.3)
+    client.disconnect()
+    client.sleep(0.3)
 
-    def tearDown(self):
-        self.client.disconnect()
+    assert 'room' in client.response
+    assert 'id' in client.response['room']
+    assert 'name' in client.response['room']
+    assert 'members' in client.response['room']
+    assert 'plugins' in client.response['room']
 
-    def test_room_create_no_plugin(self):
-        print('\n', sys._getframe().f_code.co_name, flush=True)
 
-        @self.client.on('room/create')
-        def room_create(data):
-            self.data = data
+def test_room_enter_no_plugin():
+    client = socketio.Client()
+    client.connect(url, socketio_path=socketio_path)
 
-        self.client.emit('visit', {'userName': 'room/create user'})
-        self.client.sleep(0.3)
-        self.client.emit('lobby')
-        self.client.sleep(0.3)
-        self.client.emit('room/create', {'roomName': 'some room', 'plugins': []})
-        self.client.sleep(0.3)
+    @client.on('room/create')
+    def room_create(res):
+        client.response = res['room']['id']
 
-        self.assertTrue('room' in self.data)
-        self.assertTrue('id' in self.data['room'])
-        self.assertTrue('name' in self.data['room'])
-        self.assertTrue('members' in self.data['room'])
-        self.assertTrue('plugins' in self.data['room'])
+    @client.on('room/enter')
+    def room_enter(res):
+        client.response = res
 
-    def test_room_enter_no_plugin(self):
-        print('\n', sys._getframe().f_code.co_name, flush=True)
+    client.emit('visit', {'userName': 'room/enter user'})
+    client.sleep(0.3)
+    client.emit('room/create', {'roomName': 'room/enter room', 'plugins': []})
+    client.sleep(0.3)
+    client.emit('room/enter', {'roomId': client.response})
+    client.sleep(0.3)
 
-        @self.client.on('room/create')
-        def room_create(data):
-            self.data = data['room']['id']
+    assert 'room' in client.response
+    assert 'id' in client.response['room']
+    assert 'name' in client.response['room']
+    assert 'members' in client.response['room']
+    assert 'plugins' in client.response['room']
 
-        @self.client.on('room/enter')
-        def room_enter(data):
-            self.data = data
+    client.disconnect()
 
-        self.client.emit('visit', {'userName': 'room/enter user'})
-        self.client.sleep(0.3)
-        self.client.emit('room/create', {'roomName': 'room/enter room', 'plugins': []})
-        self.client.sleep(0.3)
-        self.client.emit('room/enter', {'roomId': self.data})
-        self.client.sleep(0.3)
 
-        self.assertTrue('room' in self.data)
-        self.assertTrue('id' in self.data['room'])
-        self.assertTrue('name' in self.data['room'])
-        self.assertTrue('members' in self.data['room'])
-        self.assertTrue('plugins' in self.data['room'])
+def test_room_create_with_plugin():
+    client = socketio.Client()
+    client.connect(url, socketio_path=socketio_path)
 
-    def test_room_create_with_plugin(self):
-        print('\n', sys._getframe().f_code.co_name, flush=True)
+    @client.on('plugin/register')
+    def plugin_register(res):
+        client.response = res
 
-        @self.client.on('plugin/register')
-        def plugin_register(data):
-            self.data = data
+    @client.on('room/create')
+    def room_create(res):
+        client.response = res
 
-        @self.client.on('room/create')
-        def room_create(data):
-            self.data = data
+    file_name = os.path.join(os.path.dirname(__file__), 'counter.ipl')
+    with open(file_name, mode='r') as f:
+        content = f.read()
 
-        file_name = os.path.join(os.path.dirname(__file__), 'counter.ipl')
-        with open(file_name, mode='r') as f:
-            content = f.read()
+    client.emit('visit', {'userName': 'room_with_plugin'})
+    client.sleep(0.3)
+    client.emit('plugin/register',
+                {'name': 'counter',
+                 'description': 'counter',
+                 'thumbnailUrls': [],
+                 'author': 'integration test',
+                 'tags': ['test'],
+                 'content': content})
+    client.sleep(0.3)
+    client.emit('room/create', {'roomName': 'some_room', 'plugins': [client.response['id']]})
+    client.sleep(0.3)
 
-        self.client.emit('visit', {'userName': 'room_with_plugin'})
-        self.client.sleep(0.3)
-        self.client.emit('plugin/register',
-                         {'name': 'counter',
-                          'description': 'counter',
-                          'thumbnailUrls': [],
-                          'author': 'integration test',
-                          'tags': ['test'],
-                          'content': content})
+    assert 'room' in client.response
+    assert 'plugins' in client.response['room']
+    assert len(client.response['room']['plugins']) > 0
+    assert 'plugin' in client.response['room']['plugins'][0]
+    assert 'template' in client.response['room']['plugins'][0]['plugin']
+    assert 'functions' in client.response['room']['plugins'][0]['plugin']
+    assert len(client.response['room']['plugins'][0]['plugin']['functions']) > 0
+    assert 'instanceId' in client.response['room']['plugins'][0]['plugin']
+    assert 'config' in client.response['room']['plugins'][0]['plugin']
+    assert 'enabled' in client.response['room']['plugins'][0]['plugin']['config']
+    assert 'meta' in client.response['room']['plugins'][0]
+    assert 'id' in client.response['room']['plugins'][0]['meta']
+    assert 'name' in client.response['room']['plugins'][0]['meta']
+    assert 'description' in client.response['room']['plugins'][0]['meta']
+    assert 'thumbnailUrls' in client.response['room']['plugins'][0]['meta']
+    assert 'author' in client.response['room']['plugins'][0]['meta']
+    assert 'tags' in client.response['room']['plugins'][0]['meta']
+    assert 'content' in client.response['room']['plugins'][0]['meta']
 
-        self.client.sleep(0.3)
-        self.client.emit('room/create', {'roomName': 'some_room', 'plugins': [self.data['id']]})
-        self.client.sleep(0.3)
-
-        self.assertTrue('room' in self.data)
-        self.assertTrue('plugins' in self.data['room'])
-        self.assertTrue(len(self.data['room']['plugins']) > 0)
-        self.assertTrue('plugin' in self.data['room']['plugins'][0])
-        self.assertTrue('template' in self.data['room']['plugins'][0]['plugin'])
-        self.assertTrue('functions' in self.data['room']['plugins'][0]['plugin'])
-        self.assertTrue(len(self.data['room']['plugins'][0]['plugin']['functions']) > 0)
-        self.assertTrue('instanceId' in self.data['room']['plugins'][0]['plugin'])
-        self.assertTrue('config' in self.data['room']['plugins'][0]['plugin'])
-        self.assertTrue('enabled' in self.data['room']['plugins'][0]['plugin']['config'])
-        self.assertTrue('meta' in self.data['room']['plugins'][0])
-        self.assertTrue('id' in self.data['room']['plugins'][0]['meta'])
-        self.assertTrue('name' in self.data['room']['plugins'][0]['meta'])
-        self.assertTrue('description' in self.data['room']['plugins'][0]['meta'])
-        self.assertTrue('thumbnailUrls' in self.data['room']['plugins'][0]['meta'])
-        self.assertTrue('author' in self.data['room']['plugins'][0]['meta'])
-        self.assertTrue('tags' in self.data['room']['plugins'][0]['meta'])
-        self.assertTrue('content' in self.data['room']['plugins'][0]['meta'])
-
-    def test_room_enter_with_plugin(self):
-        print('\n', sys._getframe().f_code.co_name, flush=True)
-
-        @self.client.on('plugin/register')
-        def plugin_register(data):
-            self.data = data
-
-        @self.client.on('room/create')
-        def room_create(data):
-            self.data = data
-
-        @self.client.on('room/enter')
-        def room_enter(data):
-            self.data = data
-
-        file_name = os.path.join(os.path.dirname(__file__), 'counter.ipl')
-        with open(file_name, mode='r') as f:
-            content = f.read()
-
-        self.client.sleep(0.3)
-        self.client.emit('visit', {'userName': 'room_with_plugin'})
-        self.client.sleep(0.3)
-        self.client.emit('plugin/register',
-                         {'name': 'counter',
-                          'description': 'counter',
-                          'thumbnailUrls': [],
-                          'author': 'k',
-                          'tags': ['test'],
-                          'content': content})
-        self.client.sleep(0.3)
-        self.client.emit('room/create', {'roomName': 'some_room', 'plugins': [self.data['id']]})
-        self.client.sleep(0.3)
-        self.client.emit('room/enter', {'roomId': self.data['room']['id']})
-        self.client.sleep(0.3)
-
-        self.assertTrue('room' in self.data)
-        self.assertTrue('plugins' in self.data['room'])
-        self.assertTrue(len(self.data['room']['plugins']) > 0)
-        self.assertTrue('plugin' in self.data['room']['plugins'][0])
-        self.assertTrue('template' in self.data['room']['plugins'][0]['plugin'])
-        self.assertTrue('functions' in self.data['room']['plugins'][0]['plugin'])
-        self.assertTrue(len(self.data['room']['plugins'][0]['plugin']['functions']) > 0)
-        self.assertTrue('instanceId' in self.data['room']['plugins'][0]['plugin'])
-        self.assertTrue('config' in self.data['room']['plugins'][0]['plugin'])
-        self.assertTrue('enabled' in self.data['room']['plugins'][0]['plugin']['config'])
-        self.assertTrue('meta' in self.data['room']['plugins'][0])
-        self.assertTrue('id' in self.data['room']['plugins'][0]['meta'])
-        self.assertTrue('name' in self.data['room']['plugins'][0]['meta'])
-        self.assertTrue('description' in self.data['room']['plugins'][0]['meta'])
-        self.assertTrue('thumbnailUrls' in self.data['room']['plugins'][0]['meta'])
-        self.assertTrue('author' in self.data['room']['plugins'][0]['meta'])
-        self.assertTrue('tags' in self.data['room']['plugins'][0]['meta'])
-        self.assertTrue('content' in self.data['room']['plugins'][0]['meta'])
-
-    def test_room_enter_update_detection(self):
-        print('\n', sys._getframe().f_code.co_name, flush=True)
-        self.client2 = socketio.Client()
-        self.client2.connect(url, socketio_path=socketio_path)
-
-        @self.client.on('room/create')
-        def room_enter(data):
-            self.data = data
-
-        @self.client.on('room/update')
-        def room_update(data):
-            self.data = data
-
-        self.client.emit('visit', {'userName': 'update_detection'})
-        self.client.sleep(0.3)
-        self.client.emit('room/create', {'roomName': 'some room', 'plugins': []})
-        self.client.sleep(0.3)
-        self.client.emit('room/enter', {'roomId': self.data['room']['id']})
-        self.client.sleep(0.3)
-
-        self.client2.emit('visit', {'userName': 'update_detection2'})
-        self.client.sleep(0.3)
-        self.client2.emit('room/enter', {'roomId': self.data['room']['id']})
-        self.client2.sleep(0.3)
-
-        self.assertTrue('room' in self.data)
-        self.assertTrue('id' in self.data['room'])
-        self.assertTrue('name' in self.data['room'])
-        self.assertTrue('members' in self.data['room'])
-        self.assertTrue('plugins' in self.data['room'])
-
-        self.client2.disconnect()
-
-    def test_room_exit_update_detection(self):
-        print('\n', sys._getframe().f_code.co_name, flush=True)
-
-        self.client2 = socketio.Client()
-        self.client2.connect(url, socketio_path=socketio_path)
-
-        @self.client.on('room/create')
-        def room_enter(data):
-            self.data = data
-
-        @self.client.on('room/update')
-        def room_update(data):
-            self.data = data
-
-        @self.client2.on('room/exit')
-        def room_exit(data):
-            print('\ncalled exit\n', flush=True)
-
-        self.client.emit('visit', {'userName': 'exit_detection'})
-        self.client.sleep(0.3)
-        self.client.emit('room/create', {'roomName': 'some room', 'plugins': []})
-        self.client.sleep(0.3)
-        self.client.emit('room/enter', {'roomId': self.data['room']['id']})
-        self.client.sleep(0.3)
-
-        self.client2.emit('visit', {'userName': 'exit_detection2'})
-        self.client2.sleep(0.3)
-        self.client2.emit('room/enter', {'roomId': self.data['room']['id']})
-        self.client2.sleep(0.3)
-        self.client2.emit('room/exit')
-        self.client2.sleep(0.3)
-
-        self.assertTrue('room' in self.data)
-        self.assertTrue('id' in self.data['room'])
-        self.assertTrue('name' in self.data['room'])
-        self.assertTrue('members' in self.data['room'])
-        self.assertEqual(len(self.data['room']['members']), 1)
-        self.assertTrue('plugins' in self.data['room'])
-
-        self.client2.disconnect()
+    client.disconnect()
+#
+#
+# def test_room_enter_with_plugin():
+#     client = socketio.Client()
+#     client.connect(url, socketio_path=socketio_path)
+#
+#     @client.on('plugin/register')
+#     def plugin_register(res):
+#         client.response = res
+#
+#     @client.on('room/create')
+#     def room_create(res):
+#         client.response = res
+#
+#     @client.on('room/enter')
+#     def room_enter(res):
+#         client.response = res
+#
+#     file_name = os.path.join(os.path.dirname(__file__), 'counter.ipl')
+#     with open(file_name, mode='r') as f:
+#         content = f.read()
+#
+#     client.sleep(0.3)
+#     client.emit('visit', {'userName': 'room_with_plugin'})
+#     client.sleep(0.3)
+#     client.emit('plugin/register',
+#                 {'name': 'counter',
+#                  'description': 'counter',
+#                  'thumbnailUrls': [],
+#                  'author': 'k',
+#                  'tags': ['test'],
+#                  'content': content})
+#     client.sleep(0.3)
+#     client.emit('room/create', {'roomName': 'some_room', 'plugins': [client.response['id']]})
+#     client.sleep(0.3)
+#     client.emit('room/enter', {'roomId': client.response['room']['id']})
+#     client.sleep(0.3)
+#
+#     assert 'room' in client.response
+#     assert 'plugins' in client.response['room']
+#     assert len(client.response['room']['plugins']) > 0
+#     assert 'plugin' in client.response['room']['plugins'][0]
+#     assert 'template' in client.response['room']['plugins'][0]['plugin']
+#     assert 'functions' in client.response['room']['plugins'][0]['plugin']
+#     assert len(client.response['room']['plugins'][0]['plugin']['functions']) > 0
+#     assert 'instanceId' in client.response['room']['plugins'][0]['plugin']
+#     assert 'config' in client.response['room']['plugins'][0]['plugin']
+#     assert 'enabled' in client.response['room']['plugins'][0]['plugin']['config']
+#     assert 'meta' in client.response['room']['plugins'][0]
+#     assert 'id' in client.response['room']['plugins'][0]['meta']
+#     assert 'name' in client.response['room']['plugins'][0]['meta']
+#     assert 'description' in client.response['room']['plugins'][0]['meta']
+#     assert 'thumbnailUrls' in client.response['room']['plugins'][0]['meta']
+#     assert 'author' in client.response['room']['plugins'][0]['meta']
+#     assert 'tags' in client.response['room']['plugins'][0]['meta']
+#     assert 'content' in client.response['room']['plugins'][0]['meta']
+#
+#     client.disconnect()
+#
+#
+# def test_room_enter_update_detection():
+#     client = socketio.Client()
+#     client.connect(url, socketio_path=socketio_path)
+#     client2 = socketio.Client()
+#     client2.connect(url, socketio_path=socketio_path)
+#
+#     @client.on('room/create')
+#     def room_enter(res):
+#         client.response = res
+#
+#     @client.on('room/update')
+#     def room_update(res):
+#         client.response = res
+#
+#     client.emit('visit', {'userName': 'update_detection'})
+#     client.sleep(0.3)
+#     client.emit('room/create', {'roomName': 'some room', 'plugins': []})
+#     client.sleep(0.3)
+#     client.emit('room/enter', {'roomId': client.response['room']['id']})
+#     client.sleep(0.3)
+#
+#     client2.emit('visit', {'userName': 'update_detection2'})
+#     client.sleep(0.3)
+#     client2.emit('room/enter', {'roomId': client.response['room']['id']})
+#     client2.sleep(0.3)
+#
+#     assert 'room' in client.response
+#     assert 'id' in client.response['room']
+#     assert 'name' in client.response['room']
+#     assert 'members' in client.response['room']
+#     assert 'plugins' in client.response['room']
+#
+#     client.disconnect()
+#     client2.disconnect()
+#
+#
+# def test_room_exit_update_detection():
+#     client = socketio.Client()
+#     client.connect(url, socketio_path=socketio_path)
+#     client2 = socketio.Client()
+#     client2.connect(url, socketio_path=socketio_path)
+#
+#     @client.on('room/create')
+#     def room_enter(res):
+#         client.response = res
+#
+#     @client.on('room/update')
+#     def room_update(res):
+#         client.response = res
+#
+#     @client2.on('room/exit')
+#     def room_exit(res):
+#         client2.response = res
+#
+#     client.emit('visit', {'userName': 'exit_detection'})
+#     client.sleep(0.3)
+#     client.emit('room/create', {'roomName': 'some room', 'plugins': []})
+#     client.sleep(0.3)
+#     client.emit('room/enter', {'roomId': client.response['room']['id']})
+#     client.sleep(0.3)
+#
+#     client2.emit('visit', {'userName': 'exit_detection2'})
+#     client2.sleep(0.3)
+#     client2.emit('room/enter', {'roomId': client.response['room']['id']})
+#     client2.sleep(0.3)
+#     client2.emit('room/exit')
+#     client2.sleep(0.3)
+#
+#     assert 'room' in client.response
+#     assert 'id' in client.response['room']
+#     assert 'name' in client.response['room']
+#     assert 'members' in client.response['room']
+#     assert len(client.response['room']['members']) == 1
+#     assert 'plugins' in client.response['room']
+#     assert client2.response is not None
+#
+#     client.disconnect()
+#     client2.disconnect()

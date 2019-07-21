@@ -30,9 +30,11 @@ def plugin_register(data):
     json = model.Plugin.create(data['name'],
                                data['description'],
                                data['author'],
-                               data['tags'],
+                               '',
+                               # todo: tagsはリストで受け取っているがから文字列に一時的に変更する
+                               # data['tags'],
                                data['content'])
-    print(json, flush=True)
+    mylogger.debug(json)
 
     if 'id' in json:
         res_data = {'state': True, **json}

@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: backend-env-config
 data:
-  API_ORIGIN: {{ .Values.backend.service.name }}:{{ .Values.backend.service.port }}
+  API_ORIGIN: {{ .Values.backend.service.name }}:{{ .Values.backend.port }}

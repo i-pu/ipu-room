@@ -28,7 +28,7 @@ class TestSocketIOHandler(unittest.TestCase):
             self.data = data
 
         self.client.emit('visit', {'userName': 'plugin register'})
-        self.client.sleep(0.3)
+        self.client.sleep(1)
         self.client.emit('plugin/register',
                          {'name': 'plugin name',
                           'description': 'plugin description',
@@ -36,7 +36,7 @@ class TestSocketIOHandler(unittest.TestCase):
                           'author': 'plugin author',
                           'tags': ['test'],
                           'content': 'plugin content'})
-        self.client.sleep(0.3)
+        self.client.sleep(1)
 
         self.assertTrue(self.data['state'])
 
@@ -68,20 +68,20 @@ class TestSocketIOHandler(unittest.TestCase):
                           'tags': ['test'],
                           'content': content})
 
-        self.client.sleep(0.3)
+        self.client.sleep(1)
         self.client.emit('room/create',
                          data={'roomName': 'some_room', 'plugins': [self.data['id']]})
-        self.client.sleep(0.3)
+        self.client.sleep(1)
         self.client.emit('room/enter',
                          data={'roomId': self.data['room']['id']})
-        self.client.sleep(0.3)
+        self.client.sleep(1)
         # client compile at local
         self.client.emit('plugin/trigger',
                          data={'roomId': self.data['room']['id'],
                                'instanceId': self.data['room']['plugins'][0]['plugin']['instanceId'],
                                'data': {'event': 'nums',
                                         'args': [1, 2, 3]}})
-        self.client.sleep(0.3)
+        self.client.sleep(1)
 
         self.assertTrue('data' in self.data)
         self.assertTrue('event' in self.data['data'])
@@ -120,7 +120,7 @@ class TestSocketIOHandler(unittest.TestCase):
             self.data = data
 
         self.client.emit('visit', {'userName': 'plugin/clone'})
-        self.client.sleep(0.3)
+        self.client.sleep(1)
 
         file_name = os.path.join(os.path.dirname(__file__), 'counter.ipl')
         with open(file_name, mode='r') as f:
@@ -132,20 +132,20 @@ class TestSocketIOHandler(unittest.TestCase):
                           'author': 'k',
                           'tags': ['test'],
                           'content': content})
-        self.client.sleep(0.3)
+        self.client.sleep(1)
         self.client.emit('room/create', {'roomName': 'plugin/clone', 'plugins': [self.data['id']]})
-        self.client.sleep(0.3)
+        self.client.sleep(1)
         self.client.emit('room/enter', {'roomId': self.data['room']['id']})
-        self.client.sleep(0.3)
+        self.client.sleep(1)
 
         self.client2.emit('visit', {'userName': 'plugin/clone2'})
-        self.client2.sleep(0.3)
+        self.client2.sleep(1)
         self.client2.emit('room/enter', {'roomId': self.data['room']['id']})
-        self.client2.sleep(0.3)
+        self.client2.sleep(1)
         self.client2.emit('plugin/sync',
                           {'roomId': self.data['room']['id'],
                            'instanceId': self.data['room']['plugins'][0]['plugin']['instanceId']})
-        self.client2.sleep(0.3)
+        self.client2.sleep(1)
 
         self.assertTrue('record' in self.data)
 

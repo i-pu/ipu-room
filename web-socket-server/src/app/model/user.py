@@ -22,7 +22,9 @@ class User:
         res.close()
 
         if res.status_code >= 400:
-            raise Exception("status code is {}".format(res.status_code))
+            raise Exception(
+                f"in user get status code is {res.status_code}. {res.content}"
+            )
 
         return res.json()
 

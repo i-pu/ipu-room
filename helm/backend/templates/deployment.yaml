@@ -20,7 +20,7 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           image: {{ .Values.docker.username }}/{{ .Values.image }}:{{ .Values.tag }}
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: {{ .Values.backend.port }}
           resources:

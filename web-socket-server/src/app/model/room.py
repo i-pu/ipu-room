@@ -1,11 +1,22 @@
 import requests
+import pprint
 from uuid import uuid4
+from logging import basicConfig, getLogger, DEBUG, INFO
 
 from ..config import flask_app
 from .user import User
 from .active_plugin import ActivePlugin
 from .plugin import Plugin
 from ..plugin_compiler import compiler
+
+basicConfig()
+mylogger = getLogger(__name__)
+if flask_app.config['ENV'] == 'dev':
+    mylogger.setLevel(DEBUG)
+elif flask_app.config['ENV'] == 'prd':
+    mylogger.setLevel(INFO)
+else:
+    raise EnvironmentError("flask_app.config['ENV'] is invalid.")
 
 
 class Room:
@@ -64,7 +75,13 @@ class Room:
         plugins = []
         for ap in active_plugins:
             plugin_meta = Plugin.get(ap['pluginId'])
+            # TODO: plugin_metaにthumbnailUrlsとtags(list)を追加する必要がある
+            # TODO: tagsはstringで帰ってきているので一時的に空配列にする
+            plugin_meta['thumbnailUrls'] = []
+            plugin_meta['tags'] = []
             template, functions = compiler(plugin_meta['content'])
+            mylogger.debug(f'template<{type(template)}>: {template}')
+            mylogger.debug(f'functions<{type(functions)}: {functions}')
             plugins.append({'plugin': {'template': template,
                                        'functions': functions,
                                        'instanceId': ap['id'],
@@ -74,10 +91,12 @@ class Room:
 
         compiled_plugins = []
         for plugin in plugins:
+            mylogger.debug(f'{plugin}')
             res = requests.post(
                 f'http://{flask_app.config["BACKEND_URL"]}:{flask_app.config["BACKEND_PORT"]}/api/v1/plugin/compile',
                 json=plugin)
             res.close()
+            mylogger.debug(f'{res.json}')
             cp = res.json()['properties']
             compiled_plugins.append(cp)
 

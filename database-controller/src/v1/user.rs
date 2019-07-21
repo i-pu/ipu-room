@@ -37,10 +37,10 @@ pub fn get_users(query: web::Query<UserQuery>, pool: web::Data<Pool>)
     Ok(web::Json(users))
 }
 
-pub fn get_user(path: web::Path<String>, pool: web::Data<Pool>)
+pub fn get_user(id_path: web::Path<String>, pool: web::Data<Pool>)
                 -> Result<web::Json<User>, failure::Error> {
     use crate::schema::users::dsl::users;
-    let id = path.into_inner();
+    let id = id_path.into_inner();
     let user = users.find(&id).first(&pool.get()?)?;
 
     info!("{{user: {}}}", serde_json::to_string(&user)?);
