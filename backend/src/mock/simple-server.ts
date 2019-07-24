@@ -16,7 +16,7 @@ import { sessions, pluginMarket, roomList } from '@mock/resources'
 import { PluginMeta, PluginPackage } from '@model'
 
 // @ts-ignore
-import fetch from 'node-fetch'
+import axios from 'axios'
 
 // Mock API Origin
 const API_ORIGIN_PORT = 3000
@@ -77,9 +77,20 @@ const __test__ = async () => {
   //     await activatePlugin(Chat),
   //   ]
   // }
+
+  try {
+    // axios.post('http://localhost:3001/plugin/compile', 'a')
+    // .then((res) => console.log(res))
+    axios.post(`${BACKEND_ORIGIN}/plugin/compile`, 'a')
+      .then((res) => console.log(res))
+
+      // .then((res: Response) => res.json()) as PluginPackage
+  } catch (error) {
+    console.log(error)
+  }
 }
 
-// __test__()
+__test__()
 
 const handler = router(
   /**
@@ -185,6 +196,7 @@ io.on('connection', (socket) => {
 
         const pluginPackage = await fetch(`${BACKEND_ORIGIN}/plugin/compile`, {
           method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(pluginMeta)
         })
           .then((res: Response) => res.json()) as PluginPackage

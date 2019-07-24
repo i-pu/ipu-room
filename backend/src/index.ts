@@ -4,12 +4,11 @@
 // Copyright (c) 2019 i-pu
 // =========================
 
-import uuidv4 from 'uuid'
 import color from 'colors'
 import micro, { send, json } from 'micro'
 // @ts-ignore
 import cors from 'micro-cors'
-import { router, post } from 'microrouter'
+import { router, post, options } from 'microrouter'
 import { compilePlugin } from '@plugin-compiler/compiler'
 import { PluginMeta } from '@model'
 
@@ -23,24 +22,36 @@ const handler = router(
    */
   post('/api/v1/plugin/compile', async (req, res) => {
     try {
-      // fetch package from market
-      const meta: PluginMeta = await json(req) as PluginMeta
-
-      console.log('meta:')
-      console.log(meta)
-
-      const plugin = await compilePlugin(meta)
-
-      return send(res, 200, JSON.stringify({ plugin, meta }))
-    } catch (error) {
-      console.log(`${color.black.bgRed('[plugin/compile]')} Occur internal error`)
-      console.log(error)
-      send(res, 500, JSON.stringify({ error }))
+      // const body = await json(req)
+      return send(res, 200, '1')
+    } catch {
+      return send(res, 500, '2')
     }
+
+    // try {
+    //   // fetch package from market
+    //   const meta: PluginMeta = await json(req) as PluginMeta
+
+    //   console.log('meta:')
+    //   console.log(meta)
+
+    //   const plugin = await compilePlugin(meta)
+
+    //   return send(res, 200, JSON.stringify({ plugin, meta }))
+    // } catch (error) {
+    //   console.log(`${color.black.bgRed('[plugin/compile]')} Occur internal error`)
+    //   console.log(error)
+    //   return send(res, 500, error)
+    // }
   }),
+  options('/api/v1/plugin/compile', (_, res) => send(res, 200))
 )
 
+if (!process.env.PORT) {
+  throw 'Port is not defined.'
+}
+
 export const apiServer = micro(cors()(handler))
-apiServer.listen(3000, () => {
-  console.log(`compiler service running on ${color.green.bold(process.env.API_ORIGIN!!)}`)
+apiServer.listen(parseInt(process.env.PORT!!), () => {
+  console.log(`compiler service running on port ${color.green.bold(process.env.PORT!!)}`)
 })

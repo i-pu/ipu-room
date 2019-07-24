@@ -1,18 +1,19 @@
 version: '2'
 services:
-  node:
+  compiler:
     build:
       context: .
+      dockerfile: Dockerfile-compiler
     image: node:11.15.0-alpine
-    container_name: mock-server
-    hostname: node
+    container_name: compiler
+    hostname: compiler
     volumes:
       - ".:/src"
     working_dir: /src
     environment:
-      - API_ORIGIN="localhost:3000"
+      - PORT=3001
     command: [sh, -c, npm install && npm start]
     ports:
-      - "3000:3000"
+      - "3001:3001"
     stdin_open: true
     tty: true
