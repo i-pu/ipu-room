@@ -34,7 +34,7 @@ const handler = router(
     } catch (error) {
       console.log(`${color.black.bgRed('[plugin/compile]')} Occur internal error`)
       console.log(error)
-      return send(res, 500, error)
+      return send(res, 500, JSON.stringify({ error }))
     }
   }),
   options('/api/v1/plugin/compile', (_, res) => send(res, 200))

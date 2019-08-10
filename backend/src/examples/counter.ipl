@@ -4,15 +4,14 @@
     v-btn(@click="plus(1)") Add
 </template>
 <script>
-export default {
+({
   initialize () {
     return {
       count: 0
     }
-  }
-
+  },
   plus () {
     this.record.count++
   }
-}
+})
 </script>

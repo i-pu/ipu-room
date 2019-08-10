@@ -11,6 +11,8 @@ import micro, { send, json, RequestHandler } from 'micro'
 // @ts-ignore
 import cors from 'micro-cors'
 import { router, post, get } from 'microrouter'
+// @ts-ignore
+import fetch from 'node-fetch'
 import { compilePlugin, activatePlugin } from '@plugin-compiler/compiler'
 import { sessions, pluginMarket, roomList } from '@mock/resources'
 import { PluginMeta, PluginPackage } from '@model'
@@ -157,9 +159,11 @@ const socketHandler: RequestHandler = (req, res) => send(res, 200)
 
 const socketServer = micro(cors()(socketHandler))
 
-const io: Server = SocketIO(socketServer)
+const io: Server = SocketIO(socketServer, {
+  path: '/web-socket-server/'
+})
 socketServer.listen(SOCKET_ORIGIN_PORT, () => {
-  console.log(`simple socket server running on ${color.green.bold(SOCKET_ORIGIN)}`)
+  console.log(`simple socket server running on ${color.green.bold(SOCKET_ORIGIN + '/web-socket-server')}`)
 })
 
 io.on('connection', (socket) => {
@@ -187,21 +191,30 @@ io.on('connection', (socket) => {
 
     plugins.forEach(async (id: string, i: number) => {
       try {
-        const pluginMeta: PluginMeta = await fetch(`${API_ORIGIN}/api/v1/market/plugins/${id}`)
+        const maybePluginMeta = await fetch(`${API_ORIGIN}/api/v1/market/plugins/${id}`)
           .then((res: Response) => res.json())
+
+        if (maybePluginMeta.error) {
+          throw maybePluginMeta.error
+        }
+
+        const pluginMeta: PluginMeta = maybePluginMeta as PluginMeta
 
         console.log(`${color.black.bgWhite('[plugin/fetch]')} [${i + 1}/${plugins.length}] Plugin ${color.yellow(id)} fetched`)
 
-        console.log(pluginMeta)
-
-        const pluginPackage = await fetch(`${BACKEND_ORIGIN}/plugin/compile`, {
+        const maybePluginPackage = await fetch(`${BACKEND_ORIGIN}/api/v1/plugin/compile`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(pluginMeta)
         })
-          .then((res: Response) => res.json()) as PluginPackage
+          .then((res: Response) => res.json())
 
-        pluginPackages.push(pluginPackage)
+        if (maybePluginPackage.error) {
+          throw maybePluginPackage.error
+        }
+
+        pluginPackages.push(maybePluginPackage as PluginPackage)
+
         console.log(`${color.black.bgWhite('[plugin/load]')} [${i + 1}/${plugins.length}] Plugin ${color.yellow(id)} successfully loaded!!`)
       } catch (error) {
         console.log(`${color.black.bgRed('[plugin/load]')} [${i + 1}/${plugins.length}] Plugin ${color.yellow(id)} failed to load...`)
@@ -280,6 +293,12 @@ io.on('connection', (socket) => {
   socket.on('room/exit', ({ roomId }: { roomId: string }) => {
     leaveRoom(roomId)
     socket.emit('room/exit')
+  })
+
+  socket.on('room/remove', ({ roomId }: { roomId: string }) => {
+    console.log(`${color.black.bgWhite('[room/remove]')} room ${color.gray(roomId)} removed`)
+    delete roomList[roomId]
+    socket.emit('room/remove')
   })
 
   socket.on('disconnect', () => {

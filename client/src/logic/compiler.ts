@@ -133,6 +133,14 @@ export const compile = async (
           this.callbackFromServer(payload)
         },
       },
+      watch: {
+        record: {
+          handler (v) {
+            console.log(Object.assign({}, v))
+          },
+          deep: true
+        }
+      },
       data (): {
         record: Record<string, any>,
         meta: PluginProperties['meta'],

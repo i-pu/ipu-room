@@ -57,11 +57,12 @@ import { Prop } from 'vue-property-decorator'
 import PluginEditor from '@/components/market/PluginEditor.vue'
 import { Room, PluginInstance, PluginMeta, PluginPackage } from '../model'
 import { boot } from '@/logic/loader'
+import { Route } from 'vue-router'
 
 @Component<PluginDetail>({
   components: { PluginEditor },
   sockets: {
-    async 'room/make' ({ room }: { room: Room }) {
+    async 'room/create' ({ room }: { room: Room }) {
       console.log('[2/4] made room')
       this.$socket.emit('room/enter', { roomId: room.id })
     },
@@ -70,6 +71,9 @@ import { boot } from '@/logic/loader'
       this.room = room
       this.refresh()
     },
+    'room/remove' () {
+      console.log('room removed')
+    }
   },
 })
 export default class PluginDetail extends Vue {
@@ -84,6 +88,7 @@ export default class PluginDetail extends Vue {
   private snackbarMessage: string = ''
 
   public created () {
+    this.loaded = false
     console.log(`pluginId: ${this.$route.params.pluginId}`)
     fetch(`${process.env.VUE_APP_API_ORIGIN}/market/plugins/${this.$route.params.pluginId}`)
       .then((res) => res.json())
@@ -92,13 +97,19 @@ export default class PluginDetail extends Vue {
         this.pluginMeta = meta
       })
 
-    this.$socket.emit('room/make', {
+    this.$socket.emit('room/create', {
       roomName: '部屋',
-      pluginIds: [ 'counter' ],
+      plugins: [ this.$route.params.pluginId ],
     })
   }
 
+  beforeDestroy() {
+    console.log('leave')
+    this.$socket.emit('room/remove', { roomId: this.room.id })
+  }
+
   private async refresh () {
+    console.log('refresh')
     if (!this.room) {
       return
     }

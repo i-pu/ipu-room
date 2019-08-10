@@ -9,6 +9,8 @@ export const boot = async ({ plugin, meta }: PluginPackage, options: { room: Roo
     throw new Error('Plugin instance id must be required')
   }
 
+  console.log(plugin.functions)
+
   try {
     plugin.functions = typeof plugin.functions === 'string'
       ? eval(plugin.functions) as PluginFunctions
