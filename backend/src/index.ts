@@ -22,27 +22,20 @@ const handler = router(
    */
   post('/api/v1/plugin/compile', async (req, res) => {
     try {
-      // const body = await json(req)
-      return send(res, 200, '1')
-    } catch {
-      return send(res, 500, '2')
+      // fetch package from market
+      const meta: PluginMeta = await json(req) as PluginMeta
+
+      console.log('meta:')
+      console.log(meta)
+
+      const plugin = await compilePlugin(meta)
+
+      return send(res, 200, JSON.stringify({ plugin, meta }))
+    } catch (error) {
+      console.log(`${color.black.bgRed('[plugin/compile]')} Occur internal error`)
+      console.log(error)
+      return send(res, 500, error)
     }
-
-    // try {
-    //   // fetch package from market
-    //   const meta: PluginMeta = await json(req) as PluginMeta
-
-    //   console.log('meta:')
-    //   console.log(meta)
-
-    //   const plugin = await compilePlugin(meta)
-
-    //   return send(res, 200, JSON.stringify({ plugin, meta }))
-    // } catch (error) {
-    //   console.log(`${color.black.bgRed('[plugin/compile]')} Occur internal error`)
-    //   console.log(error)
-    //   return send(res, 500, error)
-    // }
   }),
   options('/api/v1/plugin/compile', (_, res) => send(res, 200))
 )
@@ -51,7 +44,7 @@ if (!process.env.PORT) {
   throw 'Port is not defined.'
 }
 
-export const apiServer = micro(cors()(handler))
+export const apiServer = micro(handler) // micro(cors()(handler))
 apiServer.listen(parseInt(process.env.PORT!!), () => {
   console.log(`compiler service running on port ${color.green.bold(process.env.PORT!!)}`)
 })

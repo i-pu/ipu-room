@@ -12,7 +12,7 @@
         v-for="room in rooms" :key="room.id"
         d-flex xs12 sm6 md3
       )
-        v-card
+        v-cardc
           v-card-title
             h3.headline {{ room.name }} [{{ room.members.length }} / 6]
           v-card-text

@@ -32,11 +32,12 @@
                 v-icon(left) label
                 | {{ tag }}
 
-      //- PluginEditor(
-      //-   :pluginPackage="pluginPackage"
-      //-   @refresh="refresh"
-      //-   @toast="toast"
-      //- )
+      PluginEditor(
+        v-if="loaded"
+        :pluginPackage="room.pluginPackages[0]"
+        @refresh="refresh"
+        @toast="toast"
+      )
 
       v-flex(d-flex xs12 sm12 md6)
         v-card(white flat fluid)
@@ -83,12 +84,12 @@ export default class PluginDetail extends Vue {
   private snackbarMessage: string = ''
 
   public created () {
-    fetch(`http://localhost:3000/api/v1/market/plugins/counter`)
+    console.log(`pluginId: ${this.$route.params.pluginId}`)
+    fetch(`${process.env.VUE_APP_API_ORIGIN}/market/plugins/${this.$route.params.pluginId}`)
       .then((res) => res.json())
       .then((meta: PluginMeta) => {
         console.log('[1/4] fetched plugin package')
         this.pluginMeta = meta
-        this.loaded = true
       })
 
     this.$socket.emit('room/make', {
@@ -107,6 +108,7 @@ export default class PluginDetail extends Vue {
       }
       this.toast('Successfully Compiled')
       console.log('[4/4] refresh all plugin')
+      this.loaded = true
     } catch (error) {
       this.toast('Failed to Compile')
       console.log(error)

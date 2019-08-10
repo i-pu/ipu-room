@@ -2,7 +2,7 @@ import { Room, PluginProperties, PluginInstance, PluginPackage, PluginFunctions 
 import { compile } from '@/logic/compiler'
 
 /**
-*  Initialize plugin with record and compile Vue Component
+*  Initialize a plugin with record and compiles Vue Component
 */
 export const boot = async ({ plugin, meta }: PluginPackage, options: { room: Room }): Promise<PluginInstance> => {
   if (plugin.instanceId === '') {
@@ -10,23 +10,22 @@ export const boot = async ({ plugin, meta }: PluginPackage, options: { room: Roo
   }
 
   try {
-    // plugin.functin: string -> Function[]
     plugin.functions = typeof plugin.functions === 'string'
       ? eval(plugin.functions) as PluginFunctions
       : plugin.functions
 
-    const initializeFn = plugin.functions.initialize
+    const initializer: () => Record<string, any> = plugin.functions.initialize
 
-    if (!initializeFn) {
-      throw new Error('Plugin initializer not found')
+    if (!initializer) {
+      throw '[Plugin Loader] Plugin initializer not found'
     }
     const properties: PluginProperties = {
-      record: initializeFn(),
+      record: initializer(),
       env: { instanceId: plugin.instanceId, ...options },
       meta,
     }
     return { component: await compile(plugin, properties), properties }
-  } catch (e) {
-    throw e
+  } catch (error) {
+    throw error
   }
 }

@@ -7,7 +7,7 @@
 import SocketIO, { Server } from 'socket.io'
 import uuidv4 from 'uuid'
 import color from 'colors'
-import micro, { send, json } from 'micro'
+import micro, { send, json, RequestHandler } from 'micro'
 // @ts-ignore
 import cors from 'micro-cors'
 import { router, post, get } from 'microrouter'
@@ -78,21 +78,21 @@ const __test__ = async () => {
   //   ]
   // }
 
-  try {
-    // axios.post('http://localhost:3001/plugin/compile', 'a')
-    // .then((res) => console.log(res))
-    axios.post(`${BACKEND_ORIGIN}/plugin/compile`, 'a')
-      .then((res) => console.log(res))
+  // try {
+  //   // axios.post('http://localhost:3001/plugin/compile', 'a')
+  //   // .then((res) => console.log(res))
+  //   axios.post(`${BACKEND_ORIGIN}/plugin/compile`, 'a')
+  //     .then((res) => console.log(res))
 
-      // .then((res: Response) => res.json()) as PluginPackage
-  } catch (error) {
-    console.log(error)
-  }
+  //     // .then((res: Response) => res.json()) as PluginPackage
+  // } catch (error) {
+  //   console.log(error)
+  // }
 }
 
 __test__()
 
-const handler = router(
+const handler: RequestHandler = router(
   /**
    *  upload plugin API as [meta: PluginMeta].
    * 
@@ -148,14 +148,14 @@ const handler = router(
   (req, res) => send(res, 404, { message: 'Not Found' })
 )
 
-export const apiServer = micro(cors()(handler))
+const apiServer = micro(cors()(handler))
 apiServer.listen(API_ORIGIN_PORT, () => {
   console.log(`simple api server running on ${color.green.bold(API_ORIGIN)}`)
 })
 
-const socketServer = micro(
-  (req, res) => send(res, 200)
-)
+const socketHandler: RequestHandler = (req, res) => send(res, 200)
+
+const socketServer = micro(cors()(socketHandler))
 
 const io: Server = SocketIO(socketServer)
 socketServer.listen(SOCKET_ORIGIN_PORT, () => {
