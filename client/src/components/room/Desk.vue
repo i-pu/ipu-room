@@ -57,9 +57,21 @@ export default class Desk extends Vue {
   }
 
   @Watch('room.members')
-  private onUpdateMembers (members: User[]) {
-    console.log('[Desk] event event/members')
-    this.invokePluginsFunction('event/members', members)
+  private onUpdateMember (newMembers: User[], oldMembers: User[]) {
+    if (newMembers.length === oldMembers.length) return
+    const isJoin: boolean = newMembers.length > oldMembers.length
+    const diffs: User[] = _.differenceBy(
+      isJoin ? newMembers : oldMembers,
+      isJoin ? oldMembers : newMembers,
+      'id'
+    )
+    const member: User = diffs[0]
+
+    if (isJoin) {
+      this.invokePluginsFunction('join/member', member)
+    } else {
+      this.invokePluginsFunction('leave/member', member)
+    }
   }
 
   private invokePluginsFunction (event: string, ...args: any[]) {
@@ -68,7 +80,7 @@ export default class Desk extends Vue {
 
   private invokePluginFunction (instanceId: string, event: string, ...args: any[]) {
     const instance = this.getInstance(instanceId) as Record<string, any>
-    console.log(typeof instance[event])
+
     if (instance && instance[event] && typeof instance[event] === 'function') {
       instance[event](...args)
     }

@@ -15,7 +15,7 @@ export default {
   ],
   description: 'これはプラグインですこれはプラグインですこれはプラグインです',
   author: 'wakame-tech',
-  version: 'v0.0.1',
+  version: '0.0.1',
   tags: '娯楽',
   content: `
 <template>
