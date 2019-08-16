@@ -14,6 +14,7 @@ import { router, post, get } from 'microrouter'
 // @ts-ignore
 import fetch from 'node-fetch'
 import { compilePlugin, activatePlugin } from '@plugin-compiler/compiler'
+import { semanticVersioning } from '@plugin-compiler/versioning'
 import { sessions, pluginMarket, roomList } from '@mock/resources'
 import { PluginMeta, PluginPackage } from '@model'
 
@@ -64,21 +65,21 @@ const __test__ = async () => {
   // }
 
   // make test rooms
-  // roomList['xxxx-yyyy-zz'] = {
-  //   name: 'トランプ',
-  //   id: 'xxxx-yyyy-zz',
-  //   // tslint:disable:max-line-length
-  //   thumbnailUrl: 'https://public.potaufeu.asahi.com/686b-p/picture/12463073/5c4a362cea9cb2f5d90b60e2f2a6c85f.jpg',
-  //   members: [],
-  //   pluginPackages: [
-  //     await activatePlugin(PlayingCard),
-  //     await activatePlugin(Counter),
-  //     await activatePlugin(Status),
-  //     await activatePlugin(Player),
-  //     await activatePlugin(Paint),
-  //     await activatePlugin(Chat),
-  //   ]
-  // }
+  roomList['xxxx-yyyy-zz'] = {
+    name: 'テストルーム',
+    id: 'xxxx-yyyy-zz',
+    // tslint:disable:max-line-length
+    thumbnailUrl: 'https://public.potaufeu.asahi.com/686b-p/picture/12463073/5c4a362cea9cb2f5d90b60e2f2a6c85f.jpg',
+    members: [],
+    pluginPackages: [
+      await activatePlugin(PlayingCard),
+      await activatePlugin(Counter),
+      // await activatePlugin(Status),
+      // await activatePlugin(Player),
+      // await activatePlugin(Paint),
+      await activatePlugin(Chat),
+    ]
+  }
 
   // try {
   //   // axios.post('http://localhost:3001/plugin/compile', 'a')
@@ -113,6 +114,7 @@ const handler: RequestHandler = router(
       const pluginMeta = maybePluginMeta as PluginMeta
 
       pluginMeta.id = uuidv4()
+      pluginMeta.version = '0.0.1'
       pluginMarket[pluginMeta.id] = pluginMeta
 
       console.log(`${color.black.bgWhite('[market/plugins]')} Upload ${color.yellow(pluginMeta.name)} as ${color.yellow(pluginMeta.id)}`)
@@ -145,6 +147,37 @@ const handler: RequestHandler = router(
       return send(res, 200, JSON.stringify(pluginMarket[pluginId]))
     } else {
       return send(res, 403, { error: `plugin id ${pluginId} was not found.` })
+    }
+  }),
+
+  /**
+   *  update plugin metadata which plugin id is [id].
+   * 
+   *  @param id plugin id
+   */
+  post('/api/v1/market/plugins/:id', async (req, res) => {
+    const pluginId = req.params.id
+
+    try {
+      const maybePluginMeta: object = await json(req)
+
+      if (!maybePluginMeta) {
+        throw 'invalid meta'
+      }
+
+      const pluginMeta = maybePluginMeta as PluginMeta
+
+      if (Object.keys(pluginMarket).includes(pluginId)) {
+        // semantic versioning
+        pluginMeta.version = semanticVersioning(pluginMeta, pluginMarket[pluginId])
+        pluginMarket[pluginId] = pluginMeta
+
+        return send(res, 200, JSON.stringify({ state: true }))
+      } else {
+        throw 'invalid plugin id'
+      }
+    } catch (error) {
+      return send(res, 403, JSON.stringify({ state: false }))
     }
   }),
   (req, res) => send(res, 404, { message: 'Not Found' })
@@ -309,6 +342,8 @@ io.on('connection', (socket) => {
   })
 
   const leaveRoom = (roomId: string) => {
+    if (!roomList[roomId]) return
+
     console.log(`${color.black.bgWhite('[room/exit]')} ${color.gray(roomId)} ${color.red.bold('-')} ${color.gray(socket.id)}`)
     roomList[roomId].members = roomList[roomId].members.filter((m) => m.id !== socket.id)
 

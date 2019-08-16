@@ -14,7 +14,7 @@ export default {
   ],
   description: 'これはプラグインですこれはプラグインですこれはプラグインです',
   author: 'wakame-tech',
-  version: 'v0.0.1',
+  version: '0.0.1',
   tags: '基本',
   content: `
 <template lang="pug">

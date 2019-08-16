@@ -68,10 +68,11 @@ export const compile = async (
     const addonComponents: Record<string, Component> = await installModules()
 
     const hooks: Record<string, (...args: any) => void> = {}
+    console.log(Object.keys(plugin.functions))
     for (const [event, fn] of Object.entries<
       ((...args: any[]) => void)
     >(plugin.functions as PluginFunctions)) {
-      console.log(` - ${event} : ${fn.toString()}`)
+      // console.log(` - ${event} : ${fn.toString()}`)
       /**
        *  functions that its name starts with 'event/*', '_*' are special functions.
        *
@@ -133,14 +134,14 @@ export const compile = async (
           this.callbackFromServer(payload)
         },
       },
-      watch: {
-        record: {
-          handler (v) {
-            console.log(Object.assign({}, v))
-          },
-          deep: true
-        }
-      },
+      // watch: {
+      //   record: {
+      //     handler (v) {
+      //       console.log(Object.assign({}, v))
+      //     },
+      //     deep: true
+      //   }
+      // },
       data (): {
         record: Record<string, any>,
         meta: PluginProperties['meta'],

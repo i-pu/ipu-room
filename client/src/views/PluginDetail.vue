@@ -73,18 +73,18 @@ import PluginUploadForm from '@/components/market/PluginUploadForm.vue'
 @Component<PluginDetail>({
   components: { PluginEditor, PluginUploadForm },
   sockets: {
-    async 'room/create' ({ room }: { room: Room }) {
-      console.log('[2/4] made room')
-      this.$socket.emit('room/enter', { roomId: room.id })
-    },
-    'room/enter' ({ room }: { room: Room }) {
-      console.log('[3/4] enter room')
-      this.room = room
-      this.refresh()
-    },
-    'room/remove' () {
-      console.log('room removed')
-    }
+    // async 'room/create' ({ room }: { room: Room }) {
+    //   console.log('[2/4] made room')
+    //   this.$socket.emit('room/enter', { roomId: room.id })
+    // },
+    // 'room/enter' ({ room }: { room: Room }) {
+    //   console.log('[3/4] enter room')
+    //   this.room = room
+    //   this.refresh()
+    // },
+    // 'room/remove' () {
+    //   console.log('room removed')
+    // }
   },
 })
 export default class PluginDetail extends Vue {
@@ -92,11 +92,11 @@ export default class PluginDetail extends Vue {
   private pluginMeta!: PluginMeta
   private loaded: boolean = false
 
-  private room!: Room
-  private instance: PluginInstance | null = null
+  // private room!: Room
+  // private instance: PluginInstance | null = null
 
-  private snackbar: boolean = false
-  private snackbarMessage: string = ''
+  // private snackbar: boolean = false
+  // private snackbarMessage: string = ''
 
   public created () {
     this.loaded = false
@@ -108,38 +108,38 @@ export default class PluginDetail extends Vue {
         this.pluginMeta = meta
       })
 
-    this.$socket.emit('room/create', {
-      roomName: '部屋',
-      plugins: [ this.$route.params.pluginId ],
-    })
+    // this.$socket.emit('room/create', {
+    //   roomName: '部屋',
+    //   plugins: [ this.$route.params.pluginId ],
+    // })
   }
 
-  beforeDestroy() {
-    console.log('leave')
-    this.$socket.emit('room/remove', { roomId: this.room.id })
-  }
+  // beforeDestroy() {
+  //   console.log('leave')
+  //   this.$socket.emit('room/remove', { roomId: this.room.id })
+  // }
 
-  private async refresh () {
-    console.log('refresh')
-    if (!this.room) {
-      return
-    }
-    try {
-      for (const pluginPackage of this.room.pluginPackages) {
-        this.instance = await boot(pluginPackage, { room: this.room })
-      }
-      this.toast('Successfully Compiled')
-      console.log('[4/4] refresh all plugin')
-      this.loaded = true
-    } catch (error) {
-      this.toast('Failed to Compile')
-      console.log(error)
-    }
-  }
+  // private async refresh () {
+  //   console.log('refresh')
+  //   if (!this.room) {
+  //     return
+  //   }
+  //   try {
+  //     for (const pluginPackage of this.room.pluginPackages) {
+  //       this.instance = await boot(pluginPackage, { room: this.room })
+  //     }
+  //     this.toast('Successfully Compiled')
+  //     console.log('[4/4] refresh all plugin')
+  //     this.loaded = true
+  //   } catch (error) {
+  //     this.toast('Failed to Compile')
+  //     console.log(error)
+  //   }
+  // }
 
-  private async toast (message: string) {
-    this.snackbar = true
-    this.snackbarMessage = message
-  }
+  // private async toast (message: string) {
+  //   this.snackbar = true
+  //   this.snackbarMessage = message
+  // }
 }
 </script>

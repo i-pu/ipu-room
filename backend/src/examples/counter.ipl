@@ -1,7 +1,7 @@
 <template lang="pug">
   div
     h3 {{ record.count }}
-    v-btn(@click="plus(1)") Add
+    v-btn(@click="plus") Add
 </template>
 <script>
 ({
@@ -11,7 +11,7 @@
     }
   },
   plus () {
-    this.record.count++
+    this.record.count += 2
   }
 })
 </script>

@@ -7,6 +7,9 @@
         v-spacer
         v-btn(color="blue white--text" @click="$router.push('/market')") ストアへ
         room-create-form(@add="responseCreateRoom")
+
+      v-flex(d-flex xs12 sm12 md12)
+        v-btn(@click="requestFetchRooms") 更新
         
       v-flex(
         v-for="room in rooms" :key="room.id"
@@ -24,6 +27,7 @@
                 span {{ member.name }}
           v-card-actions
             v-btn(color="info" @click="$router.push(`/room/${room.id}`)") 入室
+            v-btn(color="red white--text" @click="removeRoom(room.id)") 削除
 </template>
 
 <script lang="ts">
@@ -38,6 +42,9 @@ import RoomCreateForm from '@/components/lobby/RoomCreateForm.vue'
     lobby (data: { rooms: Room[] }) {
       this.responseLobby(data)
     },
+    'room/remove' () {
+      this.requestFetchRooms()
+    }
   },
 })
 export default class Lobby extends Vue {
@@ -48,11 +55,10 @@ export default class Lobby extends Vue {
   }
 
   private mounted () {
-    /**
-    *  request lobby event
-    *  @event lobby
-    *  @param userId: string
-    */
+    this.requestFetchRooms()
+  }
+
+  private requestFetchRooms() {
     this.$socket.emit('lobby', {
       userId: this.$store.getters.userId,
     })
@@ -64,6 +70,10 @@ export default class Lobby extends Vue {
 
   private responseCreateRoom (data: { room: Room }) {
     this.rooms.push(data.room)
+  }
+
+  private removeRoom(roomId: string) {
+    this.$socket.emit('room/remove', { roomId })
   }
 }
 </script>
