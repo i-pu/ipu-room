@@ -3,10 +3,10 @@
     v-layout(row justify-center)
       v-dialog(v-model="dialog" max-width="600px")
         template(v-slot:activator="{ on }")
-          v-btn(color="red" v-on="on") プラグインを作成
+          v-btn(color="green white--text" v-on="on") プラグインを{{ update ? '更新' : '作成' }}
         v-card
           v-card-title
-            span.headline プラグインを作成
+            span.headline プラグインを{{ update ? '更新' : '作成' }}
           v-card-text
             v-form(
               v-model="valid"
@@ -30,7 +30,7 @@
                       )
                       v-icon(right dark) cloud_upload
 
-                  v-flex(xs12)
+                  v-flex(xs12 v-if="!update")
                     v-text-field(
                       v-model="meta.name"
                       :counter="12"
@@ -65,12 +65,12 @@
               :disabled="!valid"
               color="success"
               @click="requestUploadPlugin"
-            ) 作成
+            ) {{ update ? '更新' : '作成' }}
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-import Component from 'vue-class-component'
+import { Component, Prop } from 'vue-property-decorator'
 import { PluginMeta } from '../../model'
 
 @Component<PluginUploadForm>({
@@ -81,6 +81,8 @@ import { PluginMeta } from '../../model'
   },
 })
 export default class PluginUploadForm extends Vue {
+  @Prop({ default: false }) private update!: boolean
+  @Prop() private pluginMeta!: PluginMeta
   private dialog: boolean = false
   private valid: boolean = false
   private loader: any = null
@@ -94,6 +96,12 @@ export default class PluginUploadForm extends Vue {
     author: '',
     tags: '',
     content: '',
+  }
+
+  private mounted() {
+    if (this.update) {
+      this.meta = Object.assign({}, this.pluginMeta)
+    }
   }
 
   public onFileSelected (event: Event) {
@@ -121,14 +129,25 @@ export default class PluginUploadForm extends Vue {
   public requestUploadPlugin () {
     this.meta.author = this.$store.getters.userName
     console.log(Object.assign({}, this.meta))
-    fetch(`${process.env.VUE_APP_API_ORIGIN}/market/plugins`, {
-      method: 'POST',
-      body: JSON.stringify(this.meta),
-    })
-      .then((res) => res.json())
-      .then((payload: { state: boolean }) => {
-        this.responseCreatePlugin(payload)
+    if(this.update) {
+      fetch(`${process.env.VUE_APP_API_ORIGIN}/market/plugins/${this.pluginMeta.id}`, {
+        method: 'POST',
+        body: JSON.stringify(this.meta),
       })
+        .then((res) => res.json())
+        .then((payload: { state: boolean }) => {
+          this.responseCreatePlugin(payload)
+        })
+    } else {
+      fetch(`${process.env.VUE_APP_API_ORIGIN}/market/plugins`, {
+        method: 'POST',
+        body: JSON.stringify(this.meta),
+      })
+        .then((res) => res.json())
+        .then((payload: { state: boolean }) => {
+          this.responseCreatePlugin(payload)
+        })
+    }
   }
 
   public responseCreatePlugin (payload: { state: boolean }) {

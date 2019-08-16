@@ -5,14 +5,13 @@
 
       v-flex(d-flex xs12 sm12 md12)
         v-layout(align-center column justify-center)
-          v-parallax(src="https://i.imgur.com/A9c6blU.jpg")
-            h1.display-3.font-weight-thin.mb-4.mt-4 ipu-room
-            v-card(white)
-              v-card-text
-                v-layout(align-center)
-                  v-text-field(placeholder="ニックネーム" v-model="userName")
-                  v-btn(color="blue-grey" class="white--text" :disabled="userName === ''" @click="requestToLobby") ロビーへ
-                    v-icon(right dark) arrow_right_alt
+          h1.display-3.font-weight-thin.mb-4.mt-4 ipu-room
+          v-card(white)
+            v-card-text
+              v-layout(align-center)
+                v-text-field(placeholder="ニックネーム" v-model="userName")
+                v-btn(color="blue-grey" class="white--text" :disabled="userName === ''" @click="requestToLobby") ロビーへ
+                  v-icon(right dark) arrow_right_alt
 </template>
 
 <script lang="ts">

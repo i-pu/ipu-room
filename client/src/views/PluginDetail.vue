@@ -5,8 +5,9 @@
         v-btn(icon to="/market")
           v-icon arrow_back
         v-toolbar-title.headline.text-uppercase
-          span.pr-3 {{ pluginMeta.name }} の詳細
+          span.pr-3 プラグインの詳細
         v-spacer
+        PluginUploadForm(:update="true" :pluginMeta="pluginMeta")
       v-flex(xs12 d-flex)
         v-carousel(hide-delimiters height="300")
           v-carousel-item(
@@ -16,51 +17,61 @@
           )
       v-list(two-line subheader)
         v-subheader 基本情報
-        v-list-tile(
-          v-for="value, key in pluginMeta"
-        )
+        v-list-tile
           v-list-tile-content
-            v-list-tile-title {{ key }}
-            v-list-tile-sub-title(v-if="key !== 'tags'") {{ value }}
-            v-list-tile-sub-title(v-else)
+            v-list-tile-title パッケージ名
+            v-list-tile-title {{ pluginMeta.author }}/{{ pluginMeta.name }}
+        v-list-tile
+          v-list-tile-content
+            v-list-tile-title バージョン
+            v-list-tile-sub-title {{ pluginMeta.version }}
+        v-list-tile
+          v-list-tile-content
+            v-list-tile-title タグ
+            v-list-tile-sub-title
               v-chip(
-                v-for="tag in value.split(',')"
+                v-for="tag in pluginMeta.tags.split(',')"
                 label
                 color="pink"
                 text-color="white"
               )
                 v-icon(left) label
                 | {{ tag }}
+        v-list-tile
+          v-list-tile-content
+            v-list-tile-title 説明
+            v-list-tile-sub-title {{ pluginMeta.description }}
+      //- PluginEditor(
+      //-   v-if="loaded"
+      //-   :pluginPackage="room.pluginPackages[0]"
+      //-   @refresh="refresh"
+      //-   @toast="toast"
+      //- )
 
-      PluginEditor(
-        v-if="loaded"
-        :pluginPackage="room.pluginPackages[0]"
-        @refresh="refresh"
-        @toast="toast"
-      )
-
-      v-flex(d-flex xs12 sm12 md6)
-        v-card(white flat fluid)
-          v-card-title.grey--text(icon) Plugin
-          component(v-if="instance" :is="instance.component")
-          v-snackbar(
-            v-model="snackbar"
-            :timeout="2000"
-          ) {{ snackbarMessage }}
+      //- v-flex(d-flex xs12 sm12 md6)
+      //-   v-card(white flat fluid)
+      //-     v-card-title.grey--text(icon) Plugin
+      //-     component(v-if="instance" :is="instance.component")
+      //-     v-snackbar(
+      //-       v-model="snackbar"
+      //-       :timeout="2000"
+      //-     ) {{ snackbarMessage }}
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-import _ from 'lodash'
-import Component from 'vue-class-component'
-import { Prop } from 'vue-property-decorator'
-import PluginEditor from '@/components/market/PluginEditor.vue'
-import { Room, PluginInstance, PluginMeta, PluginPackage } from '../model'
-import { boot } from '@/logic/loader'
 import { Route } from 'vue-router'
+import _ from 'lodash'
+import { Component, Prop } from 'vue-property-decorator'
+
+import { boot } from '@/logic/loader'
+import { Room, PluginInstance, PluginMeta, PluginPackage } from '@/model'
+
+import PluginEditor from '@/components/market/PluginEditor.vue'
+import PluginUploadForm from '@/components/market/PluginUploadForm.vue'
 
 @Component<PluginDetail>({
-  components: { PluginEditor },
+  components: { PluginEditor, PluginUploadForm },
   sockets: {
     async 'room/create' ({ room }: { room: Room }) {
       console.log('[2/4] made room')
