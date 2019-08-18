@@ -4,12 +4,11 @@
 // Copyright (c) 2019 i-pu
 // =========================
 
-import uuidv4 from 'uuid'
 import color from 'colors'
 import micro, { send, json } from 'micro'
 // @ts-ignore
 import cors from 'micro-cors'
-import { router, post } from 'microrouter'
+import { router, post, options } from 'microrouter'
 import { compilePlugin } from '@plugin-compiler/compiler'
 import { PluginMeta } from '@model'
 
@@ -35,12 +34,19 @@ const handler = router(
     } catch (error) {
       console.log(`${color.black.bgRed('[plugin/compile]')} Occur internal error`)
       console.log(error)
-      send(res, 500, JSON.stringify({ error }))
+      return send(res, 500, JSON.stringify({ error }))
     }
   }),
+  options('/api/v1/plugin/compile', (_, res) => send(res, 200))
 )
 
-export const apiServer = micro(cors()(handler))
-apiServer.listen(3000, () => {
-  console.log(`compiler service running on ${color.green.bold(process.env.API_ORIGIN!!)}`)
+console.log(process.env)
+
+if (!process.env.PORT) {
+  throw 'Port is not defined.'
+}
+
+export const apiServer = micro(handler) // micro(cors()(handler))
+apiServer.listen(parseInt(process.env.PORT!!), () => {
+  console.log(`compiler service running on port ${color.green.bold(process.env.PORT!!)}`)
 })

@@ -37,7 +37,7 @@ export default {
             <v-text-field v-model="record.chatInput" label="コメント"></v-text-field>
           </v-flex>
           <v-flex d-flex="d-flex" xs4="xs4" sm4="sm4" md4="md4">
-            <v-btn color="info" @click="comment(record.chatInput); record.chatInput = ''">送信</v-btn>
+            <v-btn color="info" @click="comment($me, record.chatInput); record.chatInput = ''">送信</v-btn>
           </v-flex>
         </v-layout>
       </v-container>
@@ -51,13 +51,13 @@ export default {
         chatInput: ''
       }
     },
-    comment (text) {
+    comment (me, text) {
       this.record.comments.push({
         type: 'comment',
-        avatar: this.$me.avatarUrl,
+        avatar: me.avatarUrl,
         commentId: Math.random().toString(),
-        userName: this.$me.name,
-        userId: this.$me.id,
+        userName: me.name,
+        userId: me.id,
         text: text
       })
     }

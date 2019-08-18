@@ -1,13 +1,15 @@
 {
   "scripts": {
-    "start": "API_ORIGIN=http://localhost:3001 npx ts-node -r tsconfig-paths/register src/index.ts",
-    "dev": "ts-node -r tsconfig-paths/register  src/mock/simple-server.ts",
+    "start": "npx ts-node -r tsconfig-paths/register src/index.ts",
+    "dev": "PORT=3001 npx ts-node -r tsconfig-paths/register src/index.ts",
+    "mock": "ts-node -r tsconfig-paths/register  src/mock/simple-server.ts",
     "doc": "rm -r ../docs/backend; typedoc . --options ./typedoc.js --theme markdown",
     "test": "jest --runInBand",
     "blueprint": "aglio --theme-variables slate -i ./../docs/_blueprints/compile.md -o ./../docs/backend/compile.html"
   },
   "dependencies": {
     "@types/node": "^12.0.8",
+    "axios": "^0.19.0",
     "colors": "^1.3.3",
     "gulp": "^4.0.2",
     "micro": "^9.3.4",

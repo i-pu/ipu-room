@@ -14,26 +14,33 @@ export default {
   ],
   description: 'これはプラグインですこれはプラグインですこれはプラグインです',
   author: 'wakame-tech',
-  version: 'v0.0.1',
+  version: '0.0.1',
   tags: 'トランプ',
   content: `
 <template lang="pug">
 div
-  vue-playing-card(v-for="i in 4" :signature="_random()" :width="80")
+  vue-playing-card(v-for="sig in record.sigs" :signature="sig" :width="80")
 </template>
 <script>
   ({
     initialize () {
-      return {}
+      return {
+        sigs: []
+      }
     },
-    'event/members' (members) {
-      console.log(members)
+    'join/member' (member) {
+      console.log('+' + member.name)
     },
-    _random () {
+    'leave/member' (member) {
+      console.log('-' + member.name)
+    },
+    mounted () {
       const nums = ['a', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K']
       const suits = ['c', 'd', 'h', 's']
-      return this._.sample(nums) + this._.sample(suits)
-    }
+      for (let i = 0; i < 4; i++) {
+        this.record.sigs.push(this._.sample(nums) + this._.sample(suits))
+      }
+    },
   })
 </script>`
 } as PluginMeta
