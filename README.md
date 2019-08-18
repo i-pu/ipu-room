@@ -11,10 +11,12 @@ Docs deployed at [here](https://i-pu.github.io/ipu-room/index.html) 🎉🎉🎉
 way to routing of github-pages, see <https://github.blog/2016-12-05-relative-links-for-github-pages/>
 
 ## Deploy
-基本的にデプロイはディレクトリ名をタグとして `push` すれば `ci/cd` 走ります．
-### client
-#### push
-tag: client
+基本的にデプロイはディレクトリ名をbranchとして `push` すれば `ci/cd` 走ります．
+```bash
+git push origin client
+git push origin backend
+git push origin web-socket-server
+```
 
 ## local development
 ### run client
@@ -31,9 +33,3 @@ cd client && docker-compose up --build
 ### Memo
 using modified `typedoc-markdown-plugin` to generate client document
 because jekyll doesn't recognize files starts with '_'.
-
-### client/node_modules/typedoc-plugin-markdown/dist/theme/index.js#L51
-```js
-- return [mapping.directory, DefaultTheme_1.DefaultTheme.getUrl(reflection) + '.md'].join('/');
-+ return [mapping.directory, DefaultTheme_1.DefaultTheme.getUrl(reflection).slice(1) + '.md'].join('/');
-```
