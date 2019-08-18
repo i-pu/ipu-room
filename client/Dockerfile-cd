@@ -7,8 +7,9 @@ COPY package.json .
 RUN yarn install
 COPY . .
 
-RUN echo "VUE_APP_SOCKET_ORIGIN=http://35.247.18.78:30000/web-socket-server/" > .env.production && \
-    echo "VUE_APP_API_ORIGIN=http://35.247.18.78:30000/database-controller/api/v1" >> .env.production && \
+RUN echo "VUE_APP_SOCKET_ORIGIN=http://http://34.83.135.173"  >  .env.production && \
+    echo "VUE_APP_SOCKET_PATH=/web-socket-server/" >> .env.production && \
+    echo "VUE_APP_API_ORIGIN=http://34.83.135.173/database-controller/api/v1" >> .env.production && \
     yarn build
 
 FROM nginx:1.15-alpine as deploy
