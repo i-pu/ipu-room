@@ -34,10 +34,6 @@ import TopToolbar from '@/components/TopToolbar.vue'
 export default class Top extends Vue {
   private userName: string = ''
 
-  private mounted () {
-    console.log(process.env)
-  }
-
   private requestToLobby () {
     /**
      *  request visit event

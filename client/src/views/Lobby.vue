@@ -40,6 +40,7 @@ import RoomCreateForm from '@/components/lobby/RoomCreateForm.vue'
   components: { RoomCreateForm },
   sockets: {
     lobby (data: { rooms: Room[] }) {
+      console.log(data)
       this.responseLobby(data)
     },
     'room/remove' () {
@@ -69,6 +70,7 @@ export default class Lobby extends Vue {
   }
 
   private responseCreateRoom (data: { room: Room }) {
+    console.log(data)
     this.rooms.push(data.room)
   }
 

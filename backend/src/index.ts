@@ -40,6 +40,8 @@ const handler = router(
   options('/api/v1/plugin/compile', (_, res) => send(res, 200))
 )
 
+console.log(process.env)
+
 if (!process.env.PORT) {
   throw 'Port is not defined.'
 }
