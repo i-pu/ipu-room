@@ -46,6 +46,7 @@ export interface Plugin {
 */
 interface PluginMeta {
   id: string,
+  version: string,
   thumbnailUrls: string[],
   name: string,
   description: string,

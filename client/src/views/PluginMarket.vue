@@ -47,7 +47,7 @@
             placeholder="名前, タグで検索"
           )
 
-          plugin-upload-form
+          PluginUploadForm
         
         v-list(two-line subheader)
           v-subheader

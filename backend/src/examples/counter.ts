@@ -14,7 +14,7 @@ export default {
   ],
   description: 'これはプラグインですこれはプラグインですこれはプラグインです',
   author: 'wakame-tech',
-  version: 'v0.1.1',
+  version: '0.1.1',
   tags: 'a,b,c',
   content: `
     <template>

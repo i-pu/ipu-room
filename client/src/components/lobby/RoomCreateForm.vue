@@ -15,13 +15,15 @@
                 v-flex(xs12 sm12)
                   v-select(
                     v-model="selectedPlugins"
-                    :items="pluginIds"
+                    item-text="label"
+                    item-value="value"
+                    :items="myPlugins"
                     label="プラグイン"
                     multiple
                   )
                     template(v-slot:selection="{ item, index }")
                       v-chip(v-if="index === 0")
-                        span {{ item }}
+                        span {{ item.label }}
           v-card-actions
             v-spacer
             v-btn(color="blue darken-1" flat @click="requestCreateRoom") 作成
@@ -45,14 +47,17 @@ export default class RoomCreateForm extends Vue {
 
   private dialog: boolean = false
   private roomNameInput: string = ''
-  private pluginIds: string[] = []
+  private myPlugins: Array<{ label: string, value: string }> = []
   private selectedPlugins: string[] = []
 
   private fetchPluginData () {
     fetch(`${process.env.VUE_APP_API_ORIGIN}/market/plugins`)
       .then((res) => res.json())
       .then((metas: PluginMeta[]) => {
-        this.pluginIds = metas.map((meta) => meta.id)
+        this.myPlugins = metas.map((meta) => ({
+          label: `${meta.author}/${meta.name} v${meta.version}`,
+          value: meta.id
+        }))
       })
   }
 
