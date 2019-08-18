@@ -4,3 +4,4 @@ metadata:
   name: backend-env-config
 data:
   API_ORIGIN: {{ .Values.backend.service.name }}:{{ .Values.backend.port }}
+  PORT: {{ .Values.backend.port }}
