@@ -32,9 +32,14 @@ def visit(data):
 @utils.check_user
 @utils.function_info_wrapper
 def lobby(data):
-    json = model.Room.get()
-    mylogger.info(json)
-    socketio.emit('lobby', data={'rooms': json}, room=request.sid)
+    rooms = model.Room.get()
+    formatted_rooms = []
+    for room in rooms:
+        room_id = room['id']
+        members, plugins = model.Room.make_json_elem(room_id, None, None)
+        formatted_rooms.append({**room, 'members': members, 'plugins': plugins})
+    mylogger.info(formatted_rooms)
+    socketio.emit('lobby', data={'rooms': formatted_rooms}, room=request.sid)
 
 
 @socketio.on('disconnect')
