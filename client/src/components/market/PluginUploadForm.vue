@@ -32,6 +32,13 @@
 
                   v-flex(xs12 v-if="!update")
                     v-text-field(
+                      v-model="gistUrl"
+                      :counter="12"
+                      label="gistから"
+                    )
+
+                  v-flex(xs12 v-if="!update")
+                    v-text-field(
                       v-model="meta.name"
                       :counter="12"
                       :rules="[v => !!v || '必須項目です']",
@@ -83,6 +90,7 @@ import { PluginMeta } from '../../model'
 export default class PluginUploadForm extends Vue {
   @Prop({ default: false }) private update!: boolean
   @Prop() private pluginMeta!: PluginMeta
+  private gistUrl: string = ''
   private dialog: boolean = false
   private valid: boolean = false
   private loader: any = null
@@ -96,6 +104,7 @@ export default class PluginUploadForm extends Vue {
     author: '',
     tags: '',
     content: '',
+    thumbnailUrls: []
   }
 
   private mounted() {
@@ -126,7 +135,7 @@ export default class PluginUploadForm extends Vue {
     }
   }
 
-  public requestUploadPlugin () {
+  public async requestUploadPlugin () {
     this.meta.author = this.$store.getters.userName
     console.log(Object.assign({}, this.meta))
     if(this.update) {
@@ -139,6 +148,12 @@ export default class PluginUploadForm extends Vue {
           this.responseCreatePlugin(payload)
         })
     } else {
+      // from gist
+      if (this.gistUrl) {
+        this.meta.content = await fetch(this.gistUrl).then(res => res.text())
+        console.log(this.meta.content)
+      }
+
       fetch(`${process.env.VUE_APP_API_ORIGIN}/market/plugins`, {
         method: 'POST',
         body: JSON.stringify(this.meta),
@@ -153,6 +168,7 @@ export default class PluginUploadForm extends Vue {
   public responseCreatePlugin (payload: { state: boolean }) {
     console.log(payload)
     this.dialog = false
+    this.$emit('reload')
   }
 }
 </script>

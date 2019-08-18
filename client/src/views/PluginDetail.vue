@@ -8,6 +8,7 @@
           span.pr-3 プラグインの詳細
         v-spacer
         PluginUploadForm(:update="true" :pluginMeta="pluginMeta")
+
       v-flex(xs12 d-flex)
         v-carousel(hide-delimiters height="300")
           v-carousel-item(
@@ -15,47 +16,49 @@
             :key="i"
             :src="src"
           )
-      v-list(two-line subheader)
-        v-subheader 基本情報
-        v-list-tile
-          v-list-tile-content
-            v-list-tile-title パッケージ名
-            v-list-tile-title {{ pluginMeta.author }}/{{ pluginMeta.name }}
-        v-list-tile
-          v-list-tile-content
-            v-list-tile-title バージョン
-            v-list-tile-sub-title {{ pluginMeta.version }}
-        v-list-tile
-          v-list-tile-content
-            v-list-tile-title タグ
-            v-list-tile-sub-title
-              v-chip(
-                v-for="tag in pluginMeta.tags.split(',')"
-                label
-                color="pink"
-                text-color="white"
-              )
-                v-icon(left) label
-                | {{ tag }}
-        v-list-tile
-          v-list-tile-content
-            v-list-tile-title 説明
-            v-list-tile-sub-title {{ pluginMeta.description }}
-      //- PluginEditor(
-      //-   v-if="loaded"
-      //-   :pluginPackage="room.pluginPackages[0]"
-      //-   @refresh="refresh"
-      //-   @toast="toast"
-      //- )
+          
+      v-flex(xs12 d-flex)
+        v-list(two-line subheader)
+          v-subheader 基本情報
+          v-list-tile
+            v-list-tile-content
+              v-list-tile-title パッケージ名
+              v-list-tile-title {{ pluginMeta.author }}/{{ pluginMeta.name }}
+          v-list-tile
+            v-list-tile-content
+              v-list-tile-title バージョン
+              v-list-tile-sub-title {{ pluginMeta.version }}
+          v-list-tile
+            v-list-tile-content
+              v-list-tile-title タグ
+              v-list-tile-sub-title
+                v-chip(
+                  v-for="tag in pluginMeta.tags.split(',')"
+                  label
+                  color="pink"
+                  text-color="white"
+                )
+                  v-icon(left) label
+                  | {{ tag }}
+          v-list-tile
+            v-list-tile-content
+              v-list-tile-title 説明
+              v-list-tile-sub-title {{ pluginMeta.description }}
+        //- PluginEditor(
+        //-   v-if="loaded"
+        //-   :pluginPackage="room.pluginPackages[0]"
+        //-   @refresh="refresh"
+        //-   @toast="toast"
+        //- )
 
-      //- v-flex(d-flex xs12 sm12 md6)
-      //-   v-card(white flat fluid)
-      //-     v-card-title.grey--text(icon) Plugin
-      //-     component(v-if="instance" :is="instance.component")
-      //-     v-snackbar(
-      //-       v-model="snackbar"
-      //-       :timeout="2000"
-      //-     ) {{ snackbarMessage }}
+        //- v-flex(d-flex xs12 sm12 md6)
+        //-   v-card(white flat fluid)
+        //-     v-card-title.grey--text(icon) Plugin
+        //-     component(v-if="instance" :is="instance.component")
+        //-     v-snackbar(
+        //-       v-model="snackbar"
+        //-       :timeout="2000"
+        //-     ) {{ snackbarMessage }}
 </template>
 
 <script lang="ts">
@@ -106,6 +109,7 @@ export default class PluginDetail extends Vue {
       .then((meta: PluginMeta) => {
         console.log('[1/4] fetched plugin package')
         this.pluginMeta = meta
+        this.loaded = true
       })
 
     // this.$socket.emit('room/create', {

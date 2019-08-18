@@ -35,7 +35,7 @@
         v-toolbar(app color="light-blue" dark)
           v-toolbar-side-icon(@click.stop="drawer = !drawer")
           v-toolbar-title.headline.text-uppercase
-            span.pr-3 マーケット
+            span.pr-3(@click="$router.push('/lobby')") マーケット
 
           v-spacer
 
@@ -47,7 +47,7 @@
             placeholder="名前, タグで検索"
           )
 
-          PluginUploadForm
+          PluginUploadForm(@reload="reloadPlugins")
         
         v-list(two-line subheader)
           v-subheader
@@ -112,7 +112,11 @@ export default class PluginMarket extends Vue {
 
   private pluginOverviews: PluginMeta[] = []
 
-  public async created () {
+  public created () {
+    this.reloadPlugins()
+  }
+
+  private async reloadPlugins() {
     const metas: PluginMeta[] = await fetch(`${process.env.VUE_APP_API_ORIGIN}/market/plugins`)
       .then((res) => res.json())
       .catch(console.log)

@@ -11,7 +11,7 @@
     }
   },
   plus () {
-    this.record.count += 2
+    this.record.count += 1
   }
 })
 </script>
