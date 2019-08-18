@@ -3,7 +3,7 @@ services:
   compiler:
     build:
       context: .
-      dockerfile: Dockerfile-compiler
+      dockerfile: Dockerfile
     image: node:11.15.0-alpine
     container_name: compiler
     hostname: compiler
