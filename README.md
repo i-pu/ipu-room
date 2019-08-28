@@ -9,11 +9,18 @@ Docs deployed at [here](https://i-pu.github.io/ipu-room/index.html) 🎉🎉🎉
 way to routing of github-pages, see <https://github.blog/2016-12-05-relative-links-for-github-pages/>
 
 ## Deploy
+### CI
 基本的にデプロイはディレクトリ名をbranchとして `push` すれば `ci/cd` 走ります．
 ```bash
 git push origin client
 git push origin backend
 git push origin web-socket-server
+```
+### Document
+(require `yarn global add now`)
+
+```
+$ cd document && now
 ```
 
 ## local development
