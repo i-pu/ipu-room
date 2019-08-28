@@ -2,7 +2,6 @@ module.exports = {
   title: 'Ipu-room Document',
   description: 'APIの仕様等をまとめる',
   dest: '../docs/',
-  base: '/',
   themeConfig: {
     displayAllHeaders: true,
     sidebar: [
