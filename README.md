@@ -3,8 +3,6 @@
 
 [ipu-room](http://34.83.135.173)
 
-## Change Logs
-
 ## Document
 Docs deployed at [here](https://i-pu.github.io/ipu-room/index.html) 🎉🎉🎉 
 
@@ -28,8 +26,3 @@ cd client && docker-compose up --build
 デプロイする前にデータベースのConfigMapを更新する必要がある(煩雑)  
 `database-config.yaml`  
 デプロイ
-
-
-### Memo
-using modified `typedoc-markdown-plugin` to generate client document
-because jekyll doesn't recognize files starts with '_'.
