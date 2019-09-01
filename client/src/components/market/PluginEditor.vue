@@ -13,55 +13,60 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import { createComponent, SetupContext, ref, reactive, onMounted, watch } from '@vue/composition-api'
 import _ from 'lodash'
+import { PluginPackage, Room, PluginInstance, Plugin } from '@/model'
 
-import Component from 'vue-class-component'
-import { Prop, Watch } from 'vue-property-decorator'
-import { PluginPackage, PluginComponent, Room, PluginInstance, Plugin } from '@/model'
+export default createComponent({
+  props: {
+    pluginPackage: Object as () => PluginPackage,
+  },
+  setup (props: { pluginPackage: PluginPackage }, { root }: SetupContext) {
+    const loaded = ref<boolean>()
+    // ???
+    let innerPluginPackage: any = null
+    const editableFunctions = ref<string>()
+    const editableTemplate = ref<string>()
 
-@Component<PluginEditor>({
-  watch: {
-    async 'innerPluginPackage.plugin.functions' (innerPluginPackage: PluginPackage) {
+    watch(() => innerPluginPackage!!.plugin.functions, async (v: PluginPackage) => {
       console.log('watch')
-      await this.$emit('refresh', innerPluginPackage)
-    },
-    async 'innerPluginPackage.plugin.template' (innerPluginPackage: PluginPackage) {
-      await this.$emit('refresh', innerPluginPackage)
-    },
+      await root.$emit('refresh', v)
+    })
+
+    watch(() => innerPluginPackage!!.plugin.template, async (v: PluginPackage) => {
+      console.log('watch')
+      await root.$emit('refresh', v)
+    })
+
+    const syncFunctions = () => _.debounce(async (e: Event) => {
+      try {
+        const functions = JSON.parse((e.target as HTMLInputElement).innerHTML)
+        this.innerPluginPackage.plugin.functions = functions
+      } catch (e) {
+        root.$emit('toast', 'Syntax error')
+      }
+    }, 1000)
+
+    const syncTemplate = () => _.debounce(async (e: Event) => {
+      if (!innerPluginPackage) { return }
+      innerPluginPackage.plugin.template = (e.target as HTMLInputElement).innerText
+    }, 1000)
+
+    onMounted(() => {
+      // @ts-ignore
+      Function.prototype.toJSON = Function.prototype.toString
+      innerPluginPackage = reactive(_.clone(props.pluginPackage))
+      editableFunctions.value = JSON.stringify(props.pluginPackage.plugin.functions, null, '\t')
+      editableTemplate.value = _.clone(props.pluginPackage.plugin.template)
+      loaded.value = true
+    })
+
+    return {
+      loaded, innerPluginPackage, editableFunctions, editableTemplate,
+      syncFunctions, syncTemplate,
+    }
   },
 })
-export default class PluginEditor extends Vue {
-  @Prop() public pluginPackage!: PluginPackage
-
-  private loaded: boolean = false
-  private innerPluginPackage!: PluginPackage
-
-  private editableFunctions: string = ''
-  private editableTempate: string = ''
-
-  private syncFunctions = _.debounce(async (e: Event) => {
-    try {
-      const functions = JSON.parse((e.target as HTMLInputElement).innerHTML)
-      this.innerPluginPackage.plugin.functions = functions
-    } catch (e) {
-      this.$emit('toast', 'Syntax error')
-    }
-  }, 1000)
-
-  private syncTemplate = _.debounce(async (e: Event) => {
-    this.innerPluginPackage.plugin.template = (e.target as HTMLInputElement).innerText
-  }, 1000)
-
-  private mounted () {
-    // @ts-ignore
-    Function.prototype.toJSON = Function.prototype.toString
-    this.innerPluginPackage = _.clone(this.pluginPackage)
-    this.editableFunctions = JSON.stringify(this.pluginPackage.plugin.functions, null, '\t')
-    this.editableTempate = _.clone(this.pluginPackage.plugin.template)
-    this.loaded = true
-  }
-}
 </script>
 
 <style lang="stylus" scoped>

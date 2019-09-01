@@ -1,226 +1,143 @@
-import Vue, { Component } from 'vue'
-import { Plugin, PluginProperties, PluginComponent, PluginFunctions, User, Room } from '@/model'
+import { createComponent, ref, provide, inject, Ref, onMounted, computed } from '@vue/composition-api'
+
+import { Plugin, PluginProperties, PluginFunctions, User, PluginMeta, PluginEnv } from '@/model'
 
 import _, { LoDashStatic } from 'lodash'
-// @ts-ignore
-import VueP5 from 'vue-p5'
-// @ts-ignore
-import VuePlayingCard from 'vue-playing-card'
-// TODO: global install -> local install
-Vue.use(VuePlayingCard)
+import socket from '@/socket'
+import store from '@/store'
 
-/**
-* [TODO] Import dynamically additional components are used in a plugin.
-*/
-const installModules = async () => {
-  // addons
-  const modules: Record<string, Component> = {}
+type Component = ReturnType<typeof createComponent>
 
-  // custom install
-  // for (const [key, path] of Object.entries(addons)) {
-  //   const [library, comp] = path.split('/')
-  //   console.log([library, comp])
-  //   if (comp) {
-  //     const addon = await import(library)
-  //     console.log(addon[comp])
-  //     modules[key] = addon[comp]
-  //   } else {
-  //     const addon = await import(path)
-  //     console.log(addon)
-  //     modules[key] = addon
-  //   }
-  // }
-  // vuetify
-  const vuetifyAddons: Record<string, any> = await import('vuetify/lib')
-  Object.entries(vuetifyAddons)
-    .filter(([componentName, __]) => componentName[0] === 'V')
-    .forEach(([componentName, component]) => {
-      modules[componentName] = component
-    })
-  // vue-youtube
-  // @ts-ignore
-  modules.player = (await import('vue-youtube')).Youtube
+interface EventContext { event: string, args: any[] }
 
-  modules.VueP5 = VueP5
+const SocketInjectorSymbol = Symbol()
 
-  // modules.VuePlayingCard = VuePlayingCard
+const fromEntries = <V>(iterable: Iterable<[string, V]>): Record<string, V> =>
+  [...iterable].reduce((obj, [k, v]) => ({ [k]: v, ...obj }), {})
 
-  return modules
+const objectMap = <T, R>(obj: Record<string, T>, transformer: (v: T) => R): Record<string, R> => {
+  return fromEntries(Object.entries(obj).map(([k, v]) => [k, transformer(v)]))
 }
 
-/**
-* Compiles a plugin-package, and converts Vue component.
-*
-* ### Hook type
-* - (without prefix, ex: add): send me, recieve all members in room.
-* - (with '_' prefix ex: _add): call the function directly.
-* - (with 'bc_' ex: bc_add): broadcast to room, recieve all members excepts me in room.
-*
-* @param plugin hoge
-* @param properties hoge
-*/
+interface SocketInjector {
+  record: Ref<Record<string, any>>
+  pluginSyncFunction: (res: { record: Record<string, any> }) => void
+  pluginCloneFunction: ({ roomId, instanceId, from }: {
+    roomId: string
+    instanceId: string
+    from: string,
+  }) => void
+}
+
+const socketInjector = {
+  setup () {
+    // plugin data
+    const record = ref<Record<string, any>>({})
+    const pluginSyncFunction = (res: { record: Record<string, any> }) => {
+      record.value = res.record
+    }
+    const pluginCloneFunction = ({ roomId, instanceId, from }: {
+      roomId: string, instanceId: string, from: string,
+    }) => {
+      console.log(`[Plugin] came clone request from ${from}`)
+
+      socket.emit('plugin/clone', {
+        roomId,
+        instanceId,
+        record: Object.assign({}, record.value),
+        from,
+      })
+    }
+
+    provide(SocketInjectorSymbol, {
+      record,
+      pluginSyncFunction,
+      pluginCloneFunction,
+    })
+  },
+}
+
 export const compile = async (
   plugin: Plugin,
   properties: PluginProperties,
-): Promise<any> => {
-  try {
-    // addons
-    const addonComponents: Record<string, Component> = await installModules()
+): Promise<Component> => {
+  const components = {}
+  const setup: Component['setup'] = () => {
+    const meta = ref<PluginMeta>(properties.meta)
+    const env = ref<PluginEnv>(properties.env)
+    const events = objectMap(plugin.functions as PluginFunctions, (fn) =>
+      ref<(...args: any[]) => void>((...args: any[]) => {
+        fn(...args)
+        // extend event
+        console.log(plugin.instanceId)
+        socket.emit('plugin/trigger', {
+          roomId: env.value.room.id,
+          instanceId: env.value.instanceId,
+          data: { event, args },
+          options: {},
+        })
+      }),
+    )
 
-    const hooks: Record<string, (...args: any) => void> = {}
-    console.log(Object.keys(plugin.functions))
-    for (const [event, fn] of Object.entries<
-      ((...args: any[]) => void)
-    >(plugin.functions as PluginFunctions)) {
-      // console.log(` - ${event} : ${fn.toString()}`)
-      /**
-       *  functions that its name starts with 'event/*', '_*' are special functions.
-       *
-       *  # Events
-       *  - event/room : fire when room updated.
-       *  - event/member :
-       */
-      if (event.startsWith('_') || event.startsWith('event/')) {
-        hooks[event] = fn
-      } else {
-        hooks[event] = function (this: PluginComponent, ...args: any[]) {
-          // emit to server
-          console.log(this.env.instanceId)
-          this.$socket.emit('plugin/trigger', {
-            roomId: this.env.room.id,
-            instanceId: this.env.instanceId,
-            data: {
-              event,
-              args,
-            },
-            options: {},
-          })
-        }
-        hooks[`__callback__${event}`] = fn
-      }
-    }
+    const {
+      record, pluginSyncFunction, pluginCloneFunction,
+    } = inject<SocketInjector>(SocketInjectorSymbol) as SocketInjector
 
-    console.log(`[Compiler] compiled ${properties.env.instanceId} successfully`)
-
-    // @ts-ignore
-    return Vue.extend({
-      template: plugin.template,
-      components: addonComponents,
-      // @ts-ignore
-      sockets: {
-        [`plugin/${plugin.instanceId}/sync`] (this: PluginComponent, { record }: { record: Record<string, any> }) {
-          // @ts-ignore
-          this.record = record
-          console.log('record synced')
-        },
-        [`plugin/${plugin.instanceId}/clone`] ({ roomId, instanceId, from }: {
-          roomId: string, instanceId: string, from: string,
-        }) {
-          console.log(`[Plugin] came clone request from ${from}`)
-
-          // @ts-ignore
-          this.$socket.emit('plugin/clone', {
-            // @ts-ignore
-            roomId: this.env.room.id,
-            // @ts-ignore
-            instanceId: this.env.instanceId,
-            // @ts-ignore
-            record: this.$cloneRecord(),
-            from,
-          })
-        },
-        [`plugin/${plugin.instanceId}/trigger`] (payload: { data: { event: string, args: [] } }) {
-          // @ts-ignore
-          this.callbackFromServer(payload)
-        },
-      },
-      // watch: {
-      //   record: {
-      //     handler (v) {
-      //       console.log(Object.assign({}, v))
-      //     },
-      //     deep: true
-      //   }
-      // },
-      data (): {
-        record: Record<string, any>,
-        meta: PluginProperties['meta'],
-        env: PluginProperties['env'],
-      } {
-        return {
-          record: Object.assign({}, properties.record),
-          meta: properties.meta,
-          env: properties.env,
-        }
-      },
-      mounted () {
-        console.log(`[${this.env.instanceId}] active`)
-
-        // if someone exist, sync records
-        if (1 < this.env.room.members.length) {
-          this.$socket.emit('plugin/sync', {
-            roomId: this.env.room.id,
-            instanceId: this.env.instanceId,
-          })
-          console.log(`[Plugin] send sync request`)
-        } else {
-          console.log('[Plugin] initialized record')
-        }
-      },
-      computed: {
-        /**
-         *  support Lodash
-         */
-        _ (): LoDashStatic {
-          return _
-        },
-        /**
-          *  return [User] of mine.
-        */
-        $me (): User {
-          // @ts-ignore
-          return this.env.room.members.find((m) => m.id === this.$socket.id)
-        },
-        /**
-         *   return [User[]] members in room
-         */
-        $members (): User[] {
-          return this.env.room.members
-        },
-      },
-      methods: {
-        $cloneRecord (): Record<string, any> {
-          // @ts-ignore
-          return Object.assign({}, this.record)
-        },
-        $send (event: string, options?: { to: string } | { broadcast: boolean }, ...args: any[]) {
-        // @ts-ignore
-          this.$socket.emit('plugin/trigger', {
-            // @ts-ignore
-            roomId: this.env.room.id,
-            // @ts-ignore
-            instanceId: this.env.instanceId,
-            data: {
-              event,
-              args,
-            },
-            options,
-          })
-          // @ts-ignore
-          console.log(`${this.env.instanceId} ${event}`)
-        },
-        ...hooks,
-        // callback from server
-        callbackFromServer ({ data }: { data: { event: string, args: any[] } },
-        ) {
-          const { event, args } = data
-          // console.log(`[plugin/trigger/${this.env.instanceId}] ${event}(${args})`)
-          // @ts-ignore
-          this[`__callback__${event}`](...args)
-        },
-      },
+    socket.on(`plugin/${env.value.instanceId}/sync`, pluginSyncFunction)
+    socket.on(`plugin/${env.value.instanceId}/clone`, pluginCloneFunction)
+    socket.on(`plugin/${env.value.instanceId}/trigger`, (res: { data: EventContext }) => {
+      events[res.data.event].value(res.data.args)
     })
-  } catch (error) {
-    throw error
+
+    // Api
+    const $me = computed(() => {
+      return env.value.room.members.find((m) => m.id === store.getters.userId)
+    })
+    const $members = computed(() => {
+      return env.value.room.members
+    })
+    const $send = (event: string, options?: { to: string } | { broadcast: boolean }, ...args: any[]) => {
+      socket.emit('plugin/trigger', {
+        roomId: env.value.room.id,
+        // @ts-ignore
+        instanceId: env.value.instanceId,
+        data: { event, args },
+        options,
+      })
+      console.log(`${env.value.instanceId} ${event}`)
+    }
+    const $_ = ref<LoDashStatic>(_)
+
+    onMounted(() => {
+      console.log(`[${env.value.instanceId}] active`)
+
+      // if someone exist, sync records
+      if (1 < env.value.room.members.length) {
+        socket.emit('plugin/sync', {
+          roomId: env.value.room.id,
+          instanceId: env.value.instanceId,
+        })
+        console.log(`[Plugin] send sync request`)
+      } else {
+        console.log('[Plugin] initialized record')
+      }
+    })
+
+    return {
+      ...events,
+      record,
+      meta,
+      env,
+      $me,
+      $members,
+      $send,
+      $_,
+    }
   }
+
+  return createComponent({
+    template: plugin.template,
+    components,
+    setup,
+  })
 }

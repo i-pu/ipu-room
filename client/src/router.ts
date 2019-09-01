@@ -1,6 +1,5 @@
 import Vue from 'vue'
-import Router, { Route } from 'vue-router'
-import store from '@/store'
+import Router from 'vue-router'
 
 import Top from '@/views/Top.vue'
 import About from '@/views/About.vue'
@@ -8,8 +7,6 @@ import Lobby from '@/views/Lobby.vue'
 import Room from '@/views/Room.vue'
 import PluginMarket from '@/views/PluginMarket.vue'
 import PluginDetail from '@/views/PluginDetail.vue'
-
-Vue.use(Router)
 
 const router = new Router({
   mode: 'history',

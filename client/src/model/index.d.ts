@@ -5,15 +5,15 @@ import { Socket } from 'socket.io'
 /**
 * PluginComponent
 */
-type ThenArg<T> = T extends Promise<infer U> ? U : T
-export type PluginComponent = ThenArg<ReturnType<typeof compile>> & {
-  record: Record<string, any>,
-  $send: (event: string, options?: { to: string, broadcast: boolean }, ...args: any[]) => void,
-  $socket: Socket,
-  $me: User,
-  $members: User[],
-  env: PluginProperties['env'],
-}
+// type ThenArg<T> = T extends Promise<infer U> ? U : T
+// export type PluginComponent = ThenArg<ReturnType<typeof compile>> & {
+//   record: Record<string, any>,
+//   $send: (event: string, options?: { to: string, broadcast: boolean }, ...args: any[]) => void,
+//   $socket: Socket,
+//   $me: User,
+//   $members: User[],
+//   env: PluginProperties['env'],
+// }
 
 /**
 * Expresses Data that will be send from the server.
@@ -26,7 +26,7 @@ export type PluginComponent = ThenArg<ReturnType<typeof compile>> & {
 // compiler internal expression
 export interface PluginFunctions {
   initialize: ((...args: any) => Record<string, any>)
-  [event: string]: (this: PluginComponent, ...args: any) => void
+  [event: string]: (...args: any) => void
 }
 
 export interface Plugin {
@@ -55,15 +55,20 @@ interface PluginMeta {
   content: string
 }
 
+/*
+
+*/
+export interface PluginEnv {
+  instanceId: string,
+  room: Room
+}
+
 /**
 * PluginProperties
 */
 export interface PluginProperties {
   record: Record<string, any>,
-  env: {
-    instanceId: string,
-    room: Room,
-  },
+  env: PluginEnv,
   meta: PluginMeta
 }
 

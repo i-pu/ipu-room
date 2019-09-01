@@ -32,15 +32,10 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import Component from 'vue-class-component'
-import { Prop } from 'vue-property-decorator'
 import TopToolbar from '@/components/TopToolbar.vue'
+import { createComponent } from '@vue/composition-api'
 
-@Component<About>({
+export default createComponent({
   components: { TopToolbar },
 })
-export default class About extends Vue {
-
-}
 </script>

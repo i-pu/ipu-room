@@ -35,7 +35,7 @@
         v-toolbar(app color="light-blue" dark)
           v-toolbar-side-icon(@click.stop="drawer = !drawer")
           v-toolbar-title.headline.text-uppercase
-            span.pr-3(@click="$router.push('/lobby')") マーケット
+            span.pr-3(@click="toLobby") マーケット
 
           v-spacer
 
@@ -56,7 +56,7 @@
             v-icon.px-2 sort_by_alpha
             | {{ sortKey.name }}
 
-          v-list-tile(avatar ripple @click="$router.push(`/market/${pluginOverview.id}`)" v-for="pluginOverview in pluginOverviews")
+          v-list-tile(avatar ripple @click="toDetail(pluginOverview.id)" v-for="pluginOverview in pluginOverviews")
             v-list-tile-avatar
               img(:src="pluginOverview.thumbnailUrls[0]")
             v-list-tile-content
@@ -68,59 +68,70 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import { createComponent, onBeforeMount, ref, watch } from '@vue/composition-api'
 import _ from 'lodash'
-import Component from 'vue-class-component'
-import { Prop, Watch } from 'vue-property-decorator'
-import { PluginMeta, PluginPackage } from '../model'
+import router from '@/router'
+import { PluginMeta, PluginPackage } from '@/model'
 import PluginUploadForm from '@/components/market/PluginUploadForm.vue'
 
 interface MarketCategory { name: string, icon: string }
 interface MarketSortKey { name: string, icon: string, query: string }
 
-@Component({
+const categories: MarketCategory[] = [
+  { name: 'すべてのカテゴリ', icon: 'home' },
+  { name: 'A', icon: 'home' },
+  { name: 'B', icon: 'home' },
+  { name: 'C', icon: 'home' },
+  { name: 'D', icon: 'home' },
+]
+const sortKeys: MarketSortKey[] = [
+  { name: '人気順', icon: 'sort_by_alpha', query: '' },
+  { name: '新着順', icon: 'sort_by_alpha', query: '' },
+]
+
+export default createComponent({
   components: { PluginUploadForm },
-  watch: {
-    searchText: _.debounce((v: string) => {
-      console.log(v)
-    }, 1500),
-  },
   filters: {
     less (s: string): string {
       return s.slice(0, 14) + '...'
     },
   },
+  setup () {
+    const drawer = ref<boolean>(false)
+    const category = ref<MarketCategory>(categories[0])
+    const sortKey = ref<MarketSortKey>(sortKeys[0])
+    const searchText = ref<string>('')
+    const pluginOverviews = ref<PluginMeta[]> ([])
+
+    watch(() => _.debounce(() => {
+      console.log(searchText.value)
+    }, 1500))
+
+    onBeforeMount(() => {
+      reloadPlugins()
+    })
+
+    const toDetail = (pluginId: string) => {
+      router.push(`/market/${pluginId}`)
+    }
+
+    const toLobby = () => {
+      router.push('/lobby')
+    }
+
+    const reloadPlugins = async () => {
+      const metas: PluginMeta[] = await fetch(`${process.env.VUE_APP_API_ORIGIN}/market/plugins`)
+        .then((res) => res.json())
+        .catch(console.log)
+      pluginOverviews.value = metas
+    }
+
+    return {
+      reloadPlugins,
+      drawer,
+      toDetail,
+      toLobby,
+    }
+  },
 })
-export default class PluginMarket extends Vue {
-  private drawer: boolean = false
-
-  private categories: MarketCategory[] = [
-    { name: 'すべてのカテゴリ', icon: 'home' },
-    { name: 'A', icon: 'home' },
-    { name: 'B', icon: 'home' },
-    { name: 'C', icon: 'home' },
-    { name: 'D', icon: 'home' },
-  ]
-  private sortKeys: MarketSortKey[] = [
-    { name: '人気順', icon: 'sort_by_alpha', query: '' },
-    { name: '新着順', icon: 'sort_by_alpha', query: '' },
-  ]
-
-  private category: MarketCategory = this.categories[0]
-  private sortKey: MarketSortKey = this.sortKeys[0]
-  private searchText: string = ''
-
-  private pluginOverviews: PluginMeta[] = []
-
-  public created () {
-    this.reloadPlugins()
-  }
-
-  private async reloadPlugins () {
-    const metas: PluginMeta[] = await fetch(`${process.env.VUE_APP_API_ORIGIN}/market/plugins`)
-      .then((res) => res.json())
-      .catch(console.log)
-    this.pluginOverviews = metas
-  }
-}
 </script>

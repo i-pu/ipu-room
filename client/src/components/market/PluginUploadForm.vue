@@ -76,99 +76,113 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import { Component, Prop } from 'vue-property-decorator'
-import { PluginMeta } from '../../model'
+import { createComponent, ref, SetupContext, onMounted } from '@vue/composition-api'
+import { PluginMeta } from '@/model'
+import store from '@/store'
 
-@Component<PluginUploadForm>({
-  sockets: {
-    // 'plugin/register' (data) {
-    //   this.responseCreatePlugin(data)
-    // },
+export default createComponent({
+  props: {
+    update: {
+      type: Boolean,
+      default: () => false,
+    },
+    pluginMeta: Object as () => PluginMeta,
+  },
+  setup (props: { update: boolean, pluginMeta: PluginMeta }, { root }: SetupContext) {
+    const gistUrl = ref<string>('')
+    const dialog = ref<boolean>(false)
+    const valid = ref<boolean>(false)
+    const loader = ref<any>(null)
+    const fileName = ref<string>('')
+    const fileUploaded = ref<boolean>(false)
+    const loading = ref<boolean>(false)
+    const agreed = ref<boolean>(false)
+    const meta = ref<Partial<PluginMeta>>({
+      name: '',
+      description: '',
+      author: '',
+      tags: '',
+      content: '',
+      thumbnailUrls: [],
+    })
+
+    const onFileSelected = (event: Event) => {
+      loader.value = 'loading'
+      loading.value = true
+      if (event.target instanceof HTMLInputElement) {
+        if (!event.target.files) { return }
+        const file = event.target.files[0]
+        const reader = new FileReader()
+        reader.onload = (e: Event) => {
+          meta.value.content = reader.result as string
+          loader.value = null
+          loading.value = false
+          fileUploaded.value = true
+          fileName.value = file.name
+
+          if (meta.value.name === '') {
+            meta.value.name = fileName.value.match(/(.*)(?:\.([^.]+$))/)!![1]
+          }
+        }
+        reader.readAsText(file)
+      }
+    }
+
+    const requestUploadPlugin = async () => {
+      meta.value.author = store.getters.userName
+      console.log(Object.assign({}, this.meta))
+      if (props.update) {
+        const response: { state: boolean } = await fetch(
+          `${process.env.VUE_APP_API_ORIGIN}/market/plugins/${props.pluginMeta.id}`
+        , {
+          method: 'POST',
+          body: JSON.stringify(meta.value),
+        })
+          .then((res) => res.json())
+        responseCreatePlugin(response)
+      } else {
+        // from gist
+        if (this.gistUrl) {
+          this.meta.content = await fetch(this.gistUrl).then((res) => res.text())
+          console.log(this.meta.content)
+        }
+
+        const response: { state: boolean } = await fetch(`${process.env.VUE_APP_API_ORIGIN}/market/plugins`, {
+          method: 'POST',
+          body: JSON.stringify(this.meta),
+        })
+          .then((res) => res.json())
+
+        responseCreatePlugin(response)
+      }
+    }
+
+    const responseCreatePlugin = (payload: { state: boolean }) => {
+      console.log(payload)
+      dialog.value = false
+      root.$emit('reload')
+    }
+
+    onMounted(() => {
+      if (props.update) {
+        meta.value = Object.assign({}, props.pluginMeta)
+      }
+    })
+
+    return {
+      gistUrl,
+      dialog,
+      valid,
+      loader,
+      fileName,
+      fileUploaded,
+      loading,
+      agreed,
+      meta,
+      onFileSelected,
+      requestUploadPlugin,
+      responseCreatePlugin,
+    }
   },
 })
-export default class PluginUploadForm extends Vue {
-  @Prop({ default: false }) private update!: boolean
-  @Prop() private pluginMeta!: PluginMeta
-  private gistUrl: string = ''
-  private dialog: boolean = false
-  private valid: boolean = false
-  private loader: any = null
-  private fileName: string = ''
-  private fileUploaded: boolean = false
-  private loading: boolean = false
-  private agreed: boolean = false
-  private meta: Partial<PluginMeta> = {
-    name: '',
-    description: '',
-    author: '',
-    tags: '',
-    content: '',
-    thumbnailUrls: [],
-  }
-
-  public onFileSelected (event: Event) {
-    this.loader = 'loading'
-    this.loading = true
-    if (event.target instanceof HTMLInputElement) {
-      if (!event.target.files) { return }
-      const file = event.target.files[0]
-      const reader = new FileReader()
-      reader.onload = (e: Event) => {
-        this.meta.content = reader.result as string
-        this.loader = null
-        this.loading = false
-        this.fileUploaded = true
-        this.fileName = file.name
-
-        if (this.meta.name === '') {
-          this.meta.name = this.fileName.match(/(.*)(?:\.([^.]+$))/)!![1]
-        }
-      }
-      reader.readAsText(file)
-    }
-  }
-
-  public async requestUploadPlugin () {
-    this.meta.author = this.$store.getters.userName
-    console.log(Object.assign({}, this.meta))
-    if (this.update) {
-      fetch(`${process.env.VUE_APP_API_ORIGIN}/market/plugins/${this.pluginMeta.id}`, {
-        method: 'POST',
-        body: JSON.stringify(this.meta),
-      })
-        .then((res) => res.json())
-        .then((payload: { state: boolean }) => {
-          this.responseCreatePlugin(payload)
-        })
-    } else {
-      // from gist
-      if (this.gistUrl) {
-        this.meta.content = await fetch(this.gistUrl).then((res) => res.text())
-        console.log(this.meta.content)
-      }
-
-      fetch(`${process.env.VUE_APP_API_ORIGIN}/market/plugins`, {
-        method: 'POST',
-        body: JSON.stringify(this.meta),
-      })
-        .then((res) => res.json())
-        .then((payload: { state: boolean }) => {
-          this.responseCreatePlugin(payload)
-        })
-    }
-  }
-
-  public responseCreatePlugin (payload: { state: boolean }) {
-    console.log(payload)
-    this.dialog = false
-    this.$emit('reload')
-  }
-
-  private mounted () {
-    if (this.update) {
-      this.meta = Object.assign({}, this.pluginMeta)
-    }
-  }
-}
 </script>

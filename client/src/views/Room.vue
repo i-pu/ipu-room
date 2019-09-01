@@ -12,45 +12,50 @@
 </template>
 
 <script lang="ts">
-import Vue, { ComponentOptions, VueConstructor } from 'vue'
-import Component from 'vue-class-component'
+import { createComponent, ref, computed, SetupContext, onMounted } from '@vue/composition-api'
 import { Room, User } from '@/model'
+import socket from '@/socket'
+import router from '@/router'
 
 import Desk from '@/components/room/Desk.vue'
 import Settings from '@/components/room/Settings.vue'
-import { Watch } from 'vue-property-decorator';
 
-@Component<RoomView>({
+const room = ref<Room | null>(null)
+
+socket.on('room/enter', (res: { room: Room }) => {
+  console.log(`[Room] entered`)
+  room.value = res.room
+})
+
+socket.on('room/update', (res: { room: Room }) => {
+  if (!room.value) { return }
+  room.value.members = res.room.members
+})
+
+socket.on('room/exit', () => {
+  router.push('/lobby')
+})
+
+export default createComponent({
   components: { Desk, Settings },
-  sockets: {
-    'room/enter' ({ room }: { room: Room }) {
-      console.log(`[Room] entered`)
-      this.room = room
-    },
-    'room/update' ({ room }: { room: Room }) {
-      if (!this.room) { return }
-      this.room.members = room.members
-    },
-    'room/exit' (data: {}) {
-      this.$router.push('/lobby')
-    },
+  setup (props: {}, { root }: SetupContext) {
+    const roomId = computed(() => root.$route.params.roomId)
+
+    onMounted(() => {
+      console.log(`[Room] request enter`)
+      socket.emit('room/enter', { roomId: roomId.value })
+    })
+
+    const requestExitRoom = () => {
+      socket.emit('room/exit', { roomId: roomId.value })
+    }
+
+    return {
+      roomId,
+      requestExitRoom,
+      room,
+    }
   },
 })
-export default class RoomView extends Vue {
-  private room: Room | null = null
-
-  private get roomId (): string {
-    return this.$route.params.roomId
-  }
-
-  private mounted () {
-    console.log(`[Room] request enter`)
-    this.$socket.emit('room/enter', { roomId: this.roomId })
-  }
-
-  private requestExitRoom () {
-    this.$socket.emit('room/exit', { roomId: this.roomId })
-  }
-}
 </script>
 

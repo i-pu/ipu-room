@@ -47,28 +47,31 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import Component from 'vue-class-component'
-import { Prop } from 'vue-property-decorator'
+import { createComponent, ref, onMounted, computed } from '@vue/composition-api'
 import { Room, Plugin, PluginProperties, PluginMeta } from '@/model'
 
-@Component
-export default class Settings extends Vue {
-  @Prop() public room!: Room
+export default createComponent({
+  setup (props: { room: Room }) {
+    const dialog = ref<boolean>(false)
+    const roomName = ref<string>('ほげ')
+    const setting1 = ref<boolean>(false)
+    const addPluginDialog = ref<boolean>(false)
+    const selectedPlugin = ref<string>('')
+    const room = computed(() => props.room)
 
-  private dialog: boolean = false
-  private roomName: string = 'ほげ'
-  private setting1: boolean = false
-  private addPluginDialog: boolean = false
-  private selectedPlugin: string = ''
+    const onChangePluginSettings = (meta: PluginMeta) => {
+      console.log(meta)
+    }
 
-  public mounted () {
-    // console.log(this.room.plugins)
-  }
-
-  private onChangePluginSettings (meta: PluginMeta) {
-    console.log(meta)
-    return {}
-  }
-}
+    return {
+      dialog,
+      roomName,
+      setting1,
+      addPluginDialog,
+      selectedPlugin,
+      onChangePluginSettings,
+      room,
+    }
+  },
+})
 </script>

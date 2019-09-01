@@ -30,45 +30,51 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import Component from 'vue-class-component'
-import { Prop } from 'vue-property-decorator'
+import { createComponent, SetupContext, ref } from '@vue/composition-api'
 import { Room, PluginPackage, PluginMeta } from '@/model'
+import socket from '@/socket'
 
-@Component<RoomCreateForm>({
-  sockets: {
-    'room/create' (data: { room: Room }) {
-      this.$emit('add', data)
-    },
+export default createComponent({
+  props: {
+    userId: String,
   },
-})
-export default class RoomCreateForm extends Vue {
-  @Prop() public userId!: string
+  setup (props: { userId: string }, { root }: SetupContext) {
+    const dialog = ref<boolean>(false)
+    const roomNameInput = ref<string>('')
+    const myPlugins = ref<Array<{ label: string, value: string }>>([])
+    const selectedPlugins = ref<string[]>([])
 
-  private dialog: boolean = false
-  private roomNameInput: string = ''
-  private myPlugins: Array<{ label: string, value: string }> = []
-  private selectedPlugins: string[] = []
+    const fetchPluginData = async () => {
+      const metas: PluginMeta[] = await fetch(`${process.env.VUE_APP_API_ORIGIN}/market/plugins`)
+        .then((res) => res.json())
 
-  private fetchPluginData () {
-    fetch(`${process.env.VUE_APP_API_ORIGIN}/market/plugins`)
-      .then((res) => res.json())
-      .then((metas: PluginMeta[]) => {
-        this.myPlugins = metas.map((meta) => ({
-          label: `${meta.author}/${meta.name} v${meta.version}`,
-          value: meta.id,
-        }))
-      })
-  }
+      myPlugins.value = metas.map((meta) => ({
+        label: `${meta.author}/${meta.name} v${meta.version}`,
+        value: meta.id,
+      }))
+    }
 
-  private requestCreateRoom () {
-    this.$socket.emit('room/create', {
-      roomName: this.roomNameInput,
-      plugins: this.selectedPlugins,
+    socket.on('room/create', (res: { room: Room }) => {
+      root.$emit('add', res)
     })
 
-    this.dialog = false
-    this.roomNameInput = ''
-  }
-}
+    const requestCreateRoom = () => {
+      socket.emit('room/create', {
+        roomName: roomNameInput.value,
+        plugins: selectedPlugins.value,
+      })
+      dialog.value = false
+      roomNameInput.value = ''
+    }
+
+    const addRoom = (res: { room: Room }) => {
+      root.$emit('add', res)
+    }
+
+    return {
+      dialog, roomNameInput, myPlugins, selectedPlugins,
+      fetchPluginData, requestCreateRoom, addRoom,
+    }
+  },
+})
 </script>
