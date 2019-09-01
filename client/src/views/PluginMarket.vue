@@ -116,7 +116,7 @@ export default class PluginMarket extends Vue {
     this.reloadPlugins()
   }
 
-  private async reloadPlugins() {
+  private async reloadPlugins () {
     const metas: PluginMeta[] = await fetch(`${process.env.VUE_APP_API_ORIGIN}/market/plugins`)
       .then((res) => res.json())
       .catch(console.log)

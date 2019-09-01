@@ -1,48 +1,37 @@
-import Vue from 'vue'
 import Vuex, { Commit } from 'vuex'
 
-Vue.use(Vuex)
-
-export interface State {
+export interface Session {
   userName: string
   userId: string
 }
 
-const storeState: State = {
-  userName: '',
-  userId: '',
-}
-
-const getters = {
-  userName (state: State) {
-    return state.userName
+export default new Vuex.Store<Session>({
+  state: {
+    userName: '',
+    userId: '',
   },
-  userId (state: State) {
-    return state.userId
+  getters: {
+    userName (state: Session): string {
+      return state.userName
+    },
+    userId (state: Session): string {
+      return state.userId
+    },
   },
-}
-
-const mutations = {
-  userName (state: State, payload: string) {
-    state.userName = payload
+  mutations: {
+    userName (state: Session, payload: string) {
+      state.userName = payload
+    },
+    userId (state: Session, payload: string) {
+      state.userId = payload
+    },
   },
-  userId (state: State, payload: string) {
-    state.userId = payload
+  actions: {
+    setUserName ({ commit }: { commit: Commit }, payload: string) {
+      commit('userName', payload)
+    },
+    setUserId ({ commit }: { commit: Commit }, payload: string) {
+      commit('userId', payload)
+    },
   },
-}
-
-const actions = {
-  setUserName ({ commit }: { commit: Commit }, payload: string) {
-    commit('userName', payload)
-  },
-  setUserId ({ commit }: { commit: Commit }, payload: string) {
-    commit('userId', payload)
-  },
-}
-
-export default new Vuex.Store({
-  state: storeState,
-  mutations,
-  getters,
-  actions,
 })

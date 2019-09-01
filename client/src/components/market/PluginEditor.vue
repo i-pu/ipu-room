@@ -40,15 +40,6 @@ export default class PluginEditor extends Vue {
   private editableFunctions: string = ''
   private editableTempate: string = ''
 
-  private mounted() {
-    // @ts-ignore
-    Function.prototype.toJSON = Function.prototype.toString
-    this.innerPluginPackage = _.clone(this.pluginPackage)
-    this.editableFunctions = JSON.stringify(this.pluginPackage.plugin.functions, null, "\t")
-    this.editableTempate = _.clone(this.pluginPackage.plugin.template)
-    this.loaded = true
-  }
-
   private syncFunctions = _.debounce(async (e: Event) => {
     try {
       const functions = JSON.parse((e.target as HTMLInputElement).innerHTML)
@@ -61,6 +52,15 @@ export default class PluginEditor extends Vue {
   private syncTemplate = _.debounce(async (e: Event) => {
     this.innerPluginPackage.plugin.template = (e.target as HTMLInputElement).innerText
   }, 1000)
+
+  private mounted () {
+    // @ts-ignore
+    Function.prototype.toJSON = Function.prototype.toString
+    this.innerPluginPackage = _.clone(this.pluginPackage)
+    this.editableFunctions = JSON.stringify(this.pluginPackage.plugin.functions, null, '\t')
+    this.editableTempate = _.clone(this.pluginPackage.plugin.template)
+    this.loaded = true
+  }
 }
 </script>
 

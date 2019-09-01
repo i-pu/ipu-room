@@ -1,19 +1,19 @@
 import Vue from 'vue'
-import './plugins/vuetify'
-import store from './store'
-import VueSocketIO from 'vue-socket.io-extended'
-import io from 'socket.io-client'
+import VueCompositionApi from '@vue/composition-api'
+import Vuetify from 'vuetify/lib'
 
 import 'vuetify/dist/vuetify.min'
 import '@fortawesome/fontawesome-free/css/all.css'
 
-Vue.use(VueSocketIO, io(process.env.VUE_APP_SOCKET_ORIGIN!!, {
-  path: process.env.VUE_APP_SOCKET_PATH
-}))
-Vue.config.productionTip = false
+import store from '@/store'
+import App from '@/App.vue'
+import router from '@/router'
 
-import App from './App.vue'
-import router from './router'
+Vue.use(Vuetify, { iconfont: 'md' })
+
+Vue.use(VueCompositionApi)
+
+Vue.config.productionTip = false
 
 new Vue({
   router,

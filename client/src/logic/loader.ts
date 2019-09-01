@@ -19,7 +19,7 @@ export const boot = async ({ plugin, meta }: PluginPackage, options: { room: Roo
     const initializer: () => Record<string, any> = plugin.functions.initialize
 
     if (!initializer) {
-      throw '[Plugin Loader] Plugin initializer not found'
+      throw new Error('[Plugin Loader] Plugin initializer not found')
     }
     const properties: PluginProperties = {
       record: initializer(),

@@ -58,12 +58,12 @@ export default class Desk extends Vue {
 
   @Watch('room.members')
   private onUpdateMember (newMembers: User[], oldMembers: User[]) {
-    if (newMembers.length === oldMembers.length) return
+    if (newMembers.length === oldMembers.length) { return }
     const isJoin: boolean = newMembers.length > oldMembers.length
     const diffs: User[] = _.differenceBy(
       isJoin ? newMembers : oldMembers,
       isJoin ? oldMembers : newMembers,
-      'id'
+      'id',
     )
     const member: User = diffs[0]
 

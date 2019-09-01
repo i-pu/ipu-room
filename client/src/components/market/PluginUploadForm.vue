@@ -104,13 +104,7 @@ export default class PluginUploadForm extends Vue {
     author: '',
     tags: '',
     content: '',
-    thumbnailUrls: []
-  }
-
-  private mounted() {
-    if (this.update) {
-      this.meta = Object.assign({}, this.pluginMeta)
-    }
+    thumbnailUrls: [],
   }
 
   public onFileSelected (event: Event) {
@@ -138,7 +132,7 @@ export default class PluginUploadForm extends Vue {
   public async requestUploadPlugin () {
     this.meta.author = this.$store.getters.userName
     console.log(Object.assign({}, this.meta))
-    if(this.update) {
+    if (this.update) {
       fetch(`${process.env.VUE_APP_API_ORIGIN}/market/plugins/${this.pluginMeta.id}`, {
         method: 'POST',
         body: JSON.stringify(this.meta),
@@ -150,7 +144,7 @@ export default class PluginUploadForm extends Vue {
     } else {
       // from gist
       if (this.gistUrl) {
-        this.meta.content = await fetch(this.gistUrl).then(res => res.text())
+        this.meta.content = await fetch(this.gistUrl).then((res) => res.text())
         console.log(this.meta.content)
       }
 
@@ -169,6 +163,12 @@ export default class PluginUploadForm extends Vue {
     console.log(payload)
     this.dialog = false
     this.$emit('reload')
+  }
+
+  private mounted () {
+    if (this.update) {
+      this.meta = Object.assign({}, this.pluginMeta)
+    }
   }
 }
 </script>

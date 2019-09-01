@@ -56,7 +56,7 @@ export default class RoomCreateForm extends Vue {
       .then((metas: PluginMeta[]) => {
         this.myPlugins = metas.map((meta) => ({
           label: `${meta.author}/${meta.name} v${meta.version}`,
-          value: meta.id
+          value: meta.id,
         }))
       })
   }

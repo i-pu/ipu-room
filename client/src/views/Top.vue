@@ -15,39 +15,33 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import Component from 'vue-class-component'
+import { createComponent, ref } from '@vue/composition-api'
 import TopToolbar from '@/components/TopToolbar.vue'
+import router from '@/router'
+import store, { Session } from '@/store'
+import socket from '@/socket'
 
-@Component<Top>({
+const userName = ref<string>('')
+
+socket.on('visit', ({ userId }: { userId: string }) => {
+  store.dispatch('setUserId', userId)
+  store.dispatch('setUserName', userName.value)
+  router.push('/lobby')
+})
+
+export default createComponent({
   components: { TopToolbar },
-  sockets: {
-    /**
-    *  response visit event
-    *  @param userId: string
-    */
-    visit (data: { userId: string }) {
-      this.toLobby(data)
-    },
+  setup () {
+    const requestToLobby = () => {
+      socket.emit('visit', { userName })
+    }
+
+    return {
+      userName,
+      requestToLobby,
+    }
   },
 })
-export default class Top extends Vue {
-  private userName: string = ''
-
-  private requestToLobby () {
-    /**
-     *  request visit event
-     *  @param userName: string
-     */
-    this.$socket.emit('visit', { userName: this.userName })
-  }
-
-  private toLobby ({ userId }: { userId: string }) {
-    this.$store.dispatch('setUserName', this.userName)
-    this.$store.dispatch('setUserId', userId)
-    this.$router.push('/lobby')
-  }
-}
 </script>
 
 <style lang="stylus" scoped>
